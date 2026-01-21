@@ -19,6 +19,8 @@ Initial project setup for Quality Sync mobile app completed. Full Expo + React N
 - ✅ Project documentation (README, ROADMAP, SETUP, INSTALL)
 - ✅ Windsurf workflows and rules setup
 - ✅ Initial git commit
+- ✅ Modified .gitignore to track all files
+- ✅ Second commit with .env, .expo, and session logs
 
 **Challenges:**
 - None - smooth initial setup

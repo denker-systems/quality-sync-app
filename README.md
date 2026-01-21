@@ -41,15 +41,25 @@ npm run web
 ```
 quality-sync-app/
 ├── src/
-│   ├── config/          # Konfiguration (Supabase, etc.)
-│   ├── types/           # TypeScript types
-│   ├── hooks/           # Custom React hooks
+│   ├── config/          # Konfiguration (Supabase, theme)
+│   ├── types/           # TypeScript types (database, index)
+│   ├── hooks/           # Custom React hooks (useAuth, useCompanyData, useMyEmployee)
 │   ├── screens/         # Screen components
-│   ├── components/      # Reusable components
-│   ├── navigation/      # Navigation setup
+│   │   ├── auth/        # Authentication screens (LoginScreen)
+│   │   └── profile/     # Profile screens (ProfileScreen)
+│   ├── features/        # Feature modules
+│   │   └── mfa/         # Multi-Factor Authentication
+│   │       ├── components/  # MFA UI components
+│   │       ├── hooks/       # MFA hooks
+│   │       ├── services/    # MFA service layer
+│   │       └── types/       # MFA types
+│   ├── navigation/      # Navigation setup (AppNavigator)
 │   └── utils/           # Utility functions
+├── docs/                # Documentation and dev logs
+│   └── devlogs/         # Date-based development logs
 ├── assets/              # Images, fonts, etc.
-├── App.tsx              # Root component
+├── .windsurf/           # Windsurf workflows and rules
+├── App.tsx              # Root component with MFAGate
 └── package.json
 ```
 
@@ -60,15 +70,24 @@ Appen använder Supabase Auth med samma credentials som webb-appen:
 - PKCE flow för säkerhet
 - Session persistence med AsyncStorage
 - Auto-refresh av tokens
+- **Multi-Factor Authentication (MFA)** med TOTP
 
 ## 📱 Features
 
 ### v1.0 (Current)
 - ✅ Login med email/password
+- ✅ Multi-Factor Authentication (MFA)
+  - ✅ TOTP enrollment med QR-kod (Google Authenticator)
+  - ✅ MFA challenge screen för verifiering
+  - ✅ MFA gate för att kräva 2FA vid behov
+  - ✅ Assurance level check (aal1/aal2)
 - ✅ Visa användarprofil
 - ✅ Logout
+- ✅ Session persistence
 
 ### Planned
+- [ ] Company data display i profil
+- [ ] Employee data display i profil
 - [ ] Avatar upload
 - [ ] Edit profile
 - [ ] Push notifications

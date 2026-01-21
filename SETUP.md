@@ -84,9 +84,12 @@ Använd samma credentials som för webb-appen:
 1. **Login Screen** visas först
 2. Fyll i email och password
 3. Klicka "Logga in"
-4. **Profile Screen** visas med din användarinfo
-5. Pull-to-refresh för att uppdatera data
-6. Klicka "Logga ut" för att logga ut
+4. **MFA Flow** (om användaren har MFA aktiverat):
+   - Om inte enrollad: **MFA Enrollment Screen** visas med QR-kod
+   - Om enrollad: **MFA Challenge Screen** visas för att ange 6-siffrig kod
+5. **Profile Screen** visas med din användarinfo
+6. Pull-to-refresh för att uppdatera data
+7. Klicka "Logga ut" för att logga ut
 
 ## 🔧 Troubleshooting
 
@@ -136,9 +139,12 @@ Appen använder **React Native Paper** för UI:
 ## 🔐 Auth Flow
 
 1. **Login** → Supabase Auth med email/password
-2. **Session** → Sparas i AsyncStorage
-3. **Auto-refresh** → Tokens uppdateras automatiskt
-4. **Logout** → Rensar session
+2. **MFA Check** → Kontrollera assurance level (aal1/aal2)
+3. **MFA Enrollment** → Om inte enrollad, visa QR-kod för Google Authenticator
+4. **MFA Challenge** → Om enrollad, kräv 6-siffrig verifieringskod
+5. **Session** → Sparas i AsyncStorage
+6. **Auto-refresh** → Tokens uppdateras automatiskt
+7. **Logout** → Rensar session
 
 ## 📊 Data Flow
 
