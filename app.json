@@ -1,0 +1,22 @@
+{
+  "expo": {
+    "name": "Quality Sync",
+    "slug": "quality-sync-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.qualitysync.app"
+    },
+    "android": {
+      "package": "com.qualitysync.app"
+    },
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}
