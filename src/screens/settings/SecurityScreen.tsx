@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { ScreenLayout } from '@/components/common';
 import { Text, Card, CardContent, Badge } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/config/supabase';
 import { 
@@ -25,6 +26,7 @@ interface MfaFactor {
 
 export function SecurityScreen() {
   const { isDark } = useTheme();
+  const { t } = useLanguage();
   const { user } = useAuth();
   const navigation = useNavigation<any>();
   const [biometricEnabled, setBiometricEnabled] = useState(false);
@@ -58,7 +60,7 @@ export function SecurityScreen() {
   };
 
   return (
-    <ScreenLayout title="Säkerhet" onBackPress={handleBackToSettings}>
+    <ScreenLayout title={t('security.title')} onBackPress={handleBackToSettings}>
       {/* Biometric */}
       <View style={styles.section}>
         <Card variant="elevated">
@@ -68,9 +70,9 @@ export function SecurityScreen() {
                 <Fingerprint size={20} color={accentColor} />
               </View>
               <View style={styles.settingsText}>
-                <Text variant="body-lg" style={{ color: textColor }}>Biometrisk inloggning</Text>
+                <Text variant="body-lg" style={{ color: textColor }}>{t('security.biometric')}</Text>
                 <Text variant="body-sm" style={{ color: mutedColor }}>
-                  Använd Face ID eller fingeravtryck
+                  {t('security.biometricSubtitle')}
                 </Text>
               </View>
               <Switch
@@ -93,17 +95,17 @@ export function SecurityScreen() {
                 <Smartphone size={20} color={accentColor} />
               </View>
               <View style={styles.settingsText}>
-                <Text variant="body-lg" style={{ color: textColor }}>Tvåfaktorsautentisering</Text>
+                <Text variant="body-lg" style={{ color: textColor }}>{t('security.twoFactor')}</Text>
                 <Text variant="body-sm" style={{ color: mutedColor }}>
-                  {hasMfaEnabled ? 'Öka säkerheten med Google Authenticator' : 'Rekommenderas för ökad säkerhet'}
+                  {hasMfaEnabled ? t('security.twoFactorEnabled') : t('security.twoFactorRecommended')}
                 </Text>
               </View>
               {mfaLoading ? (
                 <ActivityIndicator size="small" color={accentColor} />
               ) : hasMfaEnabled ? (
-                <Badge variant="success">Aktiv</Badge>
+                <Badge variant="success">{t('security.active')}</Badge>
               ) : (
-                <Badge variant="default">Inaktiv</Badge>
+                <Badge variant="default">{t('security.inactive')}</Badge>
               )}
             </View>
             
@@ -119,7 +121,7 @@ export function SecurityScreen() {
                       </Text>
                     </View>
                     <Text variant="body-sm" style={{ color: mutedColor }}>
-                      Tillagd {formatDate(factor.created_at)}
+                      {t('security.added')} {formatDate(factor.created_at)}
                     </Text>
                   </View>
                 ))}
@@ -133,7 +135,7 @@ export function SecurityScreen() {
       <View style={styles.infoContainer}>
         <Shield size={24} color={mutedColor} />
         <Text variant="body-sm" style={{ color: mutedColor, textAlign: 'center', marginTop: 8 }}>
-          Dina uppgifter är skyddade med branschledande kryptering.
+          {t('security.securityInfo')}
         </Text>
       </View>
     </ScreenLayout>

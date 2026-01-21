@@ -14,6 +14,7 @@ import { ScreenLayout } from '@/components/common';
 import { MenuButton } from '@/components/common/MenuButton';
 import { Text, Card, CardContent } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
 import { useMyEmployee } from '@/hooks/useMyEmployee';
 
@@ -52,6 +53,7 @@ function QuickAction({ icon: Icon, title, subtitle, onPress }: QuickActionProps)
 export function HomeScreen() {
   const navigation = useNavigation<any>();
   const { isDark } = useTheme();
+  const { t } = useLanguage();
   const { user } = useAuth();
   const { data: employee } = useMyEmployee();
 
@@ -60,38 +62,38 @@ export function HomeScreen() {
   const accentColor = isDark ? '#6BBD68' : '#489A45';
 
   return (
-    <ScreenLayout title="Hem" showBack={false} headerRight={<MenuButton />}>
+    <ScreenLayout title={t('home.title')} showBack={false} headerRight={<MenuButton />}>
       {/* Quick Actions */}
       <View style={styles.section}>
         <Text variant="h3" style={[styles.sectionTitle, { color: textColor }]}>
-          Snabbval
+          {t('home.quickActions')}
         </Text>
 
         <QuickAction
           icon={Calendar}
-          title="Mitt Schema"
-          subtitle="Se kommande skift och pass"
+          title={t('home.mySchedule')}
+          subtitle={t('home.seeUpcomingShifts')}
           onPress={() => navigation.navigate('Schedule')}
         />
 
         <QuickAction
           icon={ClipboardList}
-          title="Onboarding"
-          subtitle="Slutför din introduktion"
+          title={t('home.onboarding')}
+          subtitle={t('home.completeIntro')}
           onPress={() => navigation.navigate('Onboarding')}
         />
 
         <QuickAction
           icon={FileText}
-          title="Mina Avtal"
-          subtitle="Kontrakt och dokument"
+          title={t('home.myContracts')}
+          subtitle={t('home.contractsAndDocs')}
           onPress={() => navigation.navigate('Contracts')}
         />
 
         <QuickAction
           icon={User}
-          title="Min Profil"
-          subtitle="Personuppgifter och inställningar"
+          title={t('home.myProfile')}
+          subtitle={t('home.personalAndSettings')}
           onPress={() => navigation.navigate('Profile')}
         />
       </View>
@@ -99,7 +101,7 @@ export function HomeScreen() {
       {/* Stats Card */}
       <View style={styles.section}>
         <Text variant="h3" style={[styles.sectionTitle, { color: textColor }]}>
-          Denna vecka
+          {t('home.thisWeek')}
         </Text>
 
         <Card variant="elevated">
@@ -107,17 +109,17 @@ export function HomeScreen() {
             <View style={styles.statsRow}>
               <View style={styles.statItem}>
                 <Text variant="display" style={{ color: accentColor }}>3</Text>
-                <Text variant="body-sm" style={{ color: mutedColor }}>Skift</Text>
+                <Text variant="body-sm" style={{ color: mutedColor }}>{t('home.shifts')}</Text>
               </View>
               <View style={[styles.statDivider, { backgroundColor: isDark ? '#333' : '#E5E5E5' }]} />
               <View style={styles.statItem}>
                 <Text variant="display" style={{ color: accentColor }}>24</Text>
-                <Text variant="body-sm" style={{ color: mutedColor }}>Timmar</Text>
+                <Text variant="body-sm" style={{ color: mutedColor }}>{t('home.hours')}</Text>
               </View>
               <View style={[styles.statDivider, { backgroundColor: isDark ? '#333' : '#E5E5E5' }]} />
               <View style={styles.statItem}>
                 <Text variant="display" style={{ color: accentColor }}>2</Text>
-                <Text variant="body-sm" style={{ color: mutedColor }}>Dagar kvar</Text>
+                <Text variant="body-sm" style={{ color: mutedColor }}>{t('home.daysLeft')}</Text>
               </View>
             </View>
           </CardContent>

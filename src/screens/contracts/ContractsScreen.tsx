@@ -3,6 +3,7 @@ import { StyleSheet, View, TouchableOpacity, ActivityIndicator } from 'react-nat
 import { ScreenLayout, EmptyState } from '@/components/common';
 import { Text, Card, CardContent, Badge } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useMyEmployee } from '@/hooks/useMyEmployee';
 import { useMyContracts, SignedContract } from '@/hooks/useContracts';
 import { FileText, Calendar, Eye, CheckCircle } from 'lucide-react-native';
@@ -11,6 +12,7 @@ import { useNavigation } from '@react-navigation/native';
 export const ContractsScreen = () => {
   const navigation = useNavigation();
   const { isDark } = useTheme();
+  const { t } = useLanguage();
   const { data: employee } = useMyEmployee();
   const { data: contracts, isLoading, error } = useMyContracts(employee?.id);
   
@@ -20,10 +22,10 @@ export const ContractsScreen = () => {
 
   const getTypeText = (type: string) => {
     switch (type) {
-      case 'employment': return 'Anställning';
-      case 'nda': return 'Sekretess';
-      case 'custom': return 'Övrigt';
-      default: return 'Avtal';
+      case 'employment': return t('contracts.employment');
+      case 'nda': return t('contracts.nda');
+      case 'custom': return t('contracts.custom');
+      default: return t('contracts.contract');
     }
   };
 
@@ -33,11 +35,11 @@ export const ContractsScreen = () => {
 
   if (isLoading) {
     return (
-      <ScreenLayout title="Avtal" scrollable={false}>
+      <ScreenLayout title={t('contracts.title')} scrollable={false}>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={accentColor} />
           <Text variant="body" style={{ color: mutedColor, marginTop: 16 }}>
-            Laddar avtal...
+            {t('contracts.loading')}
           </Text>
         </View>
       </ScreenLayout>
@@ -45,7 +47,7 @@ export const ContractsScreen = () => {
   }
 
   return (
-    <ScreenLayout title="Avtal">
+    <ScreenLayout title={t('contracts.title')}>
 
       {contracts && contracts.length > 0 ? (
         <View style={styles.contractsList}>
@@ -72,7 +74,7 @@ export const ContractsScreen = () => {
                     <View style={styles.dateRow}>
                       <Calendar size={14} color={mutedColor} />
                       <Text variant="body-sm" style={{ color: mutedColor }}>
-                        Signerat {new Date(contract.signed_at).toLocaleDateString('sv-SE')}
+                        {t('contracts.signed')} {new Date(contract.signed_at).toLocaleDateString('sv-SE')}
                       </Text>
                     </View>
                   </View>
@@ -81,7 +83,7 @@ export const ContractsScreen = () => {
                     <View style={styles.pdfIndicator}>
                       <CheckCircle size={14} color="#10b981" />
                       <Text variant="body-sm" style={{ color: '#10b981' }}>
-                        PDF tillgänglig
+                        {t('contracts.pdfAvailable')}
                       </Text>
                     </View>
                   )}
@@ -93,8 +95,8 @@ export const ContractsScreen = () => {
       ) : (
         <EmptyState
           icon={FileText}
-          title="Inga avtal hittades"
-          description="Dina anställningsavtal och dokument kommer att visas här när de blir tillgängliga."
+          title={t('contracts.noContracts')}
+          description={t('contracts.noContractsDesc')}
         />
       )}
     </ScreenLayout>

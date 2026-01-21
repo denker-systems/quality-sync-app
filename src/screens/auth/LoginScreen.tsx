@@ -1,23 +1,28 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, TextInput } from 'react-native';
+import { View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, TextInput, TouchableOpacity } from 'react-native';
 import { Text, Card, CardContent, Button } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAuth } from '@/hooks/useAuth';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const loginSchema = z.object({
-  email: z.string().email('Ogiltig email-adress'),
-  password: z.string().min(6, 'Lösenordet måste vara minst 6 tecken'),
+const createLoginSchema = (t: (key: string) => string) => z.object({
+  email: z.string().email(t('auth.invalidEmail')),
+  password: z.string().min(6, t('auth.passwordTooShort')),
 });
 
-type LoginForm = z.infer<typeof loginSchema>;
+type LoginForm = {
+  email: string;
+  password: string;
+};
 
 export const LoginScreen = () => {
   const { signIn } = useAuth();
   const { isDark } = useTheme();
+  const { t, language, setLanguage } = useLanguage();
   const insets = useSafeAreaInsets();
   const [errorMessage, setErrorMessage] = useState('');
   
@@ -27,6 +32,8 @@ export const LoginScreen = () => {
   const inputBg = isDark ? '#1A1A1A' : '#FFFFFF';
   const borderColor = isDark ? '#2E2E2E' : '#E5E5E5';
   const backgroundColor = isDark ? '#0F0F0F' : '#FFFFFF';
+  
+  const loginSchema = createLoginSchema(t);
   
   const { control, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
@@ -41,8 +48,12 @@ export const LoginScreen = () => {
     const { error } = await signIn(data.email, data.password);
     
     if (error) {
-      setErrorMessage(error.message || 'Inloggning misslyckades');
+      setErrorMessage(error.message || t('auth.loginError'));
     }
+  };
+
+  const toggleLanguage = () => {
+    setLanguage(language === 'sv' ? 'en' : 'sv');
   };
 
   return (
@@ -54,18 +65,42 @@ export const LoginScreen = () => {
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
+        {/* Language Toggle */}
+        <View style={styles.languageToggleContainer}>
+          <TouchableOpacity 
+            style={[
+              styles.flagButton,
+              language === 'sv' && styles.flagButtonActive,
+              { backgroundColor: language === 'sv' ? (isDark ? '#2A2A2A' : '#E8E8E8') : 'transparent' }
+            ]}
+            onPress={() => setLanguage('sv')}
+          >
+            <Text style={styles.flagEmoji}>🇸🇪</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={[
+              styles.flagButton,
+              language === 'en' && styles.flagButtonActive,
+              { backgroundColor: language === 'en' ? (isDark ? '#2A2A2A' : '#E8E8E8') : 'transparent' }
+            ]}
+            onPress={() => setLanguage('en')}
+          >
+            <Text style={styles.flagEmoji}>🇺🇸</Text>
+          </TouchableOpacity>
+        </View>
+
         <View style={styles.logoContainer}>
           <Text variant="display" style={{ color: accentColor }}>
             Quality Sync
           </Text>
           <Text variant="body-lg" style={{ color: mutedColor, marginTop: 8 }}>
-            Logga in för att fortsätta
+            {t('auth.subtitle')}
           </Text>
         </View>
 
         <Card variant="elevated" style={styles.card}>
           <CardContent>
-            <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>Email</Text>
+            <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>{t('auth.email')}</Text>
             <Controller
               control={control}
               name="email"
@@ -77,7 +112,7 @@ export const LoginScreen = () => {
                   keyboardType="email-address"
                   autoCapitalize="none"
                   autoComplete="email"
-                  placeholder="din@email.com"
+                  placeholder={t('auth.emailPlaceholder')}
                   placeholderTextColor={mutedColor}
                   style={[
                     styles.input, 
@@ -91,7 +126,7 @@ export const LoginScreen = () => {
               <Text variant="body-sm" style={styles.errorText}>{errors.email.message}</Text>
             )}
 
-            <Text variant="body-sm" style={[styles.label, { color: mutedColor, marginTop: 16 }]}>Lösenord</Text>
+            <Text variant="body-sm" style={[styles.label, { color: mutedColor, marginTop: 16 }]}>{t('auth.password')}</Text>
             <Controller
               control={control}
               name="password"
@@ -102,7 +137,7 @@ export const LoginScreen = () => {
                   onBlur={onBlur}
                   secureTextEntry
                   autoComplete="password"
-                  placeholder="********"
+                  placeholder={t('auth.passwordPlaceholder')}
                   placeholderTextColor={mutedColor}
                   style={[
                     styles.input, 
@@ -128,7 +163,7 @@ export const LoginScreen = () => {
               disabled={isSubmitting}
               style={styles.button}
             >
-              {isSubmitting ? 'Loggar in...' : 'Logga in'}
+              {isSubmitting ? t('auth.loggingIn') : t('auth.loginButton')}
             </Button>
           </CardContent>
         </Card>
@@ -180,5 +215,27 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 24,
+  },
+  languageToggleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 24,
+    gap: 8,
+  },
+  flagButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 12,
+  },
+  flagButtonActive: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  flagEmoji: {
+    fontSize: 28,
   },
 });

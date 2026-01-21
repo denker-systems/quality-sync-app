@@ -4,6 +4,7 @@ import { ScreenLayout } from '@/components/common';
 import { MenuButton } from '@/components/common/MenuButton';
 import { Text, Card, CardContent } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useCompanyData } from '@/hooks/useCompanyData';
 import { 
   Building2, 
@@ -42,6 +43,7 @@ function InfoRow({ icon: Icon, label, value }: InfoRowProps) {
 
 export function CompanyScreen() {
   const { isDark } = useTheme();
+  const { t } = useLanguage();
   const { company, loading, error } = useCompanyData();
 
   const textColor = isDark ? '#FAFAFA' : '#171717';
@@ -51,11 +53,11 @@ export function CompanyScreen() {
 
   if (loading) {
     return (
-      <ScreenLayout title="Företag" headerRight={<MenuButton />}>
+      <ScreenLayout title={t('company.title')} headerRight={<MenuButton />}>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={accentColor} />
           <Text variant="body" style={{ color: mutedColor, marginTop: 16 }}>
-            Laddar företagsinformation...
+            {t('company.loading')}
           </Text>
         </View>
       </ScreenLayout>
@@ -64,14 +66,14 @@ export function CompanyScreen() {
 
   if (error || !company) {
     return (
-      <ScreenLayout title="Företag" headerRight={<MenuButton />}>
+      <ScreenLayout title={t('company.title')} headerRight={<MenuButton />}>
         <View style={styles.loadingContainer}>
           <Building2 size={48} color={mutedColor} />
           <Text variant="h3" style={{ color: textColor, marginTop: 16 }}>
-            Ingen företagsinformation
+            {t('company.noCompany')}
           </Text>
           <Text variant="body" style={{ color: mutedColor, marginTop: 8, textAlign: 'center' }}>
-            Det gick inte att hämta företagsinformation.
+            {t('company.noCompanyDesc')}
           </Text>
         </View>
       </ScreenLayout>
@@ -85,15 +87,15 @@ export function CompanyScreen() {
 
   const getSubscriptionStatus = (status: string) => {
     switch (status) {
-      case 'active': return 'Aktiv';
-      case 'trial': return 'Provperiod';
-      case 'canceled': return 'Avslutad';
+      case 'active': return t('company.subscriptionActive');
+      case 'trial': return t('company.subscriptionTrial');
+      case 'canceled': return t('company.subscriptionCanceled');
       default: return status;
     }
   };
 
   return (
-    <ScreenLayout title="Företag" headerRight={<MenuButton />}>
+    <ScreenLayout title={t('company.title')} headerRight={<MenuButton />}>
       {/* Company Header */}
       <Card variant="elevated" style={styles.headerCard}>
         <CardContent style={styles.headerContent}>
@@ -104,7 +106,7 @@ export function CompanyScreen() {
             <Text variant="h2" style={{ color: textColor }}>{company.name}</Text>
             {company.organization_number && (
               <Text variant="body-sm" style={{ color: mutedColor }}>
-                Org.nr: {company.organization_number}
+                {t('company.orgNumber')}: {company.organization_number}
               </Text>
             )}
           </View>
@@ -114,13 +116,13 @@ export function CompanyScreen() {
       {/* Contact Information */}
       <View style={styles.section}>
         <Text variant="h3" style={[styles.sectionTitle, { color: textColor }]}>
-          Kontaktuppgifter
+          {t('company.contactInfo')}
         </Text>
         <Card variant="elevated">
           <CardContent>
             <InfoRow 
               icon={Mail} 
-              label="E-post" 
+              label={t('company.email')} 
               value={company.contact_email} 
             />
             {company.contact_email && company.address && (
@@ -128,7 +130,7 @@ export function CompanyScreen() {
             )}
             <InfoRow 
               icon={MapPin} 
-              label="Adress" 
+              label={t('company.address')} 
               value={company.address} 
             />
           </CardContent>
@@ -138,19 +140,19 @@ export function CompanyScreen() {
       {/* Subscription Information */}
       <View style={styles.section}>
         <Text variant="h3" style={[styles.sectionTitle, { color: textColor }]}>
-          Prenumeration
+          {t('company.subscription')}
         </Text>
         <Card variant="elevated">
           <CardContent>
             <InfoRow 
               icon={CreditCard} 
-              label="Plan" 
+              label={t('company.plan')} 
               value={company.subscription_plan} 
             />
             <View style={[styles.divider, { backgroundColor: isDark ? '#2E2E2E' : '#E5E5E5' }]} />
             <InfoRow 
               icon={Hash} 
-              label="Status" 
+              label={t('company.status')} 
               value={getSubscriptionStatus(company.subscription_status)} 
             />
             {company.trial_ends_at && (
@@ -158,7 +160,7 @@ export function CompanyScreen() {
                 <View style={[styles.divider, { backgroundColor: isDark ? '#2E2E2E' : '#E5E5E5' }]} />
                 <InfoRow 
                   icon={Calendar} 
-                  label="Provperiod slutar" 
+                  label={t('company.trialEnds')} 
                   value={formatDate(company.trial_ends_at)} 
                 />
               </>
@@ -166,8 +168,8 @@ export function CompanyScreen() {
             <View style={[styles.divider, { backgroundColor: isDark ? '#2E2E2E' : '#E5E5E5' }]} />
             <InfoRow 
               icon={Users} 
-              label="Anställningsgräns" 
-              value={`${company.employee_limit} anställda`} 
+              label={t('company.employeeLimit')} 
+              value={`${company.employee_limit} ${t('company.employees')}`} 
             />
           </CardContent>
         </Card>
@@ -176,20 +178,20 @@ export function CompanyScreen() {
       {/* Company Details */}
       <View style={styles.section}>
         <Text variant="h3" style={[styles.sectionTitle, { color: textColor }]}>
-          Övrigt
+          {t('company.other')}
         </Text>
         <Card variant="elevated">
           <CardContent>
             <InfoRow 
               icon={Calendar} 
-              label="Registrerad" 
+              label={t('company.registered')} 
               value={formatDate(company.created_at)} 
             />
             <View style={[styles.divider, { backgroundColor: isDark ? '#2E2E2E' : '#E5E5E5' }]} />
             <InfoRow 
               icon={Hash} 
-              label="Status" 
-              value={company.is_active ? 'Aktiv' : 'Inaktiv'} 
+              label={t('company.status')} 
+              value={company.is_active ? t('common.active') : t('common.inactive')} 
             />
           </CardContent>
         </Card>

@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { ScreenLayout } from '@/components/common';
 import { Text, Card, CardContent } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { 
   Info, 
   FileText, 
@@ -14,6 +15,7 @@ import {
 
 export function AboutScreen() {
   const { isDark } = useTheme();
+  const { t } = useLanguage();
   const navigation = useNavigation<any>();
   
   const textColor = isDark ? '#FAFAFA' : '#171717';
@@ -30,7 +32,7 @@ export function AboutScreen() {
   };
 
   return (
-    <ScreenLayout title="Om appen" onBackPress={handleBackToSettings}>
+    <ScreenLayout title={t('about.title')} onBackPress={handleBackToSettings}>
       {/* App Info */}
       <View style={styles.headerSection}>
         <View style={[styles.appIcon, { backgroundColor: iconBgColor }]}>
@@ -40,7 +42,7 @@ export function AboutScreen() {
           Quality Sync
         </Text>
         <Text variant="body" style={{ color: mutedColor, marginTop: 4 }}>
-          Version 1.0.0 (Build 1)
+          {t('about.version')} 1.0.0 (Build 1)
         </Text>
       </View>
 
@@ -56,7 +58,7 @@ export function AboutScreen() {
                 <Shield size={18} color={accentColor} />
               </View>
               <Text variant="body-lg" style={[styles.linkText, { color: textColor }]}>
-                Integritetspolicy
+                {t('about.privacyPolicy')}
               </Text>
               <ExternalLink size={18} color={mutedColor} />
             </TouchableOpacity>
@@ -71,7 +73,7 @@ export function AboutScreen() {
                 <FileText size={18} color={accentColor} />
               </View>
               <Text variant="body-lg" style={[styles.linkText, { color: textColor }]}>
-                Användarvillkor
+                {t('about.termsOfService')}
               </Text>
               <ExternalLink size={18} color={mutedColor} />
             </TouchableOpacity>
@@ -86,7 +88,7 @@ export function AboutScreen() {
                 <Mail size={18} color={accentColor} />
               </View>
               <Text variant="body-lg" style={[styles.linkText, { color: textColor }]}>
-                Kontakta support
+                {t('about.contactSupport')}
               </Text>
               <ExternalLink size={18} color={mutedColor} />
             </TouchableOpacity>
@@ -97,7 +99,7 @@ export function AboutScreen() {
       {/* Credits */}
       <View style={styles.creditsContainer}>
         <Text variant="body-sm" style={{ color: mutedColor }}>
-          © 2025 Denker Design
+          {t('about.copyright')}
         </Text>
       </View>
     </ScreenLayout>

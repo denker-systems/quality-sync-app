@@ -4,18 +4,19 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { Home, User, Calendar, Settings } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface TabItem {
   key: string;
   icon: React.ComponentType<{ size: number; color: string; strokeWidth?: number }>;
-  label: string;
+  labelKey: string;
 }
 
 const tabs: TabItem[] = [
-  { key: 'home', icon: Home, label: 'Hem' },
-  { key: 'profile', icon: User, label: 'Profil' },
-  { key: 'schedule', icon: Calendar, label: 'Schema' },
-  { key: 'settings', icon: Settings, label: 'Inställningar' },
+  { key: 'home', icon: Home, labelKey: 'nav.home' },
+  { key: 'profile', icon: User, labelKey: 'nav.profile' },
+  { key: 'schedule', icon: Calendar, labelKey: 'nav.schedule' },
+  { key: 'settings', icon: Settings, labelKey: 'nav.settings' },
 ];
 
 interface FloatingTabBarProps {
@@ -26,6 +27,7 @@ interface FloatingTabBarProps {
 export function FloatingTabBar({ activeTab, onTabPress }: FloatingTabBarProps) {
   const insets = useSafeAreaInsets();
   const { isDark } = useTheme();
+  const { t } = useLanguage();
 
   const handlePress = (key: string) => {
     onTabPress(key);

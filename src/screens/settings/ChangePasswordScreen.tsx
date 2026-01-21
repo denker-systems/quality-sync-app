@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { ScreenLayout } from '@/components/common';
 import { Text, Card, CardContent, Button } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/config/supabase';
 import { Key, Eye, EyeOff, Shield } from 'lucide-react-native';
@@ -11,6 +12,7 @@ import { TouchableOpacity } from 'react-native';
 
 export function ChangePasswordScreen() {
   const { isDark } = useTheme();
+  const { t } = useLanguage();
   const navigation = useNavigation<any>();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -32,17 +34,17 @@ export function ChangePasswordScreen() {
 
   const handleChangePassword = async () => {
     if (!newPassword || !confirmPassword) {
-      Alert.alert('Fel', 'Fyll i alla fält');
+      Alert.alert(t('common.error'), t('changePassword.errorRequired'));
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      Alert.alert('Fel', 'Lösenorden matchar inte');
+      Alert.alert(t('common.error'), t('changePassword.errorMismatch'));
       return;
     }
 
     if (newPassword.length < 8) {
-      Alert.alert('Fel', 'Lösenordet måste vara minst 8 tecken');
+      Alert.alert(t('common.error'), t('changePassword.errorTooShort'));
       return;
     }
 
@@ -54,36 +56,36 @@ export function ChangePasswordScreen() {
 
       if (error) throw error;
 
-      Alert.alert('Klart', 'Ditt lösenord har uppdaterats', [
+      Alert.alert(t('changePassword.successTitle'), t('changePassword.successMessage'), [
         { text: 'OK', onPress: () => navigation.navigate('Settings') }
       ]);
     } catch (error: any) {
-      Alert.alert('Fel', error.message || 'Kunde inte uppdatera lösenord');
+      Alert.alert(t('common.error'), error.message || t('changePassword.errorRequired'));
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <ScreenLayout title="Byt lösenord" onBackPress={handleBackToSettings}>
+    <ScreenLayout title={t('changePassword.title')} onBackPress={handleBackToSettings}>
       <Card variant="elevated" style={styles.card}>
         <CardContent>
           <View style={styles.header}>
             <Key size={24} color={accentColor} />
             <Text variant="h3" style={{ color: textColor, marginLeft: 12 }}>
-              Uppdatera lösenord
+              {t('changePassword.updatePassword')}
             </Text>
           </View>
 
           <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>
-            Nytt lösenord
+            {t('changePassword.newPassword')}
           </Text>
           <View style={styles.inputContainer}>
             <TextInput
               value={newPassword}
               onChangeText={setNewPassword}
               secureTextEntry={!showNew}
-              placeholder="Minst 8 tecken"
+              placeholder={t('changePassword.newPasswordPlaceholder')}
               placeholderTextColor={mutedColor}
               style={[styles.input, { backgroundColor: inputBg, borderColor, color: textColor }]}
             />
@@ -100,14 +102,14 @@ export function ChangePasswordScreen() {
           </View>
 
           <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>
-            Bekräfta nytt lösenord
+            {t('changePassword.confirmPassword')}
           </Text>
           <View style={styles.inputContainer}>
             <TextInput
               value={confirmPassword}
               onChangeText={setConfirmPassword}
               secureTextEntry={!showConfirm}
-              placeholder="Skriv lösenordet igen"
+              placeholder={t('changePassword.confirmPasswordPlaceholder')}
               placeholderTextColor={mutedColor}
               style={[styles.input, { backgroundColor: inputBg, borderColor, color: textColor }]}
             />
@@ -131,13 +133,13 @@ export function ChangePasswordScreen() {
         disabled={isLoading || !newPassword || !confirmPassword}
         style={styles.button}
       >
-        {isLoading ? 'Sparar...' : 'Uppdatera lösenord'}
+        {isLoading ? t('changePassword.saving') : t('changePassword.saveButton')}
       </Button>
 
       <View style={styles.infoContainer}>
         <Shield size={20} color={mutedColor} />
         <Text variant="body-sm" style={{ color: mutedColor, marginLeft: 8, flex: 1 }}>
-          Välj ett starkt lösenord med minst 8 tecken, helst med en blandning av bokstäver, siffror och symboler.
+          {t('changePassword.passwordHint')}
         </Text>
       </View>
     </ScreenLayout>

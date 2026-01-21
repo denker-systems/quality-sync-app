@@ -6,6 +6,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { MFAGate } from './src/features/mfa';
 import { ThemeProvider, useTheme } from './src/contexts/ThemeContext';
+import { LanguageProvider } from './src/contexts/LanguageContext';
 import { lightTheme, darkTheme } from './src/config/theme';
 
 import './src/styles/global.css';
@@ -38,9 +39,11 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <QueryClientProvider client={queryClient}>
-        <ThemeProvider defaultTheme="system">
-          <ThemedApp />
-        </ThemeProvider>
+        <LanguageProvider>
+          <ThemeProvider defaultTheme="system">
+            <ThemedApp />
+          </ThemeProvider>
+        </LanguageProvider>
       </QueryClientProvider>
     </SafeAreaProvider>
   );

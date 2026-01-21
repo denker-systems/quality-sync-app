@@ -3,6 +3,7 @@ import { View, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-nat
 import { ScreenLayout } from '@/components/common';
 import { Text, Card, CardContent, Avatar, Badge, Button } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
 import { useMyEmployee } from '@/hooks/useMyEmployee';
 import { useCompanyData } from '@/hooks/useCompanyData';
@@ -59,6 +60,7 @@ function MenuItem({ icon: Icon, title, subtitle, onPress, rightContent }: MenuIt
 export const ProfileScreen = () => {
   const navigation = useNavigation<any>();
   const { isDark } = useTheme();
+  const { t } = useLanguage();
   const { user, signOut } = useAuth();
   
   const textColor = isDark ? '#FAFAFA' : '#171717';
@@ -105,7 +107,7 @@ export const ProfileScreen = () => {
     if (userProfile?.first_name || userProfile?.last_name) {
       return `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim();
     }
-    return user?.email || 'Användare';
+    return user?.email || t('common.user');
   };
 
   const handleLogout = async () => {
@@ -116,11 +118,11 @@ export const ProfileScreen = () => {
 
   if (isLoading) {
     return (
-      <ScreenLayout title="Profil" scrollable={false}>
+      <ScreenLayout title={t('profile.title')} scrollable={false}>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={accentColor} />
           <Text variant="body" style={{ color: mutedColor, marginTop: 16 }}>
-            Laddar profil...
+            {t('common.loadingProfile')}
           </Text>
         </View>
       </ScreenLayout>
@@ -128,7 +130,7 @@ export const ProfileScreen = () => {
   }
 
   return (
-    <ScreenLayout title="Profil">
+    <ScreenLayout title={t('profile.title')}>
       {/* Profile Header Card */}
       <View style={styles.profileHeaderContainer}>
         {/* Avatar with border - positioned to overlap */}
@@ -162,18 +164,18 @@ export const ProfileScreen = () => {
       {/* Account Section */}
       <View style={styles.section}>
         <Text variant="h3" style={[styles.sectionTitle, { color: textColor }]}>
-          Konto
+          {t('profile.account')}
         </Text>
         <Text variant="body-sm" style={[styles.sectionSubtitle, { color: mutedColor }]}>
-          Hantera din information
+          {t('profile.manageInfo')}
         </Text>
         
         <Card variant="elevated">
           <CardContent style={styles.menuContainer}>
             <MenuItem
               icon={Calendar}
-              title="Mitt Schema"
-              subtitle={shifts?.length ? `${shifts.length} kommande skift` : 'Visa dina skift'}
+              title={t('profile.mySchedule')}
+              subtitle={shifts?.length ? `${shifts.length} ${t('profile.upcomingShifts')}` : t('profile.viewShifts')}
               onPress={() => navigation.navigate('Schedule')}
               rightContent={shifts?.length ? (
                 <Badge variant="success">{shifts.length}</Badge>
@@ -183,11 +185,11 @@ export const ProfileScreen = () => {
             
             <MenuItem
               icon={Star}
-              title="Onboarding"
+              title={t('profile.onboarding')}
               subtitle={
                 onboardingData?.onboarding?.status === 'completed' 
-                  ? 'Slutförd' 
-                  : 'Pågående'
+                  ? t('profile.completed') 
+                  : t('profile.inProgress')
               }
               onPress={() => navigation.navigate('Onboarding')}
               rightContent={
@@ -202,8 +204,8 @@ export const ProfileScreen = () => {
             
             <MenuItem
               icon={FileText}
-              title="Avtal"
-              subtitle={`${contracts?.length || 0} signerade avtal`}
+              title={t('profile.contracts')}
+              subtitle={`${contracts?.length || 0} ${t('profile.signedContracts')}`}
               onPress={() => navigation.navigate('Contracts')}
               rightContent={contracts?.length ? (
                 <Badge variant="default">{contracts.length}</Badge>
@@ -216,7 +218,7 @@ export const ProfileScreen = () => {
       {/* Contact Info Section */}
       <View style={styles.section}>
         <Text variant="h3" style={[styles.sectionTitle, { color: textColor }]}>
-          Kontaktuppgifter
+          {t('profile.contactInfo')}
         </Text>
         
         <Card variant="elevated">
@@ -225,7 +227,7 @@ export const ProfileScreen = () => {
             <View style={styles.infoRow}>
               <Mail size={18} color={mutedColor} />
               <View style={styles.infoText}>
-                <Text variant="body-sm" style={{ color: mutedColor }}>Email</Text>
+                <Text variant="body-sm" style={{ color: mutedColor }}>{t('profile.email')}</Text>
                 <Text variant="body" style={{ color: textColor }}>
                   {employee?.email || user?.email || '-'}
                 </Text>
@@ -239,7 +241,7 @@ export const ProfileScreen = () => {
                 <View style={styles.infoRow}>
                   <Phone size={18} color={mutedColor} />
                   <View style={styles.infoText}>
-                    <Text variant="body-sm" style={{ color: mutedColor }}>Telefon</Text>
+                    <Text variant="body-sm" style={{ color: mutedColor }}>{t('profile.phone')}</Text>
                     <Text variant="body" style={{ color: textColor }}>{employee.phone}</Text>
                   </View>
                 </View>
@@ -251,8 +253,8 @@ export const ProfileScreen = () => {
             <View style={styles.infoRow}>
               <Briefcase size={18} color={mutedColor} />
               <View style={styles.infoText}>
-                <Text variant="body-sm" style={{ color: mutedColor }}>Roll</Text>
-                <Text variant="body" style={{ color: textColor }}>{employee?.role || 'Anställd'}</Text>
+                <Text variant="body-sm" style={{ color: mutedColor }}>{t('profile.role')}</Text>
+                <Text variant="body" style={{ color: textColor }}>{employee?.role || t('profile.employee')}</Text>
               </View>
             </View>
             
@@ -263,7 +265,7 @@ export const ProfileScreen = () => {
                 <View style={styles.infoRow}>
                   <Building2 size={18} color={mutedColor} />
                   <View style={styles.infoText}>
-                    <Text variant="body-sm" style={{ color: mutedColor }}>Företag</Text>
+                    <Text variant="body-sm" style={{ color: mutedColor }}>{t('profile.company')}</Text>
                     <Text variant="body" style={{ color: textColor }}>{company.name}</Text>
                   </View>
                 </View>

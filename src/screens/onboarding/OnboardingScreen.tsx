@@ -3,6 +3,7 @@ import { StyleSheet, View, ActivityIndicator, TouchableOpacity } from 'react-nat
 import { ScreenLayout, EmptyState } from '@/components/common';
 import { Text, Card, CardContent, Button, Badge, Surface, ProgressBar } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useMyEmployee } from '@/hooks/useMyEmployee';
 import { useMyOnboarding, useUpdateOnboardingProgress, useUpdateOnboardingStatus, OnboardingStep } from '@/hooks/useOnboarding';
 import { CheckCircle, Clock, AlertCircle, Star } from 'lucide-react-native';
@@ -19,6 +20,7 @@ import {
 export const OnboardingScreen = () => {
   const navigation = useNavigation();
   const { isDark } = useTheme();
+  const { t } = useLanguage();
   const { data: employee } = useMyEmployee();
   const { data: onboardingData, isLoading, error } = useMyOnboarding(employee?.id);
   const updateProgress = useUpdateOnboardingProgress();
@@ -43,11 +45,11 @@ export const OnboardingScreen = () => {
 
   if (isLoading) {
     return (
-      <ScreenLayout title="Onboarding" scrollable={false}>
+      <ScreenLayout title={t('onboarding.title')} scrollable={false}>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={accentColor} />
           <Text variant="body" style={{ color: mutedColor, marginTop: 16 }}>
-            Laddar onboarding...
+            {t('onboarding.loading')}
           </Text>
         </View>
       </ScreenLayout>
@@ -56,12 +58,12 @@ export const OnboardingScreen = () => {
 
   if (!onboardingData) {
     return (
-      <ScreenLayout title="Onboarding" scrollable={false}>
+      <ScreenLayout title={t('onboarding.title')} scrollable={false}>
         <EmptyState
           icon={Star}
-          title="Ingen onboarding tillgänglig"
-          description="Din onboarding kommer att visas här när den blir tillgängliga."
-          actionLabel="Tillbaka"
+          title={t('onboarding.noOnboarding')}
+          description={t('onboarding.noOnboardingDesc')}
+          actionLabel={t('common.back')}
           onAction={() => navigation.goBack()}
         />
       </ScreenLayout>
@@ -232,7 +234,7 @@ export const OnboardingScreen = () => {
                 </Text>
               )}
               <Button variant="primary" onPress={() => handleStepComplete({})}>
-                Fortsätt
+                {t('common.continue')}
               </Button>
             </CardContent>
           </Card>
@@ -245,14 +247,14 @@ export const OnboardingScreen = () => {
       {/* Header */}
       <Surface elevation={1} style={styles.header}>
         <View style={styles.headerContent}>
-          <Text variant="h2" style={{ color: textColor }}>Onboarding</Text>
+          <Text variant="h2" style={{ color: textColor }}>{t('onboarding.title')}</Text>
           <Badge variant={onboarding.status === 'completed' ? 'success' : 'default'}>
-            {onboarding.status === 'completed' ? 'Klar' : 
-             onboarding.status === 'in_progress' ? 'Pågående' : 'Väntande'}
+            {onboarding.status === 'completed' ? t('onboarding.completed') : 
+             onboarding.status === 'in_progress' ? t('onboarding.inProgress') : t('onboarding.pending')}
           </Badge>
         </View>
         <Text variant="body" style={[styles.headerSubtext, { color: mutedColor }]}>
-          Steg {completedSteps} av {totalSteps} klara
+          {t('onboarding.stepsCompleted').replace('{{completed}}', String(completedSteps)).replace('{{total}}', String(totalSteps))}
         </Text>
         <ProgressBar progress={progressPercentage} style={styles.progressBar} />
       </Surface>
@@ -261,7 +263,7 @@ export const OnboardingScreen = () => {
       <Card variant="elevated" style={styles.stepsCard}>
         <CardContent>
           <Text variant="h3" style={[styles.sectionTitle, { color: textColor }]}>
-            Alla steg
+            {t('onboarding.allSteps')}
           </Text>
           {steps.map((step, index) => {
             const stepProgress = progress[index];

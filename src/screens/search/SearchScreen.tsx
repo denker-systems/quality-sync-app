@@ -14,6 +14,7 @@ import {
 } from 'lucide-react-native';
 import { Text, Card, CardContent } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface SearchResultProps {
   icon: React.ComponentType<{ size: number; color: string }>;
@@ -53,17 +54,18 @@ function SearchResult({ icon: Icon, title, subtitle, type, onPress }: SearchResu
   );
 }
 
-const quickSearchItems = [
-  { icon: Calendar, title: 'Mitt schema', subtitle: 'Se kommande skift', type: 'Schema', screen: 'Schedule' },
-  { icon: FileText, title: 'Mina avtal', subtitle: 'Kontrakt och dokument', type: 'Dokument', screen: 'Contracts' },
-  { icon: User, title: 'Min profil', subtitle: 'Personuppgifter', type: 'Profil', screen: 'Profile' },
-  { icon: Building2, title: 'Företagsinformation', subtitle: 'Kontaktuppgifter', type: 'Info', screen: 'Profile' },
-  { icon: Clock, title: 'Tidrapport', subtitle: 'Registrera tid', type: 'Tid', screen: 'Schedule' },
+const getQuickSearchItems = (t: (key: string) => string) => [
+  { icon: Calendar, title: t('search.mySchedule'), subtitle: t('search.seeUpcomingShifts'), type: t('schedule.title'), screen: 'Schedule' },
+  { icon: FileText, title: t('search.myContracts'), subtitle: t('search.contractsAndDocs'), type: t('contracts.title'), screen: 'Contracts' },
+  { icon: User, title: t('search.myProfile'), subtitle: t('search.personalInfo'), type: t('profile.title'), screen: 'Profile' },
+  { icon: Building2, title: t('search.companyInfo'), subtitle: t('search.contactInfo'), type: 'Info', screen: 'Profile' },
+  { icon: Clock, title: t('search.timeReport'), subtitle: t('search.registerTime'), type: t('schedule.title'), screen: 'Schedule' },
 ];
 
 export function SearchScreen() {
   const navigation = useNavigation<any>();
   const { isDark } = useTheme();
+  const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
 
   const inputBgColor = isDark ? '#1A1A1A' : '#FFFFFF';
@@ -71,6 +73,8 @@ export function SearchScreen() {
   const mutedColor = isDark ? '#A3A3A3' : '#737373';
   const borderColor = isDark ? '#2E2E2E' : '#E5E5E5';
 
+  const quickSearchItems = getQuickSearchItems(t);
+  
   const filteredItems = searchQuery
     ? quickSearchItems.filter(item => 
         item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -87,13 +91,13 @@ export function SearchScreen() {
   };
 
   return (
-    <ScreenLayout title="Sök" showBack={false}>
+    <ScreenLayout title={t('search.title')} showBack={false}>
       {/* Search Input */}
       <View style={[styles.searchInputContainer, { backgroundColor: inputBgColor, borderColor }]}>
         <Search size={20} color={mutedColor} />
         <TextInput
           style={[styles.searchInput, { color: textColor }]}
-          placeholder="Sök i appen..."
+          placeholder={t('search.placeholder')}
           placeholderTextColor={mutedColor}
           value={searchQuery}
           onChangeText={setSearchQuery}
@@ -109,7 +113,7 @@ export function SearchScreen() {
       {/* Quick Search Section */}
       <View style={styles.section}>
         <Text variant="h3" style={[styles.sectionTitle, { color: textColor }]}>
-          {searchQuery ? 'Sökresultat' : 'Snabbsök'}
+          {searchQuery ? t('search.results') : t('search.quickSearch')}
         </Text>
 
         <Card variant="elevated">
@@ -133,10 +137,10 @@ export function SearchScreen() {
               <View style={styles.noResults}>
                 <Search size={48} color={mutedColor} />
                 <Text variant="body-lg" style={{ color: mutedColor, marginTop: 16 }}>
-                  Inga resultat hittades
+                  {t('search.noResults')}
                 </Text>
                 <Text variant="body-sm" style={{ color: mutedColor, marginTop: 4 }}>
-                  Försök med andra sökord
+                  {t('search.tryOther')}
                 </Text>
               </View>
             )}
@@ -148,13 +152,13 @@ export function SearchScreen() {
       {!searchQuery && (
         <View style={styles.section}>
           <Text variant="h3" style={[styles.sectionTitle, { color: textColor }]}>
-            Senaste sökningar
+            {t('search.recentSearches')}
           </Text>
           <Card variant="elevated">
             <CardContent>
               <View style={styles.recentSearches}>
                 <Text variant="body" style={{ color: mutedColor, textAlign: 'center' }}>
-                  Inga senaste sökningar
+                  {t('search.noRecentSearches')}
                 </Text>
               </View>
             </CardContent>

@@ -2,6 +2,10 @@ require('dotenv').config();
 
 module.exports = ({ config }) => ({
   ...config,
+  plugins: [
+    ...(config.plugins || []),
+    'expo-localization',
+  ],
   extra: {
     ...config.extra,
     supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL || 'https://gezwyczyzvzkujfsohyt.supabase.co',

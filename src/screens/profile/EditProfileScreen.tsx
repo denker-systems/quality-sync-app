@@ -3,6 +3,7 @@ import { View, StyleSheet, KeyboardAvoidingView, Platform, TextInput, ActivityIn
 import { ScreenLayout } from '@/components/common';
 import { Text, Card, CardContent, Button } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useMyEmployee } from '@/hooks/useMyEmployee';
 import { useNavigation } from '@react-navigation/native';
 import { supabase } from '@/config/supabase';
@@ -13,6 +14,7 @@ export const EditProfileScreen = () => {
   const navigation = useNavigation();
   const queryClient = useQueryClient();
   const { isDark } = useTheme();
+  const { t } = useLanguage();
   const { data: employee, isLoading } = useMyEmployee();
   
   const textColor = isDark ? '#FAFAFA' : '#171717';
@@ -102,11 +104,11 @@ export const EditProfileScreen = () => {
 
   if (isLoading) {
     return (
-      <ScreenLayout title="Redigera Profil" onBackPress={handleBackToProfile} scrollable={false}>
+      <ScreenLayout title={t('editProfile.title')} onBackPress={handleBackToProfile} scrollable={false}>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={accentColor} />
           <Text variant="body" style={{ color: mutedColor, marginTop: 16 }}>
-            Laddar profil...
+            {t('common.loadingProfile')}
           </Text>
         </View>
       </ScreenLayout>
@@ -114,7 +116,7 @@ export const EditProfileScreen = () => {
   }
 
   return (
-    <ScreenLayout title="Redigera Profil" onBackPress={handleBackToProfile}>
+    <ScreenLayout title={t('editProfile.title')} onBackPress={handleBackToProfile}>
       <KeyboardAvoidingView 
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -124,11 +126,11 @@ export const EditProfileScreen = () => {
             <View style={styles.sectionHeader}>
               <User size={20} color={accentColor} />
               <Text variant="h3" style={{ color: textColor, marginLeft: 8 }}>
-                Personuppgifter
+                {t('editProfile.personalInfo')}
               </Text>
             </View>
 
-            <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>Förnamn</Text>
+            <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>{t('editProfile.firstName')}</Text>
             <TextInput
               value={formData.first_name}
               onChangeText={(value) => updateField('first_name', value)}
@@ -136,7 +138,7 @@ export const EditProfileScreen = () => {
               placeholderTextColor={mutedColor}
             />
 
-            <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>Efternamn</Text>
+            <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>{t('editProfile.lastName')}</Text>
             <TextInput
               value={formData.last_name}
               onChangeText={(value) => updateField('last_name', value)}
@@ -144,7 +146,7 @@ export const EditProfileScreen = () => {
               placeholderTextColor={mutedColor}
             />
 
-            <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>Telefon</Text>
+            <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>{t('editProfile.phone')}</Text>
             <TextInput
               value={formData.phone}
               onChangeText={(value) => updateField('phone', value)}
@@ -153,7 +155,7 @@ export const EditProfileScreen = () => {
               placeholderTextColor={mutedColor}
             />
 
-            <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>Email</Text>
+            <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>{t('editProfile.email')}</Text>
             <TextInput
               value={formData.email}
               onChangeText={(value) => updateField('email', value)}
@@ -168,10 +170,10 @@ export const EditProfileScreen = () => {
         <Card variant="elevated" style={styles.card}>
           <CardContent>
             <Text variant="h3" style={{ color: textColor, marginBottom: 16 }}>
-              Adress
+              {t('editProfile.address')}
             </Text>
 
-            <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>Adress 1</Text>
+            <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>{t('editProfile.address1')}</Text>
             <TextInput
               value={formData.address1}
               onChangeText={(value) => updateField('address1', value)}
@@ -179,7 +181,7 @@ export const EditProfileScreen = () => {
               placeholderTextColor={mutedColor}
             />
 
-            <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>Adress 2</Text>
+            <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>{t('editProfile.address2')}</Text>
             <TextInput
               value={formData.address2}
               onChangeText={(value) => updateField('address2', value)}
@@ -189,7 +191,7 @@ export const EditProfileScreen = () => {
 
             <View style={styles.row}>
               <View style={styles.postCode}>
-                <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>Postnummer</Text>
+                <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>{t('editProfile.postCode')}</Text>
                 <TextInput
                   value={formData.post_code}
                   onChangeText={(value) => updateField('post_code', value)}
@@ -200,7 +202,7 @@ export const EditProfileScreen = () => {
               </View>
 
               <View style={styles.city}>
-                <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>Ort</Text>
+                <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>{t('editProfile.city')}</Text>
                 <TextInput
                   value={formData.city}
                   onChangeText={(value) => updateField('city', value)}
@@ -218,12 +220,12 @@ export const EditProfileScreen = () => {
           disabled={updateProfile.isPending}
           style={styles.saveButton}
         >
-          {updateProfile.isPending ? 'Sparar...' : 'Spara ändringar'}
+          {updateProfile.isPending ? t('editProfile.saving') : t('editProfile.saveChanges')}
         </Button>
 
         {updateProfile.isError && (
           <Text variant="body" style={styles.errorText}>
-            Kunde inte spara ändringar. Försök igen.
+            {t('editProfile.errorSave')}
           </Text>
         )}
       </KeyboardAvoidingView>

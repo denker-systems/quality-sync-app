@@ -1,4 +1,6 @@
-# Quality Sync Mobile - Implementation Roadmap
+# Quality Sync Mobile App - Roadmap
+
+> **Last Updated:** 2026-01-21
 
 ## Projektöversikt
 React Native-app för Quality Sync som delar samma Supabase-databas som webb-appen. Fokus på auth och profil-funktionalitet.

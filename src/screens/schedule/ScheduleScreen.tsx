@@ -3,10 +3,11 @@ import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { ScreenLayout, EmptyState } from '@/components/common';
 import { Text, Card, CardContent } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useMyShifts, MyShift } from '@/hooks/useMyShifts';
 import { Calendar, Clock, Coffee, MapPin } from 'lucide-react-native';
 
-const ShiftCard = ({ shift }: { shift: MyShift }) => {
+const ShiftCard = ({ shift, t }: { shift: MyShift; t: (key: string) => string }) => {
   const { isDark } = useTheme();
   const fromDate = new Date(shift.from_time);
   const toDate = new Date(shift.to_time);
@@ -49,7 +50,7 @@ const ShiftCard = ({ shift }: { shift: MyShift }) => {
             </Text>
             {isToday && (
               <View style={[styles.todayBadge, { backgroundColor: accentColor }]}>
-                <Text variant="tiny" style={{ color: '#FFFFFF' }}>Idag</Text>
+                <Text variant="tiny" style={{ color: '#FFFFFF' }}>{t('common.today')}</Text>
               </View>
             )}
           </View>
@@ -68,7 +69,7 @@ const ShiftCard = ({ shift }: { shift: MyShift }) => {
           <View style={styles.detailRow}>
             <Coffee size={16} color={mutedColor} />
             <Text variant="body" style={{ color: mutedColor }}>
-              {shift.breaks_duration} min rast
+              {shift.breaks_duration} {t('schedule.breakMinutes')}
             </Text>
           </View>
 
@@ -84,7 +85,7 @@ const ShiftCard = ({ shift }: { shift: MyShift }) => {
 
         <View style={[styles.durationBadge, { backgroundColor: isDark ? 'rgba(107,189,104,0.15)' : '#EDF5EC' }]}>
           <Text variant="body-sm" style={{ color: accentColor }}>
-            {workHours}h {workMins > 0 ? `${workMins}m` : ''} arbetstid
+            {workHours}h {workMins > 0 ? `${workMins}m` : ''} {t('schedule.workTime')}
           </Text>
         </View>
       </CardContent>
@@ -94,6 +95,7 @@ const ShiftCard = ({ shift }: { shift: MyShift }) => {
 
 export const ScheduleScreen = () => {
   const { isDark } = useTheme();
+  const { t } = useLanguage();
   const { data: shifts, isLoading, error, refetch } = useMyShifts();
   const [refreshing, setRefreshing] = React.useState(false);
   
@@ -112,11 +114,11 @@ export const ScheduleScreen = () => {
 
   if (isLoading) {
     return (
-      <ScreenLayout title="Schema" scrollable={false}>
+      <ScreenLayout title={t('schedule.title')} scrollable={false}>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={isDark ? '#6BBD68' : '#489A45'} />
           <Text variant="body" style={{ color: mutedColor, marginTop: 16 }}>
-            Laddar schema...
+            {t('common.loadingSchedule')}
           </Text>
         </View>
       </ScreenLayout>
@@ -125,10 +127,10 @@ export const ScheduleScreen = () => {
 
   if (error) {
     return (
-      <ScreenLayout title="Schema" scrollable={false}>
+      <ScreenLayout title={t('schedule.title')} scrollable={false}>
         <EmptyState
           icon={Calendar}
-          title="Kunde inte ladda schema"
+          title={t('schedule.couldNotLoad')}
           description={error.message}
         />
       </ScreenLayout>
@@ -136,23 +138,23 @@ export const ScheduleScreen = () => {
   }
 
   return (
-    <ScreenLayout title="Schema">
+    <ScreenLayout title={t('schedule.title')}>
 
       {upcomingShifts.length === 0 && pastShifts.length === 0 ? (
         <EmptyState
           icon={Calendar}
-          title="Inga skift"
-          description="Du har inga schemalagda skift just nu."
+          title={t('schedule.noShifts')}
+          description={t('schedule.noShiftsDesc')}
         />
       ) : (
         <>
           {upcomingShifts.length > 0 && (
             <View style={styles.section}>
               <Text variant="h3" style={{ color: textColor, marginBottom: 12 }}>
-                Kommande skift ({upcomingShifts.length})
+                {t('schedule.upcomingShifts')} ({upcomingShifts.length})
               </Text>
               {upcomingShifts.map((shift, index) => (
-                <ShiftCard key={shift.shift_id || index} shift={shift} />
+                <ShiftCard key={shift.shift_id || index} shift={shift} t={t} />
               ))}
             </View>
           )}
@@ -160,10 +162,10 @@ export const ScheduleScreen = () => {
           {pastShifts.length > 0 && (
             <View style={styles.section}>
               <Text variant="h3" style={{ color: textColor, marginBottom: 12 }}>
-                Tidigare skift
+                {t('schedule.pastShifts')}
               </Text>
               {pastShifts.map((shift, index) => (
-                <ShiftCard key={shift.shift_id || index} shift={shift} />
+                <ShiftCard key={shift.shift_id || index} shift={shift} t={t} />
               ))}
             </View>
           )}

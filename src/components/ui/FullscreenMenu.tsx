@@ -28,6 +28,7 @@ import {
 } from 'lucide-react-native';
 import { Text } from './Text';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface MenuItem {
   key: string;
@@ -49,27 +50,27 @@ interface FullscreenMenuProps {
   onLogout?: () => void;
 }
 
-const menuSections: MenuSection[] = [
+const getMenuSections = (t: (key: string) => string): MenuSection[] => [
   {
-    title: 'Huvudmeny',
+    title: t('menu.mainMenu'),
     items: [
-      { key: 'dashboard', icon: LayoutDashboard, title: 'Dashboard', subtitle: 'Översikt och snabbval' },
-      { key: 'schedule', icon: Calendar, title: 'Mitt Schema', subtitle: 'Kommande skift' },
-      { key: 'onboarding', icon: ClipboardList, title: 'Onboarding', subtitle: 'Starta din resa' },
-      { key: 'contracts', icon: FileText, title: 'Mina Avtal', subtitle: 'Kontrakt och dokument' },
+      { key: 'dashboard', icon: LayoutDashboard, title: t('menu.dashboard'), subtitle: t('menu.dashboardSubtitle') },
+      { key: 'schedule', icon: Calendar, title: t('menu.mySchedule'), subtitle: t('menu.scheduleSubtitle') },
+      { key: 'onboarding', icon: ClipboardList, title: t('menu.onboarding'), subtitle: t('menu.onboardingSubtitle') },
+      { key: 'contracts', icon: FileText, title: t('menu.myContracts'), subtitle: t('menu.contractsSubtitle') },
     ],
   },
   {
-    title: 'HR & Personal',
+    title: t('menu.hrPersonal'),
     items: [
-      { key: 'profile', icon: User, title: 'Min Profil', subtitle: 'Personuppgifter' },
-      { key: 'company', icon: Building2, title: 'Företag', subtitle: 'Företagsinformation' },
+      { key: 'profile', icon: User, title: t('menu.myProfile'), subtitle: t('menu.profileSubtitle') },
+      { key: 'company', icon: Building2, title: t('menu.company'), subtitle: t('menu.companySubtitle') },
     ],
   },
   {
     title: '',
     items: [
-      { key: 'settings', icon: Settings, title: 'Inställningar', subtitle: 'Tema, notiser, säkerhet' },
+      { key: 'settings', icon: Settings, title: t('menu.settings'), subtitle: t('menu.settingsSubtitle') },
     ],
   },
 ];
@@ -85,6 +86,8 @@ export function FullscreenMenu({
 }: FullscreenMenuProps) {
   const insets = useSafeAreaInsets();
   const { isDark } = useTheme();
+  const { t } = useLanguage();
+  const menuSections = getMenuSections(t);
   const slideAnim = useRef(new Animated.Value(SCREEN_WIDTH)).current;
   const dragX = useRef(new Animated.Value(0)).current;
 
@@ -174,21 +177,23 @@ export function FullscreenMenu({
             styles.menuContainer,
             { 
               backgroundColor,
-              paddingTop: insets.top,
-              paddingBottom: insets.bottom,
+              paddingTop: insets.top + 8,
+              paddingBottom: Math.max(insets.bottom, 20),
+              paddingLeft: insets.left,
+              paddingRight: insets.right,
               transform: [{ translateX: Animated.add(slideAnim, dragX) }],
             },
           ]}
         >
           {/* Header */}
           <View style={[styles.header, { borderBottomColor: borderColor }]}>
-            <Text variant="h1" style={{ color: textColor }}>Meny</Text>
+            <Text variant="h1" style={{ color: textColor }}>{t('menu.title')}</Text>
             <View style={styles.headerActions}>
               <Pressable 
                 style={styles.headerButton}
                 onPress={onLogout}
               >
-                <Text style={{ color: '#EF4444' }}>Logga ut</Text>
+                <Text style={{ color: '#EF4444' }}>{t('menu.logout')}</Text>
               </Pressable>
             </View>
           </View>
@@ -263,9 +268,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
     paddingVertical: 16,
     borderBottomWidth: 1,
+    minHeight: 60,
   },
   headerActions: {
     flexDirection: 'row',
@@ -273,11 +279,13 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   headerButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 22,
     borderWidth: 1,
     borderColor: '#EF4444',
+    minHeight: 44,
+    justifyContent: 'center',
   },
   scrollView: {
     flex: 1,
@@ -286,20 +294,21 @@ const styles = StyleSheet.create({
     paddingTop: 8,
   },
   sectionTitle: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
     paddingVertical: 12,
     fontWeight: '600',
   },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: 20,
+    paddingVertical: 14,
+    minHeight: 64,
   },
   iconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     alignItems: 'center',
     justifyContent: 'center',
   },

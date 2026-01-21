@@ -4,12 +4,14 @@ import { useNavigation } from '@react-navigation/native';
 import { ScreenLayout } from '@/components/common';
 import { Text, Card, CardContent } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { 
   Palette, 
   Bell, 
   Lock, 
   Info,
   Key,
+  Globe,
   ChevronRight,
   Sun,
   Moon,
@@ -46,6 +48,7 @@ function SettingsItem({ icon: Icon, title, subtitle, onPress, rightContent }: Se
 
 export function SettingsScreen() {
   const { isDark, toggleTheme } = useTheme();
+  const { language, setLanguage, t } = useLanguage();
   const navigation = useNavigation<any>();
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   
@@ -65,8 +68,12 @@ export function SettingsScreen() {
     navigation.navigate('About');
   };
 
+  const getLanguageLabel = () => {
+    return language === 'sv' ? 'Svenska' : 'English';
+  };
+
   return (
-    <ScreenLayout title="Inställningar" showBack={false}>
+    <ScreenLayout title={t('settings.title')} showBack={false}>
       {/* Appearance - Theme Toggle */}
       <View style={styles.section}>
         <Card variant="elevated">
@@ -76,8 +83,8 @@ export function SettingsScreen() {
                 <Palette size={20} color={accentColor} />
               </View>
               <View style={styles.settingsText}>
-                <Text variant="body-lg" style={{ color: textColor }}>Utseende</Text>
-                <Text variant="body-sm" style={{ color: mutedColor }}>{isDark ? 'Mörkt tema' : 'Ljust tema'}</Text>
+                <Text variant="body-lg" style={{ color: textColor }}>{t('settings.appearance')}</Text>
+                <Text variant="body-sm" style={{ color: mutedColor }}>{isDark ? t('settings.darkTheme') : t('settings.lightTheme')}</Text>
               </View>
               <View style={styles.themeButtons}>
                 <TouchableOpacity 
@@ -115,10 +122,8 @@ export function SettingsScreen() {
                 <Bell size={20} color={accentColor} />
               </View>
               <View style={styles.settingsText}>
-                <Text variant="body-lg" style={{ color: textColor }}>Notifikationer</Text>
-                <Text variant="body-sm" style={{ color: mutedColor }}>
-                  {notificationsEnabled ? 'Aktiverad' : 'Inaktiverad'}
-                </Text>
+                <Text variant="body-lg" style={{ color: textColor }}>{t('settings.notifications')}</Text>
+                <Text variant="body-sm" style={{ color: mutedColor }}>{notificationsEnabled ? t('settings.notificationsEnabled') : t('settings.notificationsDisabled')}</Text>
               </View>
               <Switch
                 value={notificationsEnabled}
@@ -131,14 +136,55 @@ export function SettingsScreen() {
         </Card>
       </View>
 
+      {/* Language Toggle */}
+      <View style={styles.section}>
+        <Card variant="elevated">
+          <CardContent style={styles.cardContent}>
+            <View style={styles.settingsItem}>
+              <View style={[styles.settingsIcon, { backgroundColor: isDark ? 'rgba(107,189,104,0.15)' : '#EDF5EC' }]}>
+                <Globe size={20} color={accentColor} />
+              </View>
+              <View style={styles.settingsText}>
+                <Text variant="body-lg" style={{ color: textColor }}>{t('settings.language')}</Text>
+                <Text variant="body-sm" style={{ color: mutedColor }}>{getLanguageLabel()}</Text>
+              </View>
+              <View style={styles.languageButtons}>
+                <TouchableOpacity 
+                  onPress={() => setLanguage('sv')}
+                  style={[
+                    styles.languageButton,
+                    language === 'sv' && { backgroundColor: accentColor }
+                  ]}
+                >
+                  <Text variant="body-sm" style={{ color: language === 'sv' ? '#FFFFFF' : mutedColor }}>
+                    SV
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  onPress={() => setLanguage('en')}
+                  style={[
+                    styles.languageButton,
+                    language === 'en' && { backgroundColor: accentColor }
+                  ]}
+                >
+                  <Text variant="body-sm" style={{ color: language === 'en' ? '#FFFFFF' : mutedColor }}>
+                    EN
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </CardContent>
+        </Card>
+      </View>
+
       {/* Security - Navigate to screen */}
       <View style={styles.section}>
         <Card variant="elevated">
           <CardContent style={styles.cardContent}>
             <SettingsItem
               icon={Lock}
-              title="Säkerhet"
-              subtitle="Biometri, 2FA"
+              title={t('settings.security')}
+              subtitle={t('settings.securitySubtitle')}
               onPress={handleSecurity}
             />
           </CardContent>
@@ -151,8 +197,8 @@ export function SettingsScreen() {
           <CardContent style={styles.cardContent}>
             <SettingsItem
               icon={Key}
-              title="Byt lösenord"
-              subtitle="Uppdatera ditt lösenord"
+              title={t('settings.changePassword')}
+              subtitle={t('settings.changePasswordSubtitle')}
               onPress={handleChangePassword}
             />
           </CardContent>
@@ -165,8 +211,8 @@ export function SettingsScreen() {
           <CardContent style={styles.cardContent}>
             <SettingsItem
               icon={Info}
-              title="Om appen"
-              subtitle="Version, licenser"
+              title={t('settings.about')}
+              subtitle={t('settings.aboutSubtitle')}
               onPress={handleAbout}
             />
           </CardContent>
@@ -226,6 +272,17 @@ const styles = StyleSheet.create({
   },
   themeButtonActive: {
     // Active state handled by backgroundColor
+  },
+  languageButtons: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  languageButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#E5E5E5',
   },
   versionContainer: {
     marginTop: 24,
