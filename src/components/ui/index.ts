@@ -7,6 +7,7 @@ export { Text } from './Text';
 export { Button } from './Button';
 export { Input } from './Input';
 export { IconButton } from './IconButton';
+export { ImageButton } from './ImageButton';
 
 // Layout
 export { Card, CardHeader, CardContent, CardFooter } from './Card';

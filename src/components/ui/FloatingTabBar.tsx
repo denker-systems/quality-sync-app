@@ -58,7 +58,7 @@ export function FloatingTabBar({ activeTab, onTabPress }: FloatingTabBarProps) {
               ]}
             >
               <Icon 
-                size={24} 
+                size={28} 
                 color={isActive 
                   ? (isDark ? '#0F0F0F' : '#FFFFFF')
                   : (isDark ? '#A3A3A3' : '#737373')
@@ -75,7 +75,7 @@ export function FloatingTabBar({ activeTab, onTabPress }: FloatingTabBarProps) {
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    bottom: 0,
+    bottom: 20,
     left: 0,
     right: 0,
     alignItems: 'center',
@@ -88,16 +88,16 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   tabButton: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
+    shadowOpacity: 0.12,
+    shadowRadius: 16,
+    elevation: 6,
   },
   overlapping: {
     marginLeft: -12,

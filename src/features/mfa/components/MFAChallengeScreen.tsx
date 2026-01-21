@@ -5,16 +5,27 @@
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Text, TextInput, Button, Card, ActivityIndicator } from 'react-native-paper';
+import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useMFA } from '../hooks/useMFA';
 import { useMFAStatus } from '../hooks/useMFAStatus';
 import { useAuth } from '@/hooks/useAuth';
 import type { MFAChallengeProps } from '../types/mfa.types';
 
 export function MFAChallengeScreen({ onVerified, onCancel }: MFAChallengeProps) {
+  const { isDark } = useTheme();
+  const { t } = useLanguage();
   const { isLoading, error, completeChallenge, clearError } = useMFA();
   const { trustCurrentDevice } = useMFAStatus();
   const { signOut } = useAuth();
   const [code, setCode] = useState('');
+
+  const bgColor = isDark ? '#171717' : '#F5F5F5';
+  const cardBg = isDark ? '#262626' : '#FFFFFF';
+  const textColor = isDark ? '#FAFAFA' : '#171717';
+  const mutedColor = isDark ? '#A3A3A3' : '#666666';
+  const errorBg = isDark ? '#7F1D1D' : '#FFEBEE';
+  const errorText = isDark ? '#FCA5A5' : '#C62828';
 
   const handleVerify = async () => {
     if (code.length !== 6) return;
@@ -35,32 +46,32 @@ export function MFAChallengeScreen({ onVerified, onCancel }: MFAChallengeProps) 
   };
 
   return (
-    <View style={styles.container}>
-      <Card style={styles.card}>
+    <View style={[styles.container, { backgroundColor: bgColor }]}>
+      <Card style={[styles.card, { backgroundColor: cardBg }]}>
         <Card.Content>
           <View style={styles.iconContainer}>
             <Text style={styles.iconText}>🔐</Text>
           </View>
           
-          <Text variant="headlineMedium" style={styles.title}>
-            Tvåfaktorsautentisering
+          <Text variant="headlineMedium" style={[styles.title, { color: textColor }]}>
+            {t('mfa.challengeTitle')}
           </Text>
           
-          <Text variant="bodyMedium" style={styles.description}>
-            Ange 6-siffrig kod från din autentiseringsapp
+          <Text variant="bodyMedium" style={[styles.description, { color: mutedColor }]}>
+            {t('mfa.challengeDescription')}
           </Text>
 
           {error && (
-            <Card style={styles.errorCard}>
+            <Card style={[styles.errorCard, { backgroundColor: errorBg }]}>
               <Card.Content>
-                <Text style={styles.errorText}>{error}</Text>
+                <Text style={[styles.errorText, { color: errorText }]}>{error}</Text>
               </Card.Content>
             </Card>
           )}
 
           <TextInput
             mode="outlined"
-            label="Verifieringskod"
+            label={t('mfa.verificationCode')}
             value={code}
             onChangeText={(text) => {
               clearError();
@@ -80,7 +91,7 @@ export function MFAChallengeScreen({ onVerified, onCancel }: MFAChallengeProps) 
             style={styles.button}
             contentStyle={styles.buttonContent}
           >
-            {isLoading ? <ActivityIndicator color="#fff" /> : 'Verifiera'}
+            {isLoading ? <ActivityIndicator color="#fff" /> : t('mfa.verify')}
           </Button>
 
           <Button
@@ -88,7 +99,7 @@ export function MFAChallengeScreen({ onVerified, onCancel }: MFAChallengeProps) 
             onPress={handleSignOut}
             style={styles.signOutButton}
           >
-            Logga ut
+            {t('mfa.signOut')}
           </Button>
         </Card.Content>
       </Card>
@@ -102,7 +113,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
-    backgroundColor: '#f5f5f5',
   },
   card: {
     width: '100%',
@@ -122,14 +132,12 @@ const styles = StyleSheet.create({
   description: {
     textAlign: 'center',
     marginBottom: 24,
-    color: '#666',
   },
   errorCard: {
-    backgroundColor: '#ffebee',
     marginBottom: 16,
   },
   errorText: {
-    color: '#c62828',
+    fontWeight: '500',
   },
   input: {
     marginBottom: 16,

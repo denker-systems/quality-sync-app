@@ -293,4 +293,23 @@ export default {
     invalidEmail: 'Ogiltig email-adress',
     passwordTooShort: 'Lösenordet måste vara minst 6 tecken',
   },
+
+  // MFA (Two-Factor Authentication)
+  mfa: {
+    // MFA Challenge Screen
+    challengeTitle: 'Tvåfaktorsautentisering',
+    challengeDescription: 'Ange 6-siffrig kod från din autentiseringsapp',
+    verificationCode: 'Verifieringskod',
+    verify: 'Verifiera',
+    signOut: 'Logga ut',
+
+    // MFA Enrollment Screen
+    enrollmentTitle: 'Aktivera 2FA',
+    enrollmentDescription: 'Skanna QR-koden med Google Authenticator',
+    manualEntry: 'Manuell inmatning:',
+    enterCode: 'Ange verifieringskod',
+    codePlaceholder: '000000',
+    activate: 'Aktivera',
+    required: 'Du måste aktivera 2FA för att fortsätta',
+  },
 };

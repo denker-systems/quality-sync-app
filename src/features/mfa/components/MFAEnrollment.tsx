@@ -6,10 +6,14 @@ import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { Text, TextInput, Button, Card, ActivityIndicator } from 'react-native-paper';
 import { WebView } from 'react-native-webview';
+import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useMFA } from '../hooks/useMFA';
 import type { MFAEnrollmentProps } from '../types/mfa.types';
 
 export function MFAEnrollment({ onEnrolled, onCancelled, required = false }: MFAEnrollmentProps) {
+  const { isDark } = useTheme();
+  const { t } = useLanguage();
   const { 
     isLoading, 
     error, 
@@ -20,6 +24,15 @@ export function MFAEnrollment({ onEnrolled, onCancelled, required = false }: MFA
   } = useMFA();
   
   const [verifyCode, setVerifyCode] = useState('');
+
+  const bgColor = isDark ? '#171717' : '#F5F5F5';
+  const cardBg = isDark ? '#262626' : '#FFFFFF';
+  const textColor = isDark ? '#FAFAFA' : '#171717';
+  const mutedColor = isDark ? '#A3A3A3' : '#666666';
+  const errorBg = isDark ? '#7F1D1D' : '#FFEBEE';
+  const errorText = isDark ? '#FCA5A5' : '#C62828';
+  const secretCardBg = isDark ? '#404040' : '#F5F5F5';
+  const qrBg = isDark ? '#262626' : '#FFFFFF';
 
   useEffect(() => {
     startEnrollment();
@@ -36,8 +49,8 @@ export function MFAEnrollment({ onEnrolled, onCancelled, required = false }: MFA
 
   if (isLoading && !enrollmentData) {
     return (
-      <View style={styles.container}>
-        <Card style={styles.card}>
+      <View style={[styles.container, { backgroundColor: bgColor }]}>
+        <Card style={[styles.card, { backgroundColor: cardBg }]}>
           <Card.Content style={styles.loadingContent}>
             <ActivityIndicator size="large" />
           </Card.Content>
@@ -47,25 +60,25 @@ export function MFAEnrollment({ onEnrolled, onCancelled, required = false }: MFA
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Card style={styles.card}>
+    <ScrollView contentContainerStyle={[styles.container, { backgroundColor: bgColor }]}>
+      <Card style={[styles.card, { backgroundColor: cardBg }]}>
         <Card.Content>
           <View style={styles.iconContainer}>
             <Text style={styles.iconText}>📱</Text>
           </View>
           
-          <Text variant="headlineMedium" style={styles.title}>
-            Aktivera 2FA
+          <Text variant="headlineMedium" style={[styles.title, { color: textColor }]}>
+            {t('mfa.enrollmentTitle')}
           </Text>
           
-          <Text variant="bodyMedium" style={styles.description}>
-            Skanna QR-koden med Google Authenticator
+          <Text variant="bodyMedium" style={[styles.description, { color: mutedColor }]}>
+            {t('mfa.enrollmentDescription')}
           </Text>
 
           {error && (
-            <Card style={styles.errorCard}>
+            <Card style={[styles.errorCard, { backgroundColor: errorBg }]}>
               <Card.Content>
-                <Text style={styles.errorText}>{error}</Text>
+                <Text style={[styles.errorText, { color: errorText }]}>{error}</Text>
               </Card.Content>
             </Card>
           )}
@@ -85,7 +98,7 @@ export function MFAEnrollment({ onEnrolled, onCancelled, required = false }: MFA
                           display: flex;
                           justify-content: center;
                           align-items: center;
-                          background: white;
+                          background: ${qrBg};
                         }
                         svg {
                           max-width: 100%;
@@ -98,7 +111,7 @@ export function MFAEnrollment({ onEnrolled, onCancelled, required = false }: MFA
                     </body>
                   </html>
                 ` }}
-                style={styles.qrCode}
+                style={[styles.qrCode, { backgroundColor: qrBg }]}
                 scrollEnabled={false}
               />
             </View>
@@ -107,12 +120,12 @@ export function MFAEnrollment({ onEnrolled, onCancelled, required = false }: MFA
           {/* Manual secret entry */}
           {enrollmentData?.totp.secret && (
             <View style={styles.secretContainer}>
-              <Text variant="labelSmall" style={styles.secretLabel}>
-                Manuell inmatning:
+              <Text variant="labelSmall" style={[styles.secretLabel, { color: mutedColor }]}>
+                {t('mfa.manualEntry')}
               </Text>
-              <Card style={styles.secretCard}>
+              <Card style={[styles.secretCard, { backgroundColor: secretCardBg }]}>
                 <Card.Content>
-                  <Text style={styles.secretText}>
+                  <Text style={[styles.secretText, { color: textColor }]}>
                     {enrollmentData.totp.secret}
                   </Text>
                 </Card.Content>
@@ -122,8 +135,8 @@ export function MFAEnrollment({ onEnrolled, onCancelled, required = false }: MFA
 
           {/* Verification code input */}
           <View style={styles.inputContainer}>
-            <Text variant="labelLarge" style={styles.inputLabel}>
-              Ange verifieringskod
+            <Text variant="labelLarge" style={[styles.inputLabel, { color: textColor }]}>
+              {t('mfa.enterCode')}
             </Text>
             <TextInput
               mode="outlined"
@@ -134,7 +147,7 @@ export function MFAEnrollment({ onEnrolled, onCancelled, required = false }: MFA
               }}
               keyboardType="number-pad"
               maxLength={6}
-              placeholder="000000"
+              placeholder={t('mfa.codePlaceholder')}
               style={styles.input}
               onSubmitEditing={handleVerify}
             />
@@ -149,7 +162,7 @@ export function MFAEnrollment({ onEnrolled, onCancelled, required = false }: MFA
                 style={styles.cancelButton}
                 disabled={isLoading}
               >
-                Avbryt
+                {t('common.cancel')}
               </Button>
             )}
             <Button
@@ -159,13 +172,13 @@ export function MFAEnrollment({ onEnrolled, onCancelled, required = false }: MFA
               style={required ? styles.fullButton : styles.actionButton}
               contentStyle={styles.buttonContent}
             >
-              {isLoading ? <ActivityIndicator color="#fff" /> : 'Aktivera'}
+              {isLoading ? <ActivityIndicator color="#fff" /> : t('mfa.activate')}
             </Button>
           </View>
 
           {required && (
-            <Text variant="bodySmall" style={styles.requiredText}>
-              Du måste aktivera 2FA för att fortsätta
+            <Text variant="bodySmall" style={[styles.requiredText, { color: mutedColor }]}>
+              {t('mfa.required')}
             </Text>
           )}
         </Card.Content>
@@ -180,7 +193,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
-    backgroundColor: '#f5f5f5',
   },
   card: {
     width: '100%',
@@ -204,14 +216,12 @@ const styles = StyleSheet.create({
   description: {
     textAlign: 'center',
     marginBottom: 24,
-    color: '#666',
   },
   errorCard: {
-    backgroundColor: '#ffebee',
     marginBottom: 16,
   },
   errorText: {
-    color: '#c62828',
+    fontWeight: '500',
   },
   qrContainer: {
     marginBottom: 24,
@@ -220,17 +230,15 @@ const styles = StyleSheet.create({
   qrCode: {
     width: 250,
     height: 250,
-    backgroundColor: 'white',
   },
   secretContainer: {
     marginBottom: 24,
   },
   secretLabel: {
     marginBottom: 8,
-    color: '#666',
   },
   secretCard: {
-    backgroundColor: '#f5f5f5',
+    // backgroundColor set dynamically
   },
   secretText: {
     fontFamily: 'monospace',
@@ -266,6 +274,5 @@ const styles = StyleSheet.create({
   requiredText: {
     textAlign: 'center',
     marginTop: 16,
-    color: '#666',
   },
 });

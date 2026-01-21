@@ -293,4 +293,23 @@ export default {
     invalidEmail: 'Invalid email address',
     passwordTooShort: 'Password must be at least 6 characters',
   },
+
+  // MFA (Two-Factor Authentication)
+  mfa: {
+    // MFA Challenge Screen
+    challengeTitle: 'Two-Factor Authentication',
+    challengeDescription: 'Enter the 6-digit code from your authenticator app',
+    verificationCode: 'Verification Code',
+    verify: 'Verify',
+    signOut: 'Sign Out',
+
+    // MFA Enrollment Screen
+    enrollmentTitle: 'Enable 2FA',
+    enrollmentDescription: 'Scan the QR code with Google Authenticator',
+    manualEntry: 'Manual entry:',
+    enterCode: 'Enter verification code',
+    codePlaceholder: '000000',
+    activate: 'Activate',
+    required: 'You must enable 2FA to continue',
+  },
 };

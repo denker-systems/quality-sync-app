@@ -11,38 +11,23 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { 
-  X, 
   LayoutDashboard, 
   Calendar, 
   ClipboardList, 
   FileText,
   User,
   Building2,
-  Palette,
-  Bell,
-  Lock,
-  Info,
-  ChevronRight,
-  LogOut,
   Settings,
 } from 'lucide-react-native';
-import { Text } from './Text';
+import { MenuHeader, MenuSection } from './menu';
+import type { MenuItemData } from './menu';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useRole } from '@/hooks/useRole';
 
-interface MenuItem {
-  key: string;
-  icon: React.ComponentType<{ size: number; color: string }>;
+interface MenuSectionData {
   title: string;
-  subtitle?: string;
-  onPress?: () => void;
-  adminOnly?: boolean;
-}
-
-interface MenuSection {
-  title: string;
-  items: MenuItem[];
+  items: MenuItemData[];
 }
 
 interface FullscreenMenuProps {
@@ -52,7 +37,7 @@ interface FullscreenMenuProps {
   onLogout?: () => void;
 }
 
-const getMenuSections = (t: (key: string) => string, canManageOnboarding: boolean): MenuSection[] => [
+const getMenuSections = (t: (key: string) => string, canManageOnboarding: boolean): MenuSectionData[] => [
   {
     title: t('menu.mainMenu'),
     items: [
@@ -65,7 +50,7 @@ const getMenuSections = (t: (key: string) => string, canManageOnboarding: boolea
   ...(canManageOnboarding ? [{
     title: t('menu.admin') || 'Administration',
     items: [
-      { key: 'onboarding-admin', icon: Settings, title: t('menu.onboardingAdmin') || 'Onboarding Settings', subtitle: t('menu.onboardingAdminSubtitle') || 'Configure onboarding steps', adminOnly: true },
+      { key: 'onboarding-admin', icon: Settings, title: t('menu.onboardingAdmin') || 'Onboarding Settings', subtitle: t('menu.onboardingAdminSubtitle') || 'Configure onboarding steps' },
     ],
   }] : []),
   {
@@ -164,12 +149,6 @@ export function FullscreenMenu({
   };
 
   const backgroundColor = isDark ? '#0F0F0F' : '#FFFFFF';
-  const textColor = isDark ? '#FAFAFA' : '#171717';
-  const mutedColor = isDark ? '#737373' : '#737373';
-  const iconBgColor = isDark ? 'rgba(107,189,104,0.15)' : '#EDF5EC';
-  const iconColor = isDark ? '#A8D5A2' : '#489A45';
-  const borderColor = isDark ? '#2A2A2A' : '#E5E5E5';
-  const sectionTitleColor = isDark ? '#525252' : '#737373';
 
   return (
     <Modal
@@ -194,62 +173,23 @@ export function FullscreenMenu({
             },
           ]}
         >
-          {/* Header */}
-          <View style={[styles.header, { borderBottomColor: borderColor }]}>
-            <Text variant="h1" style={{ color: textColor }}>{t('menu.title')}</Text>
-            <View style={styles.headerActions}>
-              <Pressable 
-                style={styles.headerButton}
-                onPress={onLogout}
-              >
-                <Text style={{ color: '#EF4444' }}>{t('menu.logout')}</Text>
-              </Pressable>
-            </View>
-          </View>
+          <MenuHeader
+            title={t('menu.title')}
+            logoutText={t('menu.logout')}
+            onLogout={onLogout}
+          />
 
-          {/* Menu Content */}
           <ScrollView 
             style={styles.scrollView}
             showsVerticalScrollIndicator={false}
           >
-            {menuSections.map((section) => (
-              <View key={section.title} style={styles.section}>
-                <Text 
-                  variant="body-sm" 
-                  style={[styles.sectionTitle, { color: sectionTitleColor }]}
-                >
-                  {section.title}
-                </Text>
-                
-                {section.items.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <Pressable
-                      key={item.key}
-                      style={({ pressed }) => [
-                        styles.menuItem,
-                        pressed && { backgroundColor: isDark ? '#1A1A1A' : '#F5F5F5' },
-                      ]}
-                      onPress={() => handleItemPress(item.key)}
-                    >
-                      <View style={[styles.iconContainer, { backgroundColor: iconBgColor }]}>
-                        <Icon size={20} color={iconColor} />
-                      </View>
-                      <View style={styles.menuItemText}>
-                        <Text variant="body-lg" style={{ color: textColor }}>
-                          {item.title}
-                        </Text>
-                        {item.subtitle && (
-                          <Text variant="body-sm" style={{ color: mutedColor }}>
-                            {item.subtitle}
-                          </Text>
-                        )}
-                      </View>
-                      <ChevronRight size={20} color={mutedColor} />
-                    </Pressable>
-                  );
-                })}
-              </View>
+            {menuSections.map((section, index) => (
+              <MenuSection
+                key={section.title || `section-${index}`}
+                title={section.title}
+                items={section.items}
+                onItemPress={handleItemPress}
+              />
             ))}
           </ScrollView>
         </Animated.View>
@@ -273,57 +213,8 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: '100%',
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    minHeight: 60,
-  },
-  headerActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  headerButton: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 22,
-    borderWidth: 1,
-    borderColor: '#EF4444',
-    minHeight: 44,
-    justifyContent: 'center',
-  },
   scrollView: {
     flex: 1,
-  },
-  section: {
-    paddingTop: 8,
-  },
-  sectionTitle: {
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    fontWeight: '600',
-  },
-  menuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-    minHeight: 64,
-  },
-  iconContainer: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  menuItemText: {
-    flex: 1,
-    marginLeft: 12,
   },
 });
 
