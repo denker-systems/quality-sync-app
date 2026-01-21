@@ -47,7 +47,7 @@ export const ContractsScreen = () => {
   }
 
   return (
-    <ScreenLayout title={t('contracts.title')}>
+    <ScreenLayout title={t('contracts.title')} isRoot={true}>
 
       {contracts && contracts.length > 0 ? (
         <View style={styles.contractsList}>

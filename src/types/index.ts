@@ -1,3 +1,5 @@
+import { OnboardingStep, OnboardingProgress, OnboardingData } from '@/hooks/useOnboarding';
+
 // Shared types from fortnox-quinyx-sync
 export interface UserProfile {
   id: string;
@@ -64,6 +66,15 @@ export type RootStackParamList = {
   // Admin screens
   OnboardingAdmin: undefined;
   OnboardingPreview: undefined;
+  // Onboarding step screen
+  OnboardingStep: { 
+    stepIndex: number;
+    previewData?: {
+      onboarding: OnboardingData;
+      steps: OnboardingStep[];
+      progress: OnboardingProgress[];
+    };
+  };
 };
 
 declare global {

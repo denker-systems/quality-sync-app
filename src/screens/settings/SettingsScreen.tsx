@@ -73,7 +73,7 @@ export function SettingsScreen() {
   };
 
   return (
-    <ScreenLayout title={t('settings.title')} showBack={false}>
+    <ScreenLayout title={t('settings.title')} isRoot={true}>
       {/* Appearance - Theme Toggle */}
       <View style={styles.section}>
         <Card variant="elevated">

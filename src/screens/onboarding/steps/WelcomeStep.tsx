@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Text, Button, Surface } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -10,12 +10,14 @@ interface WelcomeStepProps {
   onComplete: (data: Record<string, any>) => void;
   onSave: (data: Record<string, any>) => void;
   employeeName?: string;
+  submitRef?: React.MutableRefObject<(() => void) | null>;
 }
 
 export const WelcomeStep: React.FC<WelcomeStepProps> = ({
   content,
   onComplete,
   employeeName,
+  submitRef,
 }) => {
   const { isDark } = useTheme();
   const textColor = isDark ? '#FAFAFA' : '#171717';
@@ -26,8 +28,19 @@ export const WelcomeStep: React.FC<WelcomeStepProps> = ({
     console.log('🚀 WELCOME_STEP handleStart clicked');
     onComplete({ started: true, started_at: new Date().toISOString() });
   };
+
+  useEffect(() => {
+    if (submitRef) {
+      submitRef.current = handleStart;
+    }
+    return () => {
+      if (submitRef) {
+        submitRef.current = null;
+      }
+    };
+  }, [submitRef]);
   return (
-    <View style={styles.container}>
+    <>
       <Surface style={styles.card} elevation={2}>
         <View style={styles.iconContainer}>
           <PartyPopper size={64} color={accentColor} />
@@ -74,23 +87,16 @@ export const WelcomeStep: React.FC<WelcomeStepProps> = ({
           </View>
         </View>
       </Surface>
-
-      <Button variant="primary" onPress={handleStart} style={styles.button}>
-        Starta onboarding
-      </Button>
-    </View>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    gap: 16,
-  },
   card: {
     padding: 24,
     borderRadius: 12,
     alignItems: 'center',
+    marginBottom: 16,
   },
   iconContainer: {
     marginBottom: 16,

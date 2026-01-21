@@ -35,7 +35,7 @@ export function OnboardingAdminScreen() {
 
   return (
     <RoleGuard allow={['superadmin', 'admin']}>
-      <ScreenLayout title="Onboarding Management">
+      <ScreenLayout title="Onboarding Management" isRoot={true}>
         <Surface elevation={1} style={styles.header}>
           <View style={styles.headerContent}>
             <Settings size={24} color={mutedColor} />

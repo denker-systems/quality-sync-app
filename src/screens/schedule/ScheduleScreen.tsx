@@ -114,7 +114,7 @@ export const ScheduleScreen = () => {
 
   if (isLoading) {
     return (
-      <ScreenLayout title={t('schedule.title')} scrollable={false}>
+      <ScreenLayout title={t('schedule.title')} scrollable={false} isRoot={true}>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={isDark ? '#6BBD68' : '#489A45'} />
           <Text variant="body" style={{ color: mutedColor, marginTop: 16 }}>
@@ -127,7 +127,7 @@ export const ScheduleScreen = () => {
 
   if (error) {
     return (
-      <ScreenLayout title={t('schedule.title')} scrollable={false}>
+      <ScreenLayout title={t('schedule.title')} scrollable={false} isRoot={true}>
         <EmptyState
           icon={Calendar}
           title={t('schedule.couldNotLoad')}
@@ -138,7 +138,7 @@ export const ScheduleScreen = () => {
   }
 
   return (
-    <ScreenLayout title={t('schedule.title')}>
+    <ScreenLayout title={t('schedule.title')} isRoot={true}>
 
       {upcomingShifts.length === 0 && pastShifts.length === 0 ? (
         <EmptyState

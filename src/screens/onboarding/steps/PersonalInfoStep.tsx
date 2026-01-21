@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, ScrollView, TextInput } from 'react-native';
 import { Text, Button, Surface } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -9,6 +9,7 @@ interface PersonalInfoStepProps {
   stepData: Record<string, any>;
   onComplete: (data: Record<string, any>) => void;
   onSave: (data: Record<string, any>) => void;
+  submitRef?: React.MutableRefObject<(() => void) | null>;
 }
 
 export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
@@ -16,6 +17,7 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
   stepData,
   onComplete,
   onSave,
+  submitRef,
 }) => {
   const { isDark } = useTheme();
   const textColor = isDark ? '#FAFAFA' : '#171717';
@@ -23,6 +25,17 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
   const accentColor = isDark ? '#6BBD68' : '#489A45';
   const inputBg = isDark ? '#1A1A1A' : '#FFFFFF';
   const borderColor = isDark ? '#333' : '#E5E5E5';
+  useEffect(() => {
+    if (submitRef) {
+      submitRef.current = handleSubmit;
+    }
+    return () => {
+      if (submitRef) {
+        submitRef.current = null;
+      }
+    };
+  }, [submitRef]);
+
   const [formData, setFormData] = useState({
     first_name: stepData?.first_name || '',
     last_name: stepData?.last_name || '',
@@ -75,10 +88,6 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
     }
   };
 
-  const handleSave = () => {
-    onSave(formData);
-  };
-
   const updateField = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     if (errors[field]) {
@@ -92,7 +101,7 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
   ];
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <>
       <Surface style={styles.card} elevation={1}>
         <View style={styles.header}>
           <User size={24} color={accentColor} />
@@ -202,26 +211,15 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
           placeholderTextColor={mutedColor}
         />
       </Surface>
-
-      <View style={styles.buttonContainer}>
-        <Button variant="outline" onPress={handleSave} style={styles.saveButton}>
-          Spara utkast
-        </Button>
-        <Button variant="primary" onPress={handleSubmit} style={styles.submitButton}>
-          Fortsätt
-        </Button>
-      </View>
-    </ScrollView>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   card: {
     padding: 16,
     borderRadius: 12,
+    marginBottom: 16,
   },
   header: {
     flexDirection: 'row',
@@ -263,17 +261,5 @@ const styles = StyleSheet.create({
     marginTop: -8,
     marginBottom: 8,
     marginLeft: 4,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    gap: 12,
-    marginTop: 16,
-    marginBottom: 32,
-  },
-  saveButton: {
-    flex: 1,
-  },
-  submitButton: {
-    flex: 2,
   },
 });

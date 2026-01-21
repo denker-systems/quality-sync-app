@@ -9,7 +9,6 @@ import { Eye, RotateCcw, X, CheckCircle, Clock, AlertCircle, ChevronRight } from
 import { useOnboardingSteps } from '../hooks/useOnboardingSteps';
 import { useCompanyData } from '@/hooks/useCompanyData';
 import { MockEmployee, PreviewProgress, STEP_TYPE_LABELS } from '../types';
-import { StepPreviewModal } from '../components/StepPreviewModal';
 
 /**
  * Create mock employee for preview
@@ -37,7 +36,6 @@ export function OnboardingPreviewScreen() {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [previewProgress, setPreviewProgress] = useState<PreviewProgress[]>([]);
   const [resetKey, setResetKey] = useState(0);
-  const [modalVisible, setModalVisible] = useState(false);
 
   const textColor = isDark ? '#FAFAFA' : '#171717';
   const mutedColor = isDark ? '#A3A3A3' : '#737373';
@@ -132,24 +130,26 @@ export function OnboardingPreviewScreen() {
   };
 
   const handleStepPress = (index: number) => {
-    setCurrentStepIndex(index);
-    setModalVisible(true);
-  };
+    // Construct preview data package to pass to the screen
+    // This avoids the screen trying to fetch real data for the admin user
+    const previewData = {
+      onboarding: {
+        id: 'preview-onboarding-id',
+        employee_id: mockEmployee?.id || 'preview-employee-id',
+        status: 'in_progress' as const,
+        onboarding_data: {},
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      steps: activeSteps,
+      progress: previewProgress,
+    };
 
-  const handleModalClose = () => {
-    setModalVisible(false);
-  };
-
-  const handlePreviousStep = () => {
-    if (currentStepIndex > 0) {
-      setCurrentStepIndex(currentStepIndex - 1);
-    }
-  };
-
-  const handleNextStep = () => {
-    if (currentStepIndex < activeSteps.length - 1) {
-      setCurrentStepIndex(currentStepIndex + 1);
-    }
+    // Navigate to OnboardingStepScreen with preview data
+    navigation.navigate('OnboardingStep', { 
+      stepIndex: index,
+      previewData,
+    });
   };
 
   if (isLoading) {
@@ -190,7 +190,7 @@ export function OnboardingPreviewScreen() {
 
   return (
     <RoleGuard allow={['superadmin', 'admin', 'manager']}>
-      <ScreenLayout scrollable={false} noPadding>
+      <ScreenLayout title="Preview" scrollable={false} noPadding>
         {/* Preview Mode Banner */}
         <Surface elevation={2} style={[styles.previewBanner, { backgroundColor: warningBg }]}>
           <View style={styles.bannerContent}>
@@ -275,20 +275,6 @@ export function OnboardingPreviewScreen() {
 
           </ScrollView>
 
-        {/* Step Preview Modal */}
-        <StepPreviewModal
-          visible={modalVisible}
-          step={currentStep}
-          stepIndex={currentStepIndex}
-          totalSteps={totalSteps}
-          progress={currentProgress}
-          mockEmployee={mockEmployee}
-          onClose={handleModalClose}
-          onComplete={handleStepComplete}
-          onSave={handleStepSave}
-          onPrevious={handlePreviousStep}
-          onNext={handleNextStep}
-        />
       </ScreenLayout>
     </RoleGuard>
   );

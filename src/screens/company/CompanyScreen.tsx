@@ -53,7 +53,7 @@ export function CompanyScreen() {
 
   if (loading) {
     return (
-      <ScreenLayout title={t('company.title')} headerRight={<MenuButton />}>
+      <ScreenLayout title={t('company.title')} isRoot={true}>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={accentColor} />
           <Text variant="body" style={{ color: mutedColor, marginTop: 16 }}>
@@ -95,7 +95,7 @@ export function CompanyScreen() {
   };
 
   return (
-    <ScreenLayout title={t('company.title')} headerRight={<MenuButton />}>
+    <ScreenLayout title={t('company.title')} isRoot={true}>
       {/* Company Header */}
       <Card variant="elevated" style={styles.headerCard}>
         <CardContent style={styles.headerContent}>

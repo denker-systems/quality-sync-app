@@ -13,6 +13,7 @@ import { ScheduleScreen } from '@/screens/schedule/ScheduleScreen';
 import { ProfileScreen } from '@/screens/profile/ProfileScreen';
 import { EditProfileScreen } from '@/screens/profile/EditProfileScreen';
 import { OnboardingScreen } from '@/screens/onboarding/OnboardingScreen';
+import { OnboardingStepScreen } from '@/screens/onboarding/OnboardingStepScreen';
 import { OnboardingAdminScreen, OnboardingPreviewScreen } from '@/features/onboarding-admin';
 import { ContractsScreen } from '@/screens/contracts/ContractsScreen';
 import { ContractViewerScreen } from '@/screens/contracts/ContractViewerScreen';
@@ -37,6 +38,7 @@ function AppNavigatorContent() {
   const paperTheme = usePaperTheme();
   const { menuVisible, closeMenu } = useMenu();
   const [activeTab, setActiveTab] = useState('home');
+  const [currentRoute, setCurrentRoute] = useState<string>('Home');
 
   const navigationTheme = {
     ...(isDark ? DarkTheme : DefaultTheme),
@@ -50,6 +52,10 @@ function AppNavigatorContent() {
       notification: paperTheme.colors.error,
     },
   };
+
+  // Screens where tab bar should be hidden
+  const hideTabBarScreens = ['OnboardingAdmin', 'OnboardingPreview', 'OnboardingStep'];
+  const shouldShowTabBar = user && !hideTabBarScreens.includes(currentRoute);
 
   const handleTabPress = (key: string) => {
     setActiveTab(key);
@@ -98,6 +104,12 @@ function AppNavigatorContent() {
     <NavigationContainer 
       theme={navigationTheme}
       ref={(ref) => { navigationRef = ref; }}
+      onStateChange={(state) => {
+        if (state) {
+          const route = state.routes[state.index];
+          setCurrentRoute(route.name);
+        }
+      }}
     >
       <SwipeEdgeDetector>
         <View style={styles.container}>
@@ -112,6 +124,7 @@ function AppNavigatorContent() {
               <Stack.Screen name="Profile" component={ProfileScreen} />
               <Stack.Screen name="EditProfile" component={EditProfileScreen} />
               <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+              <Stack.Screen name="OnboardingStep" component={OnboardingStepScreen} />
               <Stack.Screen name="OnboardingAdmin" component={OnboardingAdminScreen} />
               <Stack.Screen name="OnboardingPreview" component={OnboardingPreviewScreen} />
               <Stack.Screen name="Contracts" component={ContractsScreen} />
@@ -125,7 +138,7 @@ function AppNavigatorContent() {
           )}
         </Stack.Navigator>
 
-        {user && (
+        {shouldShowTabBar && (
           <>
             <FloatingTabBar
               activeTab={activeTab}

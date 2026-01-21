@@ -1,6 +1,7 @@
 import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { StyleSheet, View, Dimensions, Platform } from 'react-native';
 import { Button, Surface, Text } from 'react-native-paper';
+import SignatureScreen from 'react-native-signature-canvas';
 
 interface SignatureCanvasProps {
   onComplete: (signatureData: string) => void;
@@ -63,6 +64,7 @@ export const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
 
   const startDrawing = useCallback((e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     const point = getCanvasPoint(e);
     if (!point) return;
     
@@ -75,6 +77,7 @@ export const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
 
   const draw = useCallback((e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     if (!isDrawing || !canvasRef.current || !lastPointRef.current) return;
     
     const point = getCanvasPoint(e);
@@ -129,7 +132,17 @@ export const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
           Rita din signatur nedan
         </Text>
         
-        <Surface style={styles.canvasContainer} elevation={1}>
+        <div
+          style={{ 
+            borderRadius: 8,
+            overflow: 'hidden',
+            alignItems: 'center',
+            touchAction: 'none',
+            WebkitTouchCallout: 'none',
+            WebkitUserSelect: 'none',
+            userSelect: 'none',
+          }}
+        >
           <canvas
             ref={canvasRef}
             width={canvasWidth}
@@ -141,6 +154,9 @@ export const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
               borderRadius: 8,
               cursor: 'crosshair',
               touchAction: 'none',
+              WebkitTouchCallout: 'none',
+              WebkitUserSelect: 'none',
+              userSelect: 'none',
             }}
             onMouseDown={startDrawing}
             onMouseMove={draw}
@@ -150,7 +166,7 @@ export const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
             onTouchMove={draw}
             onTouchEnd={stopDrawing}
           />
-        </Surface>
+        </div>
 
         <View style={styles.buttonRow}>
           <Button mode="outlined" onPress={onCancel} style={styles.button}>
@@ -172,29 +188,82 @@ export const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
     );
   }
 
-  // Native implementation - fallback message for now
-  // TODO: Add react-native-signature-canvas for native when needed
+  // Native implementation using react-native-signature-canvas
+  const signatureRef = useRef<any>(null);
+
+  const handleNativeSignature = (signature: string) => {
+    console.log('✅ SignatureCanvas (Native): Signature captured');
+    onComplete(signature);
+  };
+
+  const handleNativeClear = () => {
+    console.log('🗑️ SignatureCanvas (Native): Clearing signature');
+    signatureRef.current?.clearSignature();
+  };
+
+  const handleNativeEnd = () => {
+    console.log('📝 SignatureCanvas (Native): Reading signature');
+    signatureRef.current?.readSignature();
+  };
+
+  const style = `
+    .m-signature-pad {
+      box-shadow: none;
+      border: none;
+    }
+    .m-signature-pad--body {
+      border: none;
+    }
+    .m-signature-pad--footer {
+      display: none;
+    }
+    body,html {
+      width: 100%;
+      height: 100%;
+    }
+  `;
+
   return (
     <View style={styles.container}>
       <Text variant="bodySmall" style={styles.instruction}>
         Rita din signatur nedan
       </Text>
       
-      <Surface style={styles.canvasContainer} elevation={1}>
-        <View style={[styles.canvas, { width: canvasWidth, height: canvasHeight }]}>
-          <Text style={styles.nativeMessage}>
-            Signatur-canvas för native kommer snart
-          </Text>
-        </View>
-      </Surface>
+      <View 
+        style={[styles.canvas, { width: canvasWidth, height: canvasHeight }]}
+        onStartShouldSetResponder={() => true}
+        onMoveShouldSetResponder={() => true}
+      >
+        <SignatureScreen
+          ref={signatureRef}
+          onOK={handleNativeSignature}
+          onEmpty={() => console.log('⚠️ SignatureCanvas (Native): Empty signature')}
+          onClear={() => console.log('🗑️ SignatureCanvas (Native): Cleared')}
+          onBegin={() => {
+            console.log('✍️ SignatureCanvas (Native): Drawing started');
+            onScrollChange?.(false);
+          }}
+          onEnd={() => {
+            console.log('✍️ SignatureCanvas (Native): Drawing ended');
+            onScrollChange?.(true);
+          }}
+          descriptionText=""
+          webStyle={style}
+          backgroundColor="#ffffff"
+          penColor="#000000"
+        />
+      </View>
 
       <View style={styles.buttonRow}>
         <Button mode="outlined" onPress={onCancel} style={styles.button}>
           Avbryt
         </Button>
+        <Button mode="outlined" onPress={handleNativeClear} style={styles.button}>
+          Rensa
+        </Button>
         <Button 
           mode="contained" 
-          onPress={() => onComplete('placeholder-signature')} 
+          onPress={handleNativeEnd} 
           style={styles.button}
         >
           Bekräfta
@@ -224,12 +293,6 @@ const styles = StyleSheet.create({
     borderColor: '#e5e7eb',
     borderRadius: 8,
     overflow: 'hidden',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  nativeMessage: {
-    color: '#6b7280',
-    textAlign: 'center',
   },
   buttonRow: {
     flexDirection: 'row',

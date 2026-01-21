@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { StyleSheet, View, ScrollView, Dimensions } from 'react-native';
 import { Text, Button, Surface, Checkbox, ActivityIndicator } from 'react-native-paper';
 import { FileText, PenTool, Check } from 'lucide-react-native';
-import { SignatureCanvas } from '@/components/SignatureCanvas';
+import { SignatureModal } from '@/components/SignatureModal';
 import { useContractTemplate } from '@/hooks/useContracts';
 import { useCompanyData } from '@/hooks/useCompanyData';
 import { useMyEmployee } from '@/hooks/useMyEmployee';
@@ -12,6 +12,7 @@ interface ContractSigningStepProps {
   stepData: Record<string, any>;
   onComplete: (data: Record<string, any>) => void;
   onSave: (data: Record<string, any>) => void;
+  submitRef?: React.MutableRefObject<(() => void) | null>;
 }
 
 export const ContractSigningStep: React.FC<ContractSigningStepProps> = ({
@@ -19,6 +20,7 @@ export const ContractSigningStep: React.FC<ContractSigningStepProps> = ({
   stepData,
   onComplete,
   onSave,
+  submitRef,
 }) => {
   console.log('📝 CONTRACT_SIGNING_STEP render:', { stepData, hasRead: stepData?.has_read });
   
@@ -35,10 +37,20 @@ export const ContractSigningStep: React.FC<ContractSigningStepProps> = ({
 
   const [hasReadContract, setHasReadContract] = useState(stepData?.has_read || false);
   const [signature, setSignature] = useState<string | null>(stepData?.signature || null);
-  const [isSigning, setIsSigning] = useState(false);
+  const [signatureModalVisible, setSignatureModalVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [filledContent, setFilledContent] = useState<string>('');
-  const [scrollEnabled, setScrollEnabled] = useState(true);
+
+  useEffect(() => {
+    if (submitRef) {
+      submitRef.current = handleSubmit;
+    }
+    return () => {
+      if (submitRef) {
+        submitRef.current = null;
+      }
+    };
+  }, [submitRef, hasReadContract, signature]);
 
   // Bestäm avtalstitel och innehåll
   const contractTitle = content?.contract_title || contractTemplate?.title || 'Anställningsavtal';
@@ -105,8 +117,9 @@ Arbetstagaren förbinder sig att inte röja konfidentiell information.`;
   const contractContent = filledContent;
 
   const handleSignatureComplete = (signatureData: string) => {
+    console.log('✅ CONTRACT_SIGNING_STEP: Signature received from modal');
     setSignature(signatureData);
-    setIsSigning(false);
+    setSignatureModalVisible(false);
   };
 
   const handleClearSignature = () => {
@@ -146,15 +159,8 @@ Arbetstagaren förbinder sig att inte röja konfidentiell information.`;
     }
   };
 
-  const handleSave = () => {
-    onSave({
-      has_read: hasReadContract,
-      signature: signature,
-    });
-  };
-
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false} scrollEnabled={scrollEnabled}>
+    <>
       <Surface style={styles.card} elevation={1}>
         <View style={styles.header}>
           <FileText size={24} color="#0056b3" />
@@ -228,23 +234,15 @@ Arbetstagaren förbinder sig att inte röja konfidentiell information.`;
           </View>
         ) : (
           <View style={styles.signatureArea}>
-            {isSigning ? (
-              <SignatureCanvas
-                onComplete={handleSignatureComplete}
-                onCancel={() => setIsSigning(false)}
-                onScrollChange={setScrollEnabled}
-              />
-            ) : (
-              <Button
-                mode="outlined"
-                onPress={() => setIsSigning(true)}
-                icon={({ size, color }) => <PenTool size={size} color={color} />}
-                style={styles.signButton}
-                disabled={!hasReadContract}
-              >
-                Klicka för att signera
-              </Button>
-            )}
+            <Button
+              mode="outlined"
+              onPress={() => setSignatureModalVisible(true)}
+              icon={({ size, color }) => <PenTool size={size} color={color} />}
+              style={styles.signButton}
+              disabled={!hasReadContract}
+            >
+              Öppna Signeringsvyn
+            </Button>
             {!hasReadContract && (
               <Text variant="bodySmall" style={styles.warningText}>
                 Du måste läsa avtalet först
@@ -254,28 +252,19 @@ Arbetstagaren förbinder sig att inte röja konfidentiell information.`;
         )}
       </Surface>
 
-      <View style={styles.buttonContainer}>
-        <Button mode="outlined" onPress={handleSave} style={styles.saveButton}>
-          Spara utkast
-        </Button>
-        <Button 
-          mode="contained" 
-          onPress={handleSubmit} 
-          style={styles.submitButton}
-          disabled={!hasReadContract || !signature || isSubmitting}
-          loading={isSubmitting}
-        >
-          Signera avtal
-        </Button>
-      </View>
-    </ScrollView>
+      {/* Signature Modal */}
+      <SignatureModal
+        visible={signatureModalVisible}
+        onComplete={handleSignatureComplete}
+        onClose={() => setSignatureModalVisible(false)}
+        title="Signera Anställningsavtal"
+        description="Rita din signatur nedan för att godkänna avtalet"
+      />
+    </>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   card: {
     padding: 16,
     borderRadius: 12,
@@ -360,17 +349,5 @@ const styles = StyleSheet.create({
   },
   warningText: {
     color: '#f59e0b',
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    gap: 12,
-    marginTop: 16,
-    marginBottom: 32,
-  },
-  saveButton: {
-    flex: 1,
-  },
-  submitButton: {
-    flex: 2,
   },
 });

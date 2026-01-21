@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, ScrollView } from 'react-native';
 import { Text, Button, Surface, Checkbox, List } from 'react-native-paper';
 import { BookOpen, ChevronDown, ChevronUp } from 'lucide-react-native';
@@ -8,6 +8,7 @@ interface HandbookStepProps {
   stepData: Record<string, any>;
   onComplete: (data: Record<string, any>) => void;
   onSave: (data: Record<string, any>) => void;
+  submitRef?: React.MutableRefObject<(() => void) | null>;
 }
 
 export const HandbookStep: React.FC<HandbookStepProps> = ({
@@ -15,11 +16,24 @@ export const HandbookStep: React.FC<HandbookStepProps> = ({
   stepData,
   onComplete,
   onSave,
+  submitRef,
 }) => {
   console.log('📚 HANDBOOK_STEP render:', { stepData, readSections: stepData?.read_sections });
+  
   const [hasReadAll, setHasReadAll] = useState(stepData?.has_read_all || false);
   const [expandedSections, setExpandedSections] = useState<string[]>([]);
   const [readSections, setReadSections] = useState<string[]>(stepData?.read_sections || []);
+
+  useEffect(() => {
+    if (submitRef) {
+      submitRef.current = handleComplete;
+    }
+    return () => {
+      if (submitRef) {
+        submitRef.current = null;
+      }
+    };
+  }, [submitRef, hasReadAll]);
 
   interface Section {
     id: string;
@@ -89,15 +103,8 @@ export const HandbookStep: React.FC<HandbookStepProps> = ({
     });
   };
 
-  const handleSave = () => {
-    onSave({
-      has_read_all: hasReadAll,
-      read_sections: readSections,
-    });
-  };
-
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <>
       <Surface style={styles.card} elevation={1}>
         <View style={styles.header}>
           <BookOpen size={24} color="#0056b3" />
@@ -216,28 +223,11 @@ export const HandbookStep: React.FC<HandbookStepProps> = ({
           </Text>
         )}
       </Surface>
-
-      <View style={styles.buttonContainer}>
-        <Button mode="outlined" onPress={handleSave} style={styles.saveButton}>
-          Spara utkast
-        </Button>
-        <Button 
-          mode="contained" 
-          onPress={handleComplete} 
-          style={styles.submitButton}
-          disabled={!hasReadAll}
-        >
-          Slutför
-        </Button>
-      </View>
-    </ScrollView>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   card: {
     padding: 16,
     borderRadius: 12,
@@ -344,17 +334,5 @@ const styles = StyleSheet.create({
     color: '#f59e0b',
     marginLeft: 40,
     marginTop: 4,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    gap: 12,
-    marginTop: 16,
-    marginBottom: 32,
-  },
-  saveButton: {
-    flex: 1,
-  },
-  submitButton: {
-    flex: 2,
   },
 });

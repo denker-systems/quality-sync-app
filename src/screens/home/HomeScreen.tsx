@@ -21,7 +21,7 @@ export function HomeScreen() {
   const accentColor = isDark ? '#6BBD68' : '#489A45';
 
   return (
-    <ScreenLayout title={t('home.title')} showBack={false} headerRight={<MenuButton />}>
+    <ScreenLayout title={t('home.title')} isRoot={true}>
       {/* Quick Actions */}
       <View style={styles.section}>
         <Text variant="h3" style={[styles.sectionTitle, { color: textColor }]}>

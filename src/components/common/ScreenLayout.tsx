@@ -3,11 +3,13 @@ import { View, ScrollView, StyleSheet, ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/contexts/ThemeContext';
 import { PageHeader } from './PageHeader';
+import { MenuButton } from './MenuButton';
 
 interface ScreenLayoutProps {
   children: ReactNode;
   title?: string;
-  showBack?: boolean;
+  isRoot?: boolean; // New prop to determine header behavior
+  showBack?: boolean; // Still available for manual override
   onBackPress?: () => void;
   headerRight?: React.ReactNode;
   scrollable?: boolean;
@@ -19,7 +21,8 @@ interface ScreenLayoutProps {
 export function ScreenLayout({ 
   children, 
   title,
-  showBack = true,
+  isRoot = false,
+  showBack,
   onBackPress,
   headerRight,
   scrollable = true, 
@@ -31,6 +34,10 @@ export function ScreenLayout({
   const { isDark } = useTheme();
   
   const backgroundColor = isDark ? '#0F0F0F' : '#FFFFFF';
+  
+  // Determine header configuration based on isRoot
+  const shouldShowBack = showBack !== undefined ? showBack : !isRoot;
+  const rightContent = headerRight || (isRoot ? <MenuButton /> : undefined);
   
   const containerStyle = [
     styles.container,
@@ -51,9 +58,9 @@ export function ScreenLayout({
         {title && (
           <PageHeader 
             title={title} 
-            showBack={showBack}
+            showBack={shouldShowBack}
             onBackPress={onBackPress}
-            rightContent={headerRight}
+            rightContent={rightContent}
           />
         )}
         <ScrollView 
@@ -72,9 +79,9 @@ export function ScreenLayout({
       {title && (
         <PageHeader 
           title={title} 
-          showBack={showBack}
+          showBack={shouldShowBack}
           onBackPress={onBackPress}
-          rightContent={headerRight}
+          rightContent={rightContent}
         />
       )}
       <View style={innerContentStyle}>

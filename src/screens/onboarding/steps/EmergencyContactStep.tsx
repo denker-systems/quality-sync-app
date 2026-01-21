@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, ScrollView } from 'react-native';
 import { Text, TextInput, Button, Surface, SegmentedButtons } from 'react-native-paper';
 import { Phone } from 'lucide-react-native';
@@ -8,6 +8,7 @@ interface EmergencyContactStepProps {
   stepData: Record<string, any>;
   onComplete: (data: Record<string, any>) => void;
   onSave: (data: Record<string, any>) => void;
+  submitRef?: React.MutableRefObject<(() => void) | null>;
 }
 
 export const EmergencyContactStep: React.FC<EmergencyContactStepProps> = ({
@@ -15,8 +16,21 @@ export const EmergencyContactStep: React.FC<EmergencyContactStepProps> = ({
   stepData,
   onComplete,
   onSave,
+  submitRef,
 }) => {
   console.log('🆘 EMERGENCY_CONTACT_STEP render:', { stepData });
+  
+  useEffect(() => {
+    if (submitRef) {
+      submitRef.current = handleSubmit;
+    }
+    return () => {
+      if (submitRef) {
+        submitRef.current = null;
+      }
+    };
+  }, [submitRef]);
+
   const [formData, setFormData] = useState({
     contact_name: stepData?.contact_name || '',
     contact_relation: stepData?.contact_relation || 'family',
@@ -60,10 +74,6 @@ export const EmergencyContactStep: React.FC<EmergencyContactStepProps> = ({
     }
   };
 
-  const handleSave = () => {
-    onSave(formData);
-  };
-
   const updateField = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     if (errors[field]) {
@@ -72,7 +82,7 @@ export const EmergencyContactStep: React.FC<EmergencyContactStepProps> = ({
   };
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <>
       <Surface style={styles.card} elevation={1}>
         <View style={styles.header}>
           <Phone size={24} color="#0056b3" />
@@ -134,26 +144,15 @@ export const EmergencyContactStep: React.FC<EmergencyContactStepProps> = ({
           style={styles.input}
         />
       </Surface>
-
-      <View style={styles.buttonContainer}>
-        <Button mode="outlined" onPress={handleSave} style={styles.saveButton}>
-          Spara utkast
-        </Button>
-        <Button mode="contained" onPress={handleSubmit} style={styles.submitButton}>
-          Fortsätt
-        </Button>
-      </View>
-    </ScrollView>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   card: {
     padding: 16,
     borderRadius: 12,
+    marginBottom: 16,
   },
   header: {
     flexDirection: 'row',
@@ -193,17 +192,5 @@ const styles = StyleSheet.create({
     marginTop: -8,
     marginBottom: 8,
     marginLeft: 4,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    gap: 12,
-    marginTop: 16,
-    marginBottom: 32,
-  },
-  saveButton: {
-    flex: 1,
-  },
-  submitButton: {
-    flex: 2,
   },
 });

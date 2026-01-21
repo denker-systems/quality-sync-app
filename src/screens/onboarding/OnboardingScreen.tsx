@@ -8,14 +8,6 @@ import { useMyEmployee } from '@/hooks/useMyEmployee';
 import { useMyOnboarding, useUpdateOnboardingProgress, useUpdateOnboardingStatus, OnboardingStep } from '@/hooks/useOnboarding';
 import { CheckCircle, Clock, AlertCircle, Star } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
-import {
-  WelcomeStep,
-  PersonalInfoStep,
-  EmergencyContactStep,
-  BankDetailsStep,
-  ContractSigningStep,
-  HandbookStep,
-} from './steps';
 
 export const OnboardingScreen = () => {
   const navigation = useNavigation();
@@ -45,7 +37,7 @@ export const OnboardingScreen = () => {
 
   if (isLoading) {
     return (
-      <ScreenLayout title={t('onboarding.title')} scrollable={false}>
+      <ScreenLayout title={t('onboarding.title')} scrollable={false} isRoot={true}>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={accentColor} />
           <Text variant="body" style={{ color: mutedColor, marginTop: 16 }}>
@@ -58,7 +50,7 @@ export const OnboardingScreen = () => {
 
   if (!onboardingData) {
     return (
-      <ScreenLayout title={t('onboarding.title')} scrollable={false}>
+      <ScreenLayout title={t('onboarding.title')} scrollable={false} isRoot={true}>
         <EmptyState
           icon={Star}
           title={t('onboarding.noOnboarding')}
@@ -191,56 +183,6 @@ export const OnboardingScreen = () => {
     }
   };
 
-  const renderStepComponent = (step: OnboardingStep, progressData: typeof currentProgress) => {
-    console.log('🎨 ONBOARDING_SCREEN renderStepComponent:', {
-      stepType: step.step_type,
-      stepTitle: step.title,
-      progressStatus: progressData?.status,
-    });
-    
-    const commonProps = {
-      content: step.content,
-      stepData: progressData?.step_data || {},
-      onComplete: handleStepComplete,
-      onSave: handleStepSave,
-    };
-
-    switch (step.step_type) {
-      case 'welcome':
-        return (
-          <WelcomeStep
-            {...commonProps}
-            employeeName={employee?.first_name || undefined}
-          />
-        );
-      case 'personal_info':
-        return <PersonalInfoStep {...commonProps} />;
-      case 'emergency_contact':
-        return <EmergencyContactStep {...commonProps} />;
-      case 'bank_details':
-        return <BankDetailsStep {...commonProps} />;
-      case 'contract_signing':
-        return <ContractSigningStep {...commonProps} />;
-      case 'handbook':
-        return <HandbookStep {...commonProps} />;
-      default:
-        return (
-          <Card variant="elevated" style={styles.currentStepCard}>
-            <CardContent>
-              <Text variant="h3" style={{ color: textColor }}>{step.title}</Text>
-              {step.description && (
-                <Text variant="body" style={[styles.currentStepDescription, { color: mutedColor }]}>
-                  {step.description}
-                </Text>
-              )}
-              <Button variant="primary" onPress={() => handleStepComplete({})}>
-                {t('common.continue')}
-              </Button>
-            </CardContent>
-          </Card>
-        );
-    }
-  };
 
   return (
     <ScreenLayout>
@@ -272,7 +214,7 @@ export const OnboardingScreen = () => {
             return (
               <TouchableOpacity
                 key={step.id}
-                onPress={() => setCurrentStepIndex(index)}
+                onPress={() => navigation.navigate('OnboardingStep', { stepIndex: index })}
                 activeOpacity={0.7}
               >
                 <Surface
@@ -306,12 +248,6 @@ export const OnboardingScreen = () => {
         </CardContent>
       </Card>
 
-      {/* Current Step Content */}
-      {currentStep && currentProgress && (
-        <View style={styles.stepContentContainer}>
-          {renderStepComponent(currentStep, currentProgress)}
-        </View>
-      )}
     </ScreenLayout>
   );
 };

@@ -91,7 +91,7 @@ export function SearchScreen() {
   };
 
   return (
-    <ScreenLayout title={t('search.title')} showBack={false}>
+    <ScreenLayout title={t('search.title')} isRoot={true}>
       {/* Search Input */}
       <View style={[styles.searchInputContainer, { backgroundColor: inputBgColor, borderColor }]}>
         <Search size={20} color={mutedColor} />

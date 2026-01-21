@@ -118,7 +118,7 @@ export const ProfileScreen = () => {
 
   if (isLoading) {
     return (
-      <ScreenLayout title={t('profile.title')} scrollable={false}>
+      <ScreenLayout title={t('profile.title')} scrollable={false} isRoot={true}>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={accentColor} />
           <Text variant="body" style={{ color: mutedColor, marginTop: 16 }}>

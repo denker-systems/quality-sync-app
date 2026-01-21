@@ -27,8 +27,9 @@ export function PageHeader({
   const handleBack = () => {
     if (onBackPress) {
       onBackPress();
+    } else if (navigation.canGoBack()) {
+      navigation.goBack();
     } else {
-      // Always navigate to Home
       (navigation as any).navigate('Home');
     }
   };

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, ScrollView } from 'react-native';
 import { Text, TextInput, Button, Surface, SegmentedButtons } from 'react-native-paper';
 import { Building2 } from 'lucide-react-native';
@@ -8,6 +8,7 @@ interface BankDetailsStepProps {
   stepData: Record<string, any>;
   onComplete: (data: Record<string, any>) => void;
   onSave: (data: Record<string, any>) => void;
+  submitRef?: React.MutableRefObject<(() => void) | null>;
 }
 
 export const BankDetailsStep: React.FC<BankDetailsStepProps> = ({
@@ -15,8 +16,21 @@ export const BankDetailsStep: React.FC<BankDetailsStepProps> = ({
   stepData,
   onComplete,
   onSave,
+  submitRef,
 }) => {
   console.log('🏦 BANK_DETAILS_STEP render:', { stepData });
+  
+  useEffect(() => {
+    if (submitRef) {
+      submitRef.current = handleSubmit;
+    }
+    return () => {
+      if (submitRef) {
+        submitRef.current = null;
+      }
+    };
+  }, [submitRef]);
+
   const [formData, setFormData] = useState({
     bank_name: stepData?.bank_name || '',
     clearing_number: stepData?.clearing_number || '',
@@ -68,10 +82,6 @@ export const BankDetailsStep: React.FC<BankDetailsStepProps> = ({
     }
   };
 
-  const handleSave = () => {
-    onSave(formData);
-  };
-
   const updateField = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     if (errors[field]) {
@@ -80,7 +90,7 @@ export const BankDetailsStep: React.FC<BankDetailsStepProps> = ({
   };
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <>
       <Surface style={styles.card} elevation={1}>
         <View style={styles.header}>
           <Building2 size={24} color="#0056b3" />
@@ -152,26 +162,15 @@ export const BankDetailsStep: React.FC<BankDetailsStepProps> = ({
           <Text style={styles.errorText}>{errors.account_number}</Text>
         )}
       </Surface>
-
-      <View style={styles.buttonContainer}>
-        <Button mode="outlined" onPress={handleSave} style={styles.saveButton}>
-          Spara utkast
-        </Button>
-        <Button mode="contained" onPress={handleSubmit} style={styles.submitButton}>
-          Fortsätt
-        </Button>
-      </View>
-    </ScrollView>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   card: {
     padding: 16,
     borderRadius: 12,
+    marginBottom: 16,
   },
   header: {
     flexDirection: 'row',
@@ -211,17 +210,5 @@ const styles = StyleSheet.create({
     marginTop: -8,
     marginBottom: 8,
     marginLeft: 4,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    gap: 12,
-    marginTop: 16,
-    marginBottom: 32,
-  },
-  saveButton: {
-    flex: 1,
-  },
-  submitButton: {
-    flex: 2,
   },
 });
