@@ -29,6 +29,7 @@ import {
 import { Text } from './Text';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useRole } from '@/hooks/useRole';
 
 interface MenuItem {
   key: string;
@@ -36,6 +37,7 @@ interface MenuItem {
   title: string;
   subtitle?: string;
   onPress?: () => void;
+  adminOnly?: boolean;
 }
 
 interface MenuSection {
@@ -50,7 +52,7 @@ interface FullscreenMenuProps {
   onLogout?: () => void;
 }
 
-const getMenuSections = (t: (key: string) => string): MenuSection[] => [
+const getMenuSections = (t: (key: string) => string, canManageOnboarding: boolean): MenuSection[] => [
   {
     title: t('menu.mainMenu'),
     items: [
@@ -60,6 +62,12 @@ const getMenuSections = (t: (key: string) => string): MenuSection[] => [
       { key: 'contracts', icon: FileText, title: t('menu.myContracts'), subtitle: t('menu.contractsSubtitle') },
     ],
   },
+  ...(canManageOnboarding ? [{
+    title: t('menu.admin') || 'Administration',
+    items: [
+      { key: 'onboarding-admin', icon: Settings, title: t('menu.onboardingAdmin') || 'Onboarding Settings', subtitle: t('menu.onboardingAdminSubtitle') || 'Configure onboarding steps', adminOnly: true },
+    ],
+  }] : []),
   {
     title: t('menu.hrPersonal'),
     items: [
@@ -87,7 +95,8 @@ export function FullscreenMenu({
   const insets = useSafeAreaInsets();
   const { isDark } = useTheme();
   const { t } = useLanguage();
-  const menuSections = getMenuSections(t);
+  const { canManageOnboarding } = useRole();
+  const menuSections = getMenuSections(t, canManageOnboarding);
   const slideAnim = useRef(new Animated.Value(SCREEN_WIDTH)).current;
   const dragX = useRef(new Animated.Value(0)).current;
 

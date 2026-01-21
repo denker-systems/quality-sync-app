@@ -73,3 +73,54 @@ export function useContract(contractId?: string) {
     staleTime: 300000, // 5 minutes
   });
 }
+
+/**
+ * Avtalsmall från employee_contracts (för signering)
+ */
+export interface ContractTemplate {
+  id: string;
+  company_id: string;
+  contract_type: string;
+  title: string;
+  content: string;
+  version: number;
+  is_active: boolean;
+  requires_signature: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+/**
+ * Hook för att hämta avtalsmall baserat på typ
+ * Används av ContractSigningStep för att ladda avtal från databasen
+ */
+export function useContractTemplate(companyId?: string, contractType: string = 'employment') {
+  return useQuery({
+    queryKey: ['contract-template', companyId, contractType],
+    queryFn: async (): Promise<ContractTemplate | null> => {
+      if (!companyId) return null;
+
+      console.log('📄 Fetching contract template:', { companyId, contractType });
+
+      const { data, error } = await (supabase as any)
+        .from('employee_contracts')
+        .select('*')
+        .eq('company_id', companyId)
+        .eq('contract_type', contractType)
+        .eq('is_active', true)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (error) {
+        console.error('❌ Failed to fetch contract template:', error);
+        throw error;
+      }
+
+      console.log('✅ Contract template loaded:', data?.title);
+      return data as ContractTemplate | null;
+    },
+    enabled: !!companyId,
+    staleTime: 300000, // 5 minutes
+  });
+}

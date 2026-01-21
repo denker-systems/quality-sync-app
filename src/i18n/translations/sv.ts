@@ -272,6 +272,9 @@ export default {
     companySubtitle: 'Företagsinformation',
     settings: 'Inställningar',
     settingsSubtitle: 'Tema, notiser, säkerhet',
+    admin: 'Administration',
+    onboardingAdmin: 'Onboarding-inställningar',
+    onboardingAdminSubtitle: 'Konfigurera onboarding-steg',
   },
 
   // Auth

@@ -61,6 +61,9 @@ export type RootStackParamList = {
   Security: undefined;
   About: undefined;
   ChangePassword: undefined;
+  // Admin screens
+  OnboardingAdmin: undefined;
+  OnboardingPreview: undefined;
 };
 
 declare global {

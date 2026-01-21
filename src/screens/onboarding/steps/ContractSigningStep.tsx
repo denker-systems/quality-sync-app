@@ -1,8 +1,11 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { StyleSheet, View, ScrollView, Dimensions } from 'react-native';
 import { Text, Button, Surface, Checkbox, ActivityIndicator } from 'react-native-paper';
 import { FileText, PenTool, Check } from 'lucide-react-native';
 import { SignatureCanvas } from '@/components/SignatureCanvas';
+import { useContractTemplate } from '@/hooks/useContracts';
+import { useCompanyData } from '@/hooks/useCompanyData';
+import { useMyEmployee } from '@/hooks/useMyEmployee';
 
 interface ContractSigningStepProps {
   content: Record<string, any>;
@@ -18,35 +21,88 @@ export const ContractSigningStep: React.FC<ContractSigningStepProps> = ({
   onSave,
 }) => {
   console.log('📝 CONTRACT_SIGNING_STEP render:', { stepData, hasRead: stepData?.has_read });
+  
+  const { company } = useCompanyData();
+  const { data: employee } = useMyEmployee();
+  const contractType = content?.contract_type || 'employment';
+  const hasContentText = !!content?.contract_text;
+  
+  // Hämta avtalsmall från Supabase om content inte redan har contract_text
+  const { data: contractTemplate, isLoading } = useContractTemplate(
+    company?.id,
+    contractType
+  );
+
   const [hasReadContract, setHasReadContract] = useState(stepData?.has_read || false);
   const [signature, setSignature] = useState<string | null>(stepData?.signature || null);
   const [isSigning, setIsSigning] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [filledContent, setFilledContent] = useState<string>('');
+  const [scrollEnabled, setScrollEnabled] = useState(true);
 
-  const contractTitle = content?.contract_title || 'Anställningsavtal';
-  const contractContent = content?.contract_content || `
-    ANSTÄLLNINGSAVTAL
+  // Bestäm avtalstitel och innehåll
+  const contractTitle = content?.contract_title || contractTemplate?.title || 'Anställningsavtal';
+  
+  // Fyll i medarbetardata i avtalstext
+  useEffect(() => {
+    let rawContent = '';
     
-    Detta avtal ingås mellan arbetsgivaren och arbetstagaren enligt villkoren nedan.
-    
-    1. ANSTÄLLNING
-    Arbetstagaren anställs tillsvidare med en ömsesidig uppsägningstid enligt lag.
-    
-    2. ARBETSUPPGIFTER
-    Arbetstagaren ska utföra de arbetsuppgifter som framgår av befattningsbeskrivningen.
-    
-    3. ARBETSTID
-    Ordinarie arbetstid är 40 timmar per vecka.
-    
-    4. LÖN
-    Lönen utbetalas månadsvis den 25:e varje månad.
-    
-    5. SEMESTER
-    Arbetstagaren har rätt till 25 dagars semester per år.
-    
-    6. SEKRETESS
-    Arbetstagaren förbinder sig att inte röja konfidentiell information.
-  `;
+    // Prioritet 1: content.contract_text från onboarding_steps
+    if (content?.contract_text) {
+      rawContent = content.contract_text;
+    }
+    // Prioritet 2: contractTemplate från employee_contracts
+    else if (contractTemplate?.content) {
+      rawContent = contractTemplate.content;
+    }
+    // Prioritet 3: Fallback text
+    else {
+      rawContent = `ANSTÄLLNINGSAVTAL
+
+Detta avtal ingås mellan arbetsgivaren och arbetstagaren enligt villkoren nedan.
+
+1. ANSTÄLLNING
+Arbetstagaren anställs tillsvidare med en ömsesidig uppsägningstid enligt lag.
+
+2. ARBETSUPPGIFTER
+Arbetstagaren ska utföra de arbetsuppgifter som framgår av befattningsbeskrivningen.
+
+3. ARBETSTID
+Ordinarie arbetstid är 40 timmar per vecka.
+
+4. LÖN
+Lönen utbetalas månadsvis den 25:e varje månad.
+
+5. SEMESTER
+Arbetstagaren har rätt till 25 dagars semester per år.
+
+6. SEKRETESS
+Arbetstagaren förbinder sig att inte röja konfidentiell information.`;
+    }
+
+    // Ersätt placeholders med medarbetardata
+    if (employee && rawContent) {
+      const emp = employee as any; // Cast för att komma åt alla fält
+      const employeeName = emp.full_name || 
+        `${emp.first_name || ''} ${emp.last_name || ''}`.trim() || 
+        'Ej angivet';
+      
+      rawContent = rawContent
+        .replace(/\[Namn\]|\[Medarbetarens namn\]/g, employeeName)
+        .replace(/\[Personnummer\]|\[XXXXXX-XXXX\]/g, emp.personal_identity_number || 'Ej angivet')
+        .replace(/\[E-post\]/g, emp.email || 'Ej angivet')
+        .replace(/\[Telefon\]/g, emp.phone || emp.phone1 || 'Ej angivet')
+        .replace(/\[Adress\]/g, emp.address1 || emp.address || 'Ej angivet')
+        .replace(/\[Postnummer\]/g, emp.post_code || emp.postal_code || 'Ej angivet')
+        .replace(/\[Ort\]/g, emp.city || 'Ej angivet')
+        .replace(/\[Anställningsdatum\]/g, emp.employment_date || 'Ej angivet')
+        .replace(/\[Månadslön\]/g, emp.monthly_salary ? `${emp.monthly_salary} SEK` : 'Enligt överenskommelse');
+    }
+
+    setFilledContent(rawContent);
+  }, [content, contractTemplate, employee]);
+
+  const contractContent = filledContent;
 
   const handleSignatureComplete = (signatureData: string) => {
     setSignature(signatureData);
@@ -98,7 +154,7 @@ export const ContractSigningStep: React.FC<ContractSigningStepProps> = ({
   };
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false} scrollEnabled={scrollEnabled}>
       <Surface style={styles.card} elevation={1}>
         <View style={styles.header}>
           <FileText size={24} color="#0056b3" />
@@ -176,6 +232,7 @@ export const ContractSigningStep: React.FC<ContractSigningStepProps> = ({
               <SignatureCanvas
                 onComplete={handleSignatureComplete}
                 onCancel={() => setIsSigning(false)}
+                onScrollChange={setScrollEnabled}
               />
             ) : (
               <Button

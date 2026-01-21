@@ -272,6 +272,9 @@ export default {
     companySubtitle: 'Company information',
     settings: 'Settings',
     settingsSubtitle: 'Theme, notifications, security',
+    admin: 'Administration',
+    onboardingAdmin: 'Onboarding Settings',
+    onboardingAdminSubtitle: 'Configure onboarding steps',
   },
 
   // Auth

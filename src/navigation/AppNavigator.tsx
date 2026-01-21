@@ -13,6 +13,7 @@ import { ScheduleScreen } from '@/screens/schedule/ScheduleScreen';
 import { ProfileScreen } from '@/screens/profile/ProfileScreen';
 import { EditProfileScreen } from '@/screens/profile/EditProfileScreen';
 import { OnboardingScreen } from '@/screens/onboarding/OnboardingScreen';
+import { OnboardingAdminScreen, OnboardingPreviewScreen } from '@/features/onboarding-admin';
 import { ContractsScreen } from '@/screens/contracts/ContractsScreen';
 import { ContractViewerScreen } from '@/screens/contracts/ContractViewerScreen';
 import { SettingsScreen } from '@/screens/settings/SettingsScreen';
@@ -71,6 +72,7 @@ function AppNavigatorContent() {
           case 'schedule': navigationRef.navigate('Schedule'); setActiveTab('schedule'); break;
           case 'profile': navigationRef.navigate('Profile'); break;
           case 'onboarding': navigationRef.navigate('Onboarding'); break;
+          case 'onboarding-admin': navigationRef.navigate('OnboardingAdmin'); break;
           case 'contracts': navigationRef.navigate('Contracts'); break;
           case 'company': navigationRef.navigate('Company'); break;
           case 'settings': navigationRef.navigate('Settings'); setActiveTab('settings'); break;
@@ -110,6 +112,8 @@ function AppNavigatorContent() {
               <Stack.Screen name="Profile" component={ProfileScreen} />
               <Stack.Screen name="EditProfile" component={EditProfileScreen} />
               <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+              <Stack.Screen name="OnboardingAdmin" component={OnboardingAdminScreen} />
+              <Stack.Screen name="OnboardingPreview" component={OnboardingPreviewScreen} />
               <Stack.Screen name="Contracts" component={ContractsScreen} />
               <Stack.Screen name="ContractViewer" component={ContractViewerScreen} />
               <Stack.Screen name="Settings" component={SettingsScreen} />

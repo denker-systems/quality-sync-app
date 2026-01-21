@@ -6,11 +6,13 @@ import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Text, TextInput, Button, Card, ActivityIndicator } from 'react-native-paper';
 import { useMFA } from '../hooks/useMFA';
+import { useMFAStatus } from '../hooks/useMFAStatus';
 import { useAuth } from '@/hooks/useAuth';
 import type { MFAChallengeProps } from '../types/mfa.types';
 
 export function MFAChallengeScreen({ onVerified, onCancel }: MFAChallengeProps) {
   const { isLoading, error, completeChallenge, clearError } = useMFA();
+  const { trustCurrentDevice } = useMFAStatus();
   const { signOut } = useAuth();
   const [code, setCode] = useState('');
 
@@ -19,6 +21,8 @@ export function MFAChallengeScreen({ onVerified, onCancel }: MFAChallengeProps) 
     
     const success = await completeChallenge(code);
     if (success) {
+      // Trust device for 6 hours after successful MFA
+      await trustCurrentDevice();
       onVerified();
     }
   };
