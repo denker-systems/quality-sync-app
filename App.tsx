@@ -5,7 +5,8 @@ import { PaperProvider } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { MFAGate } from './src/features/mfa';
-import { theme } from './src/config/theme';
+import { ThemeProvider, useTheme } from './src/contexts/ThemeContext';
+import { lightTheme, darkTheme } from './src/config/theme';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -16,16 +17,28 @@ const queryClient = new QueryClient({
   },
 });
 
+// Inner app component that uses theme context
+const ThemedApp = () => {
+  const { isDark } = useTheme();
+  const theme = isDark ? darkTheme : lightTheme;
+
+  return (
+    <PaperProvider theme={theme}>
+      <MFAGate>
+        <AppNavigator />
+      </MFAGate>
+      <StatusBar style={isDark ? 'light' : 'dark'} />
+    </PaperProvider>
+  );
+};
+
 export default function App() {
   return (
     <SafeAreaProvider>
       <QueryClientProvider client={queryClient}>
-        <PaperProvider theme={theme}>
-          <MFAGate>
-            <AppNavigator />
-          </MFAGate>
-          <StatusBar style="auto" />
-        </PaperProvider>
+        <ThemeProvider defaultTheme="system">
+          <ThemedApp />
+        </ThemeProvider>
       </QueryClientProvider>
     </SafeAreaProvider>
   );

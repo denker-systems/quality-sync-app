@@ -48,6 +48,11 @@ export interface MyEmployee {
 export type RootStackParamList = {
   Login: undefined;
   Profile: undefined;
+  Onboarding: undefined;
+  Contracts: undefined;
+  ContractViewer: { contractId: string };
+  Schedule: undefined;
+  EditProfile: undefined;
 };
 
 declare global {

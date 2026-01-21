@@ -1,0 +1,319 @@
+import React, { useState, useRef } from 'react';
+import { StyleSheet, View, ScrollView, Dimensions } from 'react-native';
+import { Text, Button, Surface, Checkbox, ActivityIndicator } from 'react-native-paper';
+import { FileText, PenTool, Check } from 'lucide-react-native';
+import { SignatureCanvas } from '@/components/SignatureCanvas';
+
+interface ContractSigningStepProps {
+  content: Record<string, any>;
+  stepData: Record<string, any>;
+  onComplete: (data: Record<string, any>) => void;
+  onSave: (data: Record<string, any>) => void;
+}
+
+export const ContractSigningStep: React.FC<ContractSigningStepProps> = ({
+  content,
+  stepData,
+  onComplete,
+  onSave,
+}) => {
+  console.log('📝 CONTRACT_SIGNING_STEP render:', { stepData, hasRead: stepData?.has_read });
+  const [hasReadContract, setHasReadContract] = useState(stepData?.has_read || false);
+  const [signature, setSignature] = useState<string | null>(stepData?.signature || null);
+  const [isSigning, setIsSigning] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const contractTitle = content?.contract_title || 'Anställningsavtal';
+  const contractContent = content?.contract_content || `
+    ANSTÄLLNINGSAVTAL
+    
+    Detta avtal ingås mellan arbetsgivaren och arbetstagaren enligt villkoren nedan.
+    
+    1. ANSTÄLLNING
+    Arbetstagaren anställs tillsvidare med en ömsesidig uppsägningstid enligt lag.
+    
+    2. ARBETSUPPGIFTER
+    Arbetstagaren ska utföra de arbetsuppgifter som framgår av befattningsbeskrivningen.
+    
+    3. ARBETSTID
+    Ordinarie arbetstid är 40 timmar per vecka.
+    
+    4. LÖN
+    Lönen utbetalas månadsvis den 25:e varje månad.
+    
+    5. SEMESTER
+    Arbetstagaren har rätt till 25 dagars semester per år.
+    
+    6. SEKRETESS
+    Arbetstagaren förbinder sig att inte röja konfidentiell information.
+  `;
+
+  const handleSignatureComplete = (signatureData: string) => {
+    setSignature(signatureData);
+    setIsSigning(false);
+  };
+
+  const handleClearSignature = () => {
+    setSignature(null);
+  };
+
+  const handleSign = () => {
+    console.log('✍️ CONTRACT_SIGNING_STEP handleSign:', { hasRead: hasReadContract, hasSignature: !!signature });
+    
+    if (!hasReadContract || !signature) {
+      console.warn('⚠️ CONTRACT_SIGNING_STEP cannot sign - missing requirements');
+      return;
+    }
+
+    console.log('✅ CONTRACT_SIGNING_STEP signing contract');
+    onComplete({
+      contract_signed: true,
+      signed_at: new Date().toISOString(),
+      signature_data: signature,
+      has_read: true,
+    });
+  };
+
+  const handleSubmit = async () => {
+    if (!hasReadContract || !signature) return;
+    
+    setIsSubmitting(true);
+    try {
+      await onComplete({
+        has_read: true,
+        signature: signature,
+        signed_at: new Date().toISOString(),
+        contract_title: contractTitle,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleSave = () => {
+    onSave({
+      has_read: hasReadContract,
+      signature: signature,
+    });
+  };
+
+  return (
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      <Surface style={styles.card} elevation={1}>
+        <View style={styles.header}>
+          <FileText size={24} color="#0056b3" />
+          <Text variant="titleLarge" style={styles.title}>
+            {contractTitle}
+          </Text>
+        </View>
+        
+        <Text variant="bodyMedium" style={styles.description}>
+          Läs igenom avtalet nedan och signera för att godkänna.
+        </Text>
+
+        {/* Contract Content */}
+        <Surface style={styles.contractContainer} elevation={0}>
+          <ScrollView 
+            style={styles.contractScroll}
+            nestedScrollEnabled={true}
+          >
+            <Text variant="bodyMedium" style={styles.contractText}>
+              {contractContent}
+            </Text>
+          </ScrollView>
+        </Surface>
+
+        {/* Read Confirmation */}
+        <View style={styles.checkboxContainer}>
+          <Checkbox
+            status={hasReadContract ? 'checked' : 'unchecked'}
+            onPress={() => setHasReadContract(!hasReadContract)}
+          />
+          <Text 
+            variant="bodyMedium" 
+            style={styles.checkboxLabel}
+            onPress={() => setHasReadContract(!hasReadContract)}
+          >
+            Jag har läst och förstått avtalet
+          </Text>
+        </View>
+      </Surface>
+
+      {/* Signature Section */}
+      <Surface style={styles.signatureSection} elevation={1}>
+        <View style={styles.header}>
+          <PenTool size={24} color="#0056b3" />
+          <Text variant="titleMedium" style={styles.title}>
+            Signatur
+          </Text>
+        </View>
+
+        {signature ? (
+          <View style={styles.signaturePreview}>
+            <View style={styles.signatureImageContainer}>
+              <Text variant="bodySmall" style={styles.signatureLabel}>
+                Din signatur:
+              </Text>
+              {/* Display signature preview */}
+              <View style={styles.signaturePlaceholder}>
+                <Check size={32} color="#10b981" />
+                <Text variant="bodyMedium" style={styles.signedText}>
+                  Signerat
+                </Text>
+              </View>
+            </View>
+            <Button 
+              mode="outlined" 
+              onPress={handleClearSignature}
+              style={styles.clearButton}
+            >
+              Rensa signatur
+            </Button>
+          </View>
+        ) : (
+          <View style={styles.signatureArea}>
+            {isSigning ? (
+              <SignatureCanvas
+                onComplete={handleSignatureComplete}
+                onCancel={() => setIsSigning(false)}
+              />
+            ) : (
+              <Button
+                mode="outlined"
+                onPress={() => setIsSigning(true)}
+                icon={({ size, color }) => <PenTool size={size} color={color} />}
+                style={styles.signButton}
+                disabled={!hasReadContract}
+              >
+                Klicka för att signera
+              </Button>
+            )}
+            {!hasReadContract && (
+              <Text variant="bodySmall" style={styles.warningText}>
+                Du måste läsa avtalet först
+              </Text>
+            )}
+          </View>
+        )}
+      </Surface>
+
+      <View style={styles.buttonContainer}>
+        <Button mode="outlined" onPress={handleSave} style={styles.saveButton}>
+          Spara utkast
+        </Button>
+        <Button 
+          mode="contained" 
+          onPress={handleSubmit} 
+          style={styles.submitButton}
+          disabled={!hasReadContract || !signature || isSubmitting}
+          loading={isSubmitting}
+        >
+          Signera avtal
+        </Button>
+      </View>
+    </ScrollView>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  card: {
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 16,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 8,
+  },
+  title: {
+    fontWeight: '600',
+  },
+  description: {
+    color: '#6b7280',
+    marginBottom: 16,
+  },
+  contractContainer: {
+    backgroundColor: '#f9fafb',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    marginBottom: 16,
+  },
+  contractScroll: {
+    maxHeight: 300,
+    padding: 16,
+  },
+  contractText: {
+    lineHeight: 24,
+    color: '#374151',
+  },
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  checkboxLabel: {
+    flex: 1,
+  },
+  signatureSection: {
+    padding: 16,
+    borderRadius: 12,
+  },
+  signaturePreview: {
+    alignItems: 'center',
+    gap: 12,
+  },
+  signatureImageContainer: {
+    width: '100%',
+    alignItems: 'center',
+  },
+  signatureLabel: {
+    color: '#6b7280',
+    marginBottom: 8,
+  },
+  signaturePlaceholder: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    padding: 24,
+    backgroundColor: '#d1fae5',
+    borderRadius: 8,
+    width: '100%',
+    justifyContent: 'center',
+  },
+  signedText: {
+    color: '#10b981',
+    fontWeight: '600',
+  },
+  clearButton: {
+    marginTop: 8,
+  },
+  signatureArea: {
+    alignItems: 'center',
+    gap: 8,
+  },
+  signButton: {
+    width: '100%',
+    paddingVertical: 16,
+    borderStyle: 'dashed',
+  },
+  warningText: {
+    color: '#f59e0b',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 16,
+    marginBottom: 32,
+  },
+  saveButton: {
+    flex: 1,
+  },
+  submitButton: {
+    flex: 2,
+  },
+});

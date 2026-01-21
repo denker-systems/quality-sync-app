@@ -1,0 +1,438 @@
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, View, ScrollView } from 'react-native';
+import { Text, Button, Card, ProgressBar, Badge, Surface } from 'react-native-paper';
+import { SafeAreaWrapper } from '@/components/SafeAreaWrapper';
+import { useMyEmployee } from '@/hooks/useMyEmployee';
+import { useMyOnboarding, useUpdateOnboardingProgress, useUpdateOnboardingStatus, OnboardingStep } from '@/hooks/useOnboarding';
+import { CheckCircle, Clock, AlertCircle, Star } from 'lucide-react-native';
+import { useNavigation } from '@react-navigation/native';
+import {
+  WelcomeStep,
+  PersonalInfoStep,
+  EmergencyContactStep,
+  BankDetailsStep,
+  ContractSigningStep,
+  HandbookStep,
+} from './steps';
+
+export const OnboardingScreen = () => {
+  const navigation = useNavigation();
+  const { data: employee } = useMyEmployee();
+  const { data: onboardingData, isLoading, error } = useMyOnboarding(employee?.id);
+  const updateProgress = useUpdateOnboardingProgress();
+  const updateStatus = useUpdateOnboardingStatus();
+
+  const [currentStepIndex, setCurrentStepIndex] = useState(0);
+
+  console.log('🎯 ONBOARDING_SCREEN render:', {
+    employeeId: employee?.id,
+    isLoading,
+    hasData: !!onboardingData,
+    error: error?.message,
+  });
+
+  useEffect(() => {
+    if (onboardingData?.progress) {
+      // Hitta första icke-completed steg
+      const firstIncomplete = onboardingData.progress.findIndex(
+        p => p.status !== 'completed'
+      );
+      console.log('🔍 ONBOARDING_SCREEN finding first incomplete step:', {
+        firstIncomplete,
+        progressStatuses: onboardingData.progress.map(p => p.status),
+      });
+      if (firstIncomplete !== -1) {
+        setCurrentStepIndex(firstIncomplete);
+      }
+    }
+  }, [onboardingData]);
+
+  if (isLoading) {
+    return (
+      <SafeAreaWrapper>
+        <View style={styles.loadingContainer}>
+          <Text>Laddar onboarding...</Text>
+        </View>
+      </SafeAreaWrapper>
+    );
+  }
+
+  if (!onboardingData) {
+    return (
+      <SafeAreaWrapper>
+        <View style={styles.emptyContainer}>
+          <Star size={48} color="#997328" />
+          <Text variant="headlineSmall" style={styles.emptyTitle}>
+            Ingen onboarding tillgänglig
+          </Text>
+          <Text variant="bodyMedium" style={styles.emptyText}>
+            Din onboarding kommer att visas här när den blir tillgänglig.
+          </Text>
+          <Button mode="contained" onPress={() => navigation.goBack()} style={styles.backButton}>
+            Tillbaka till profil
+          </Button>
+        </View>
+      </SafeAreaWrapper>
+    );
+  }
+
+  const { onboarding, steps, progress } = onboardingData;
+  const currentStep = steps[currentStepIndex];
+  const currentProgress = progress[currentStepIndex];
+
+  const completedSteps = progress.filter(p => p.status === 'completed').length;
+  const totalSteps = steps.length;
+  const progressPercentage = totalSteps > 0 ? completedSteps / totalSteps : 0;
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return <CheckCircle size={20} color="#10b981" />;
+      case 'in_progress':
+        return <Clock size={20} color="#f59e0b" />;
+      default:
+        return <AlertCircle size={20} color="#6b7280" />;
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return '#10b981';
+      case 'in_progress':
+        return '#f59e0b';
+      default:
+        return '#6b7280';
+    }
+  };
+
+  const handleCompleteStep = async () => {
+    if (!currentProgress) return;
+
+    try {
+      await updateProgress.mutateAsync({
+        progressId: currentProgress.id,
+        status: 'completed',
+        stepData: currentProgress.step_data,
+      });
+
+      // Om detta var sista steget, markera onboarding som completed
+      if (currentStepIndex === steps.length - 1) {
+        await updateStatus.mutateAsync({
+          onboardingId: onboarding.id,
+          status: 'completed',
+        });
+      } else {
+        // Gå till nästa steg
+        setCurrentStepIndex(currentStepIndex + 1);
+      }
+    } catch (error) {
+      console.error('Failed to complete step:', error);
+    }
+  };
+
+  const handlePreviousStep = () => {
+    if (currentStepIndex > 0) {
+      setCurrentStepIndex(currentStepIndex - 1);
+    }
+  };
+
+  const handleStepComplete = async (stepData: Record<string, any>) => {
+    console.log('✅ ONBOARDING_SCREEN handleStepComplete:', {
+      stepIndex: currentStepIndex,
+      stepType: currentStep?.step_type,
+      stepData,
+    });
+    
+    if (!currentProgress) {
+      console.warn('⚠️ No currentProgress available');
+      return;
+    }
+
+    try {
+      console.log('📤 Updating progress to completed...');
+      await updateProgress.mutateAsync({
+        progressId: currentProgress.id,
+        status: 'completed',
+        stepData,
+      });
+
+      if (currentStepIndex === steps.length - 1) {
+        console.log('🏁 Last step - completing onboarding');
+        await updateStatus.mutateAsync({
+          onboardingId: onboarding.id,
+          status: 'completed',
+        });
+        navigation.goBack();
+      } else {
+        console.log('➡️ Moving to next step:', currentStepIndex + 1);
+        setCurrentStepIndex(currentStepIndex + 1);
+      }
+    } catch (err) {
+      console.error('❌ Failed to complete step:', err);
+    }
+  };
+
+  const handleStepSave = async (stepData: Record<string, any>) => {
+    console.log('💾 ONBOARDING_SCREEN handleStepSave:', {
+      stepIndex: currentStepIndex,
+      stepType: currentStep?.step_type,
+      stepData,
+    });
+    
+    if (!currentProgress) {
+      console.warn('⚠️ No currentProgress available');
+      return;
+    }
+
+    try {
+      await updateProgress.mutateAsync({
+        progressId: currentProgress.id,
+        status: 'in_progress',
+        stepData,
+      });
+      console.log('✅ Step data saved');
+    } catch (err) {
+      console.error('❌ Failed to save step:', err);
+    }
+  };
+
+  const renderStepComponent = (step: OnboardingStep, progressData: typeof currentProgress) => {
+    console.log('🎨 ONBOARDING_SCREEN renderStepComponent:', {
+      stepType: step.step_type,
+      stepTitle: step.title,
+      progressStatus: progressData?.status,
+    });
+    
+    const commonProps = {
+      content: step.content,
+      stepData: progressData?.step_data || {},
+      onComplete: handleStepComplete,
+      onSave: handleStepSave,
+    };
+
+    switch (step.step_type) {
+      case 'welcome':
+        return (
+          <WelcomeStep
+            {...commonProps}
+            employeeName={employee?.first_name || undefined}
+          />
+        );
+      case 'personal_info':
+        return <PersonalInfoStep {...commonProps} />;
+      case 'emergency_contact':
+        return <EmergencyContactStep {...commonProps} />;
+      case 'bank_details':
+        return <BankDetailsStep {...commonProps} />;
+      case 'contract_signing':
+        return <ContractSigningStep {...commonProps} />;
+      case 'handbook':
+        return <HandbookStep {...commonProps} />;
+      default:
+        return (
+          <Card style={styles.currentStepCard}>
+            <Card.Content>
+              <Text variant="titleLarge">{step.title}</Text>
+              {step.description && (
+                <Text variant="bodyMedium" style={styles.currentStepDescription}>
+                  {step.description}
+                </Text>
+              )}
+              <Button mode="contained" onPress={() => handleStepComplete({})}>
+                Fortsätt
+              </Button>
+            </Card.Content>
+          </Card>
+        );
+    }
+  };
+
+  return (
+    <SafeAreaWrapper>
+      <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+        {/* Header */}
+        <Surface style={styles.header} elevation={1}>
+          <View style={styles.headerContent}>
+            <Text variant="headlineMedium">Onboarding</Text>
+            <Badge style={[styles.statusBadge, { backgroundColor: getStatusColor(onboarding.status) }]}>
+              {onboarding.status === 'completed' ? 'Klar' : 
+               onboarding.status === 'in_progress' ? 'Pågående' : 'Väntande'}
+            </Badge>
+          </View>
+          <Text variant="bodyMedium" style={styles.headerSubtext}>
+            Steg {completedSteps} av {totalSteps} klara
+          </Text>
+          <ProgressBar progress={progressPercentage} style={styles.progressBar} />
+        </Surface>
+
+        {/* Steps List */}
+        <Card style={styles.stepsCard}>
+          <Card.Content>
+            <Text variant="titleMedium" style={styles.sectionTitle}>
+              Alla steg
+            </Text>
+            {steps.map((step, index) => {
+              const stepProgress = progress[index];
+              const isActive = index === currentStepIndex;
+
+              return (
+                <Surface
+                  key={step.id}
+                  style={[
+                    styles.stepItem,
+                    isActive && styles.stepItemActive,
+                  ]}
+                  elevation={isActive ? 2 : 0}
+                >
+                  <View style={styles.stepHeader}>
+                    {getStatusIcon(stepProgress?.status || 'pending')}
+                    <Text
+                      variant="bodyLarge"
+                      style={[
+                        styles.stepTitle,
+                        isActive && styles.stepTitleActive,
+                      ]}
+                    >
+                      {step.title}
+                    </Text>
+                  </View>
+                  {step.description && (
+                    <Text variant="bodySmall" style={styles.stepDescription}>
+                      {step.description}
+                    </Text>
+                  )}
+                </Surface>
+              );
+            })}
+          </Card.Content>
+        </Card>
+
+        {/* Current Step Content */}
+        {currentStep && currentProgress && (
+          <View style={styles.stepContentContainer}>
+            {renderStepComponent(currentStep, currentProgress)}
+          </View>
+        )}
+      </ScrollView>
+    </SafeAreaWrapper>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  contentContainer: {
+    padding: 16,
+    gap: 16,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+    gap: 16,
+  },
+  emptyTitle: {
+    textAlign: 'center',
+    marginTop: 16,
+  },
+  emptyText: {
+    textAlign: 'center',
+    color: '#6b7280',
+  },
+  backButton: {
+    marginTop: 16,
+  },
+  header: {
+    padding: 16,
+    borderRadius: 8,
+  },
+  headerContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  statusBadge: {
+    paddingHorizontal: 8,
+  },
+  headerSubtext: {
+    color: '#6b7280',
+    marginBottom: 8,
+  },
+  progressBar: {
+    height: 8,
+    borderRadius: 4,
+  },
+  stepsCard: {
+    marginTop: 8,
+  },
+  sectionTitle: {
+    marginBottom: 16,
+  },
+  stepItem: {
+    padding: 12,
+    marginBottom: 8,
+    borderRadius: 8,
+    backgroundColor: '#f9fafb',
+  },
+  stepItemActive: {
+    backgroundColor: '#eff6ff',
+    borderWidth: 1,
+    borderColor: '#0056b3',
+  },
+  stepHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  stepTitle: {
+    flex: 1,
+  },
+  stepTitleActive: {
+    fontWeight: '600',
+    color: '#0056b3',
+  },
+  stepDescription: {
+    marginTop: 4,
+    marginLeft: 28,
+    color: '#6b7280',
+  },
+  currentStepCard: {
+    marginTop: 8,
+  },
+  currentStepTitle: {
+    marginBottom: 8,
+  },
+  currentStepDescription: {
+    color: '#6b7280',
+    marginBottom: 16,
+  },
+  stepContent: {
+    padding: 16,
+    backgroundColor: '#f9fafb',
+    borderRadius: 8,
+    marginBottom: 16,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    gap: 8,
+    justifyContent: 'flex-end',
+  },
+  button: {
+    flex: 1,
+  },
+  primaryButton: {
+    flex: 2,
+  },
+  stepContentContainer: {
+    marginTop: 8,
+  },
+});
