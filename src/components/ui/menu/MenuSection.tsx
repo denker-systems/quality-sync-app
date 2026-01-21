@@ -46,7 +46,8 @@ export function MenuSection({ title, items, onItemPress }: MenuSectionProps) {
 
 const styles = StyleSheet.create({
   section: {
-    paddingTop: 16,
+    width: '100%',
+    marginTop: 24,
   },
   sectionTitle: {
     paddingHorizontal: 20,

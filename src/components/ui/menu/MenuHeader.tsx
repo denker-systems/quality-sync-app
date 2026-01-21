@@ -1,30 +1,41 @@
 import React from 'react';
 import { View, Pressable, StyleSheet } from 'react-native';
+import { X } from 'lucide-react-native';
 import { Text } from '../Text';
 import { useTheme } from '@/contexts/ThemeContext';
 
 interface MenuHeaderProps {
   title: string;
-  onLogout?: () => void;
-  logoutText: string;
+  onClose?: () => void;
 }
 
-export function MenuHeader({ title, onLogout, logoutText }: MenuHeaderProps) {
+export function MenuHeader({ title, onClose }: MenuHeaderProps) {
   const { isDark } = useTheme();
   const textColor = isDark ? '#FAFAFA' : '#171717';
-  const borderColor = isDark ? '#2A2A2A' : '#E5E5E5';
 
   return (
-    <View style={[styles.header, { borderBottomColor: borderColor }]}>
-      <Text variant="h2" style={{ color: textColor, flex: 1 }}>
-        {title}
-      </Text>
-      <Pressable 
-        style={styles.logoutButton}
-        onPress={onLogout}
-      >
-        <Text style={styles.logoutText}>{logoutText}</Text>
-      </Pressable>
+    <View style={[styles.header, { backgroundColor: isDark ? '#0F0F0F' : '#FFFFFF' }]}>
+      {/* Left - Placeholder */}
+      <View style={styles.leftSection}>
+        <View style={styles.placeholder} />
+      </View>
+
+      {/* Center - Title */}
+      <View style={styles.centerSection}>
+        <Text variant="h3" style={[styles.title, { color: textColor }]}>
+          {title}
+        </Text>
+      </View>
+
+      {/* Right - Menu icon */}
+      <View style={styles.rightSection}>
+        <Pressable 
+          style={styles.menuButton}
+          onPress={onClose}
+        >
+          <X size={20} color={textColor} />
+        </Pressable>
+      </View>
     </View>
   );
 }
@@ -33,23 +44,35 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
   },
-  logoutButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#EF4444',
-    justifyContent: 'center',
+  leftSection: {
+    width: 48,
+    alignItems: 'flex-start',
+  },
+  centerSection: {
+    flex: 1,
     alignItems: 'center',
-    flexShrink: 0,
   },
-  logoutText: {
-    color: '#EF4444',
+  rightSection: {
+    width: 48,
+    alignItems: 'flex-end',
+  },
+  menuButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  placeholder: {
+    width: 40,
+    height: 40,
+  },
+  title: {
     fontWeight: '600',
-    fontSize: 15,
+    textAlign: 'center',
   },
 });

@@ -18,6 +18,7 @@ import {
   User,
   Building2,
   Settings,
+  LogOut,
 } from 'lucide-react-native';
 import { MenuHeader, MenuSection } from './menu';
 import type { MenuItemData } from './menu';
@@ -61,9 +62,15 @@ const getMenuSections = (t: (key: string) => string, canManageOnboarding: boolea
     ],
   },
   {
-    title: '',
+    title: t('menu.settings'),
     items: [
       { key: 'settings', icon: Settings, title: t('menu.settings'), subtitle: t('menu.settingsSubtitle') },
+    ],
+  },
+  {
+    title: '',
+    items: [
+      { key: 'logout', icon: LogOut, title: t('menu.logout'), subtitle: '' },
     ],
   },
 ];
@@ -143,9 +150,26 @@ export function FullscreenMenu({
     }
   }, [visible, slideAnim, dragX]);
 
+  const handleClose = () => {
+    // Kör slide-out animation först
+    Animated.timing(slideAnim, {
+      toValue: SCREEN_WIDTH,
+      duration: 250,
+      useNativeDriver: true,
+    }).start(() => {
+      // Stäng Modal efter animation är klar
+      onClose();
+    });
+  };
+
   const handleItemPress = (key: string) => {
-    onNavigate?.(key);
-    onClose();
+    if (key === 'logout') {
+      onLogout?.();
+      handleClose();
+    } else {
+      onNavigate?.(key);
+      handleClose();
+    }
   };
 
   const backgroundColor = isDark ? '#0F0F0F' : '#FFFFFF';
@@ -158,14 +182,14 @@ export function FullscreenMenu({
       onRequestClose={onClose}
     >
       <View style={styles.overlay}>
-        <Pressable style={styles.backdrop} onPress={onClose} />
+        <Pressable style={styles.backdrop} onPress={handleClose} />
         <Animated.View 
           {...panResponder.panHandlers}
           style={[
             styles.menuContainer,
             { 
               backgroundColor,
-              paddingTop: insets.top + 8,
+              paddingTop: insets.top,
               paddingBottom: Math.max(insets.bottom, 20),
               paddingLeft: insets.left,
               paddingRight: insets.right,
@@ -175,12 +199,12 @@ export function FullscreenMenu({
         >
           <MenuHeader
             title={t('menu.title')}
-            logoutText={t('menu.logout')}
-            onLogout={onLogout}
+            onClose={handleClose}
           />
 
           <ScrollView 
             style={styles.scrollView}
+            contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
           >
             {menuSections.map((section, index) => (
@@ -215,6 +239,9 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
   },
 });
 
