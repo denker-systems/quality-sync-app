@@ -76,12 +76,52 @@ Omfattande UI/UX-session med fokus på Settings-subscreens, dark mode-fixes och 
 - **Rader tillagda:** +7,023
 - **Rader borttagna:** -982
 
+## 🔍 Session 2: Onboarding Admin Investigation (03:16)
+
+### Undersökning av `src/features/onboarding-admin/`
+
+Komplett djupdykning i onboarding-admin feature-modulen:
+
+| Fil | Rader | Syfte |
+|-----|-------|-------|
+| `index.ts` | 13 | Public API exports |
+| `types.ts` | 52 | TypeScript interfaces |
+| `OnboardingAdminScreen.tsx` | 84 | Admin management UI |
+| `OnboardingPreviewScreen.tsx` | 375 | Full preview mode |
+| `OnboardingStepsEditor.tsx` | 156 | Step list + controls |
+| `OnboardingStepCard.tsx` | 144 | Individual step card |
+| `StepPreviewModal.tsx` | 253 | Modal för step rendering |
+| `useOnboardingSteps.ts` | 141 | CRUD hooks |
+
+### Arkitektur
+
+```
+OnboardingAdminScreen (RoleGuard: admin/superadmin)
+  └─ OnboardingStepsEditor
+       └─ OnboardingStepCard[] (Toggle required/active)
+       └─ [Preview] → OnboardingPreviewScreen
+            └─ StepPreviewModal
+                 └─ Dynamisk step-komponent (Welcome, PersonalInfo, etc.)
+```
+
+### Status
+
+| Feature | Status |
+|---------|--------|
+| Lista steg | ✅ |
+| Toggle required/active | ✅ |
+| Preview mode | ✅ |
+| Add/Edit/Delete step | ⏳ TODO |
+| Drag-and-drop reorder | ⏳ TODO |
+
 ## 📋 Nästa Steg
 
 - [ ] Push till GitHub
 - [ ] Testa på fysisk device
 - [ ] Implementera biometrisk inloggning (Face ID/Touch ID)
 - [ ] Lägg till faktisk funktionalitet för notifikationer
+- [ ] Implementera Add/Edit/Delete modaler för onboarding steps
+- [ ] Lägg till drag-and-drop reorder för onboarding steps
 
 ## 🔗 Nya Filer
 
