@@ -47,12 +47,20 @@ export interface MyEmployee {
 // Navigation types
 export type RootStackParamList = {
   Login: undefined;
+  Main: undefined;
   Profile: undefined;
   Onboarding: undefined;
   Contracts: undefined;
   ContractViewer: { contractId: string };
   Schedule: undefined;
   EditProfile: undefined;
+  Home: undefined;
+  Search: undefined;
+  Settings: undefined;
+  Company: undefined;
+  Security: undefined;
+  About: undefined;
+  ChangePassword: undefined;
 };
 
 declare global {

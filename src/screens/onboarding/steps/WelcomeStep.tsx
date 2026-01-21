@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Text, Button, Surface } from 'react-native-paper';
+import { Text, Button, Surface } from '@/components/ui';
+import { useTheme } from '@/contexts/ThemeContext';
 import { PartyPopper, ArrowRight } from 'lucide-react-native';
 
 interface WelcomeStepProps {
@@ -16,7 +17,10 @@ export const WelcomeStep: React.FC<WelcomeStepProps> = ({
   onComplete,
   employeeName,
 }) => {
-  console.log('👋 WELCOME_STEP render:', { employeeName, content });
+  const { isDark } = useTheme();
+  const textColor = isDark ? '#FAFAFA' : '#171717';
+  const mutedColor = isDark ? '#A3A3A3' : '#737373';
+  const accentColor = isDark ? '#6BBD68' : '#489A45';
   
   const handleStart = () => {
     console.log('🚀 WELCOME_STEP handleStart clicked');
@@ -26,58 +30,52 @@ export const WelcomeStep: React.FC<WelcomeStepProps> = ({
     <View style={styles.container}>
       <Surface style={styles.card} elevation={2}>
         <View style={styles.iconContainer}>
-          <PartyPopper size={64} color="#997328" />
+          <PartyPopper size={64} color={accentColor} />
         </View>
         
-        <Text variant="headlineMedium" style={styles.title}>
+        <Text variant="h2" style={[styles.title, { color: textColor }]}>
           Välkommen{employeeName ? `, ${employeeName}` : ''}!
         </Text>
         
-        <Text variant="bodyLarge" style={styles.description}>
+        <Text variant="body-lg" style={[styles.description, { color: mutedColor }]}>
           {content?.welcome_message || 
             'Vi är glada att ha dig med i teamet! Denna onboarding kommer hjälpa dig att komma igång.'}
         </Text>
 
         {content?.company_info && (
-          <View style={styles.infoSection}>
-            <Text variant="titleMedium" style={styles.infoTitle}>
+          <View style={[styles.infoSection, { backgroundColor: isDark ? '#1A1A1A' : '#f3f4f6' }]}>
+            <Text variant="h4" style={[styles.infoTitle, { color: textColor }]}>
               Om företaget
             </Text>
-            <Text variant="bodyMedium" style={styles.infoText}>
+            <Text variant="body" style={{ color: mutedColor }}>
               {content.company_info}
             </Text>
           </View>
         )}
 
-        <View style={styles.checklistContainer}>
-          <Text variant="titleMedium" style={styles.checklistTitle}>
+        <View style={[styles.checklistContainer, { backgroundColor: isDark ? 'rgba(107,189,104,0.1)' : '#EDF5EC' }]}>
+          <Text variant="h4" style={[styles.checklistTitle, { color: accentColor }]}>
             Vad du kommer att göra:
           </Text>
           <View style={styles.checklistItem}>
-            <Text variant="bodyMedium">✓ Fylla i dina personuppgifter</Text>
+            <Text variant="body" style={{ color: textColor }}>✓ Fylla i dina personuppgifter</Text>
           </View>
           <View style={styles.checklistItem}>
-            <Text variant="bodyMedium">✓ Lägga till nödkontakt</Text>
+            <Text variant="body" style={{ color: textColor }}>✓ Lägga till nödkontakt</Text>
           </View>
           <View style={styles.checklistItem}>
-            <Text variant="bodyMedium">✓ Ange bankuppgifter för lön</Text>
+            <Text variant="body" style={{ color: textColor }}>✓ Ange bankuppgifter för lön</Text>
           </View>
           <View style={styles.checklistItem}>
-            <Text variant="bodyMedium">✓ Signera anställningsavtal</Text>
+            <Text variant="body" style={{ color: textColor }}>✓ Signera anställningsavtal</Text>
           </View>
           <View style={styles.checklistItem}>
-            <Text variant="bodyMedium">✓ Läsa igenom personalhandboken</Text>
+            <Text variant="body" style={{ color: textColor }}>✓ Läsa igenom personalhandboken</Text>
           </View>
         </View>
       </Surface>
 
-      <Button
-        mode="contained"
-        onPress={handleStart}
-        style={styles.button}
-        contentStyle={styles.buttonContent}
-        icon={({ size, color }) => <ArrowRight size={size} color={color} />}
-      >
+      <Button variant="primary" onPress={handleStart} style={styles.button}>
         Starta onboarding
       </Button>
     </View>

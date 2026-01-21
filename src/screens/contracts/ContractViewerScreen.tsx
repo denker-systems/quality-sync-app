@@ -1,11 +1,12 @@
 import React from 'react';
-import { StyleSheet, View, Dimensions } from 'react-native';
-import { Text, Button, Surface, ActivityIndicator } from 'react-native-paper';
-import { SafeAreaWrapper } from '@/components/SafeAreaWrapper';
+import { StyleSheet, View, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { ScreenLayout, EmptyState } from '@/components/common';
+import { Text, Card, CardContent, Button } from '@/components/ui';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useContract } from '@/hooks/useContracts';
 import { WebView } from 'react-native-webview';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
-import { FileText, Download, ArrowLeft } from 'lucide-react-native';
+import { FileText, Download } from 'lucide-react-native';
 import type { RootStackParamList } from '@/types';
 
 type ContractViewerRouteProp = RouteProp<RootStackParamList, 'ContractViewer'>;
@@ -14,66 +15,59 @@ export const ContractViewerScreen = () => {
   const navigation = useNavigation();
   const route = useRoute<ContractViewerRouteProp>();
   const { contractId } = route.params;
+  const { isDark } = useTheme();
   
-  console.log('📄 CONTRACT_VIEWER_SCREEN render:', { contractId });
+  const textColor = isDark ? '#FAFAFA' : '#171717';
+  const mutedColor = isDark ? '#A3A3A3' : '#737373';
+  const accentColor = isDark ? '#6BBD68' : '#489A45';
   
   const { data: contract, isLoading, error } = useContract(contractId);
-  
-  console.log('📄 CONTRACT_VIEWER_SCREEN data:', {
-    isLoading,
-    hasContract: !!contract,
-    hasPdf: !!contract?.pdf_url,
-    error: error?.message,
-  });
 
   if (isLoading) {
     return (
-      <SafeAreaWrapper>
+      <ScreenLayout title="Avtal" scrollable={false}>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#0056b3" />
-          <Text style={styles.loadingText}>Laddar avtal...</Text>
+          <ActivityIndicator size="large" color={accentColor} />
+          <Text variant="body" style={{ color: mutedColor, marginTop: 16 }}>
+            Laddar avtal...
+          </Text>
         </View>
-      </SafeAreaWrapper>
+      </ScreenLayout>
     );
   }
 
   if (error || !contract) {
     return (
-      <SafeAreaWrapper>
-        <View style={styles.errorContainer}>
-          <FileText size={48} color="#ef4444" />
-          <Text variant="headlineSmall" style={styles.errorTitle}>
-            Kunde inte ladda avtal
-          </Text>
-          <Text variant="bodyMedium" style={styles.errorText}>
-            {error?.message || 'Avtalet hittades inte.'}
-          </Text>
-          <Button mode="contained" onPress={() => navigation.goBack()}>
-            Tillbaka
-          </Button>
-        </View>
-      </SafeAreaWrapper>
+      <ScreenLayout title="Avtal" scrollable={false}>
+        <EmptyState
+          icon={FileText}
+          title="Kunde inte ladda avtal"
+          description={error?.message || 'Avtalet hittades inte.'}
+          actionLabel="Tillbaka"
+          onAction={() => navigation.goBack()}
+        />
+      </ScreenLayout>
     );
   }
 
   const hasPdf = !!contract.pdf_url;
 
   return (
-    <SafeAreaWrapper edges={['left', 'right', 'bottom']}>
-      {/* Contract Info Header */}
-      <Surface style={styles.header} elevation={1}>
-        <View style={styles.headerContent}>
-          <FileText size={24} color="#0056b3" />
+    <ScreenLayout title="Avtal" scrollable={false} noPadding>
+      {/* Contract Info */}
+      <Card variant="elevated" style={styles.infoCard}>
+        <CardContent style={styles.headerContent}>
+          <FileText size={24} color={accentColor} />
           <View style={styles.headerText}>
-            <Text variant="titleMedium" numberOfLines={1}>
+            <Text variant="body-lg" style={{ color: textColor }}>
               {contract.contract_title}
             </Text>
-            <Text variant="bodySmall" style={styles.signedDate}>
+            <Text variant="body-sm" style={{ color: mutedColor }}>
               Signerat {new Date(contract.signed_at).toLocaleDateString('sv-SE')}
             </Text>
           </View>
-        </View>
-      </Surface>
+        </CardContent>
+      </Card>
 
       {/* PDF Viewer or Content */}
       <View style={styles.contentContainer}>
@@ -84,36 +78,32 @@ export const ContractViewerScreen = () => {
             startInLoadingState={true}
             renderLoading={() => (
               <View style={styles.webviewLoading}>
-                <ActivityIndicator size="large" color="#0056b3" />
+                <ActivityIndicator size="large" color={accentColor} />
               </View>
             )}
           />
         ) : (
           <View style={styles.textContent}>
-            <Text variant="bodyMedium" style={styles.contractText}>
+            <Text variant="body" style={{ color: textColor, lineHeight: 24 }}>
               {contract.contract_content}
             </Text>
           </View>
         )}
       </View>
 
-      {/* Actions */}
+      {/* Download Button */}
       {hasPdf && (
-        <Surface style={styles.footer} elevation={2}>
+        <View style={styles.footer}>
           <Button
-            mode="outlined"
-            icon={({ size, color }) => <Download size={size} color={color} />}
-            onPress={() => {
-              // TODO: Implement PDF download
-              console.log('Download PDF:', contract.pdf_url);
-            }}
+            variant="outline"
+            onPress={() => console.log('Download PDF:', contract.pdf_url)}
             style={styles.downloadButton}
           >
             Ladda ner PDF
           </Button>
-        </Surface>
+        </View>
       )}
-    </SafeAreaWrapper>
+    </ScreenLayout>
   );
 };
 
@@ -126,6 +116,10 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     color: '#6b7280',
+  },
+  infoCard: {
+    margin: 16,
+    marginBottom: 8,
   },
   errorContainer: {
     flex: 1,

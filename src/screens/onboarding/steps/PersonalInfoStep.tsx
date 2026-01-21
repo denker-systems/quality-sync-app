@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, ScrollView } from 'react-native';
-import { Text, TextInput, Button, Surface } from 'react-native-paper';
+import { StyleSheet, View, ScrollView, TextInput } from 'react-native';
+import { Text, Button, Surface } from '@/components/ui';
+import { useTheme } from '@/contexts/ThemeContext';
 import { User } from 'lucide-react-native';
 
 interface PersonalInfoStepProps {
@@ -16,7 +17,12 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
   onComplete,
   onSave,
 }) => {
-  console.log('👤 PERSONAL_INFO_STEP render:', { stepData });
+  const { isDark } = useTheme();
+  const textColor = isDark ? '#FAFAFA' : '#171717';
+  const mutedColor = isDark ? '#A3A3A3' : '#737373';
+  const accentColor = isDark ? '#6BBD68' : '#489A45';
+  const inputBg = isDark ? '#1A1A1A' : '#FFFFFF';
+  const borderColor = isDark ? '#333' : '#E5E5E5';
   const [formData, setFormData] = useState({
     first_name: stepData?.first_name || '',
     last_name: stepData?.last_name || '',
@@ -80,129 +86,128 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
     }
   };
 
+  const inputStyle = [
+    styles.input,
+    { backgroundColor: inputBg, borderColor, color: textColor }
+  ];
+
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <Surface style={styles.card} elevation={1}>
         <View style={styles.header}>
-          <User size={24} color="#0056b3" />
-          <Text variant="titleLarge" style={styles.title}>
+          <User size={24} color={accentColor} />
+          <Text variant="h3" style={{ color: textColor }}>
             Personuppgifter
           </Text>
         </View>
         
-        <Text variant="bodyMedium" style={styles.description}>
+        <Text variant="body" style={[styles.description, { color: mutedColor }]}>
           {content?.description || 'Fyll i dina personuppgifter nedan.'}
         </Text>
 
         <View style={styles.row}>
           <View style={styles.halfField}>
+            <Text variant="body-sm" style={[styles.label, { color: textColor }]}>Förnamn *</Text>
             <TextInput
-              label="Förnamn *"
               value={formData.first_name}
               onChangeText={(text) => updateField('first_name', text)}
-              mode="outlined"
-              error={!!errors.first_name}
-              style={styles.input}
+              style={[inputStyle, errors.first_name && styles.inputError]}
+              placeholderTextColor={mutedColor}
             />
             {errors.first_name && (
-              <Text style={styles.errorText}>{errors.first_name}</Text>
+              <Text variant="body-sm" style={styles.errorText}>{errors.first_name}</Text>
             )}
           </View>
           <View style={styles.halfField}>
+            <Text variant="body-sm" style={[styles.label, { color: textColor }]}>Efternamn *</Text>
             <TextInput
-              label="Efternamn *"
               value={formData.last_name}
               onChangeText={(text) => updateField('last_name', text)}
-              mode="outlined"
-              error={!!errors.last_name}
-              style={styles.input}
+              style={[inputStyle, errors.last_name && styles.inputError]}
+              placeholderTextColor={mutedColor}
             />
             {errors.last_name && (
-              <Text style={styles.errorText}>{errors.last_name}</Text>
+              <Text variant="body-sm" style={styles.errorText}>{errors.last_name}</Text>
             )}
           </View>
         </View>
 
+        <Text variant="body-sm" style={[styles.label, { color: textColor }]}>Personnummer *</Text>
         <TextInput
-          label="Personnummer *"
           value={formData.personal_number}
           onChangeText={(text) => updateField('personal_number', text)}
-          mode="outlined"
           placeholder="ÅÅÅÅMMDD-XXXX"
-          error={!!errors.personal_number}
-          style={styles.input}
+          style={[inputStyle, errors.personal_number && styles.inputError]}
+          placeholderTextColor={mutedColor}
         />
         {errors.personal_number && (
-          <Text style={styles.errorText}>{errors.personal_number}</Text>
+          <Text variant="body-sm" style={styles.errorText}>{errors.personal_number}</Text>
         )}
 
+        <Text variant="body-sm" style={[styles.label, { color: textColor }]}>Adress *</Text>
         <TextInput
-          label="Adress *"
           value={formData.address}
           onChangeText={(text) => updateField('address', text)}
-          mode="outlined"
-          error={!!errors.address}
-          style={styles.input}
+          style={[inputStyle, errors.address && styles.inputError]}
+          placeholderTextColor={mutedColor}
         />
         {errors.address && (
-          <Text style={styles.errorText}>{errors.address}</Text>
+          <Text variant="body-sm" style={styles.errorText}>{errors.address}</Text>
         )}
 
         <View style={styles.row}>
           <View style={styles.halfField}>
+            <Text variant="body-sm" style={[styles.label, { color: textColor }]}>Postnummer *</Text>
             <TextInput
-              label="Postnummer *"
               value={formData.postal_code}
               onChangeText={(text) => updateField('postal_code', text)}
-              mode="outlined"
               keyboardType="numeric"
-              error={!!errors.postal_code}
-              style={styles.input}
+              style={[inputStyle, errors.postal_code && styles.inputError]}
+              placeholderTextColor={mutedColor}
             />
             {errors.postal_code && (
-              <Text style={styles.errorText}>{errors.postal_code}</Text>
+              <Text variant="body-sm" style={styles.errorText}>{errors.postal_code}</Text>
             )}
           </View>
           <View style={styles.halfField}>
+            <Text variant="body-sm" style={[styles.label, { color: textColor }]}>Ort *</Text>
             <TextInput
-              label="Ort *"
               value={formData.city}
               onChangeText={(text) => updateField('city', text)}
-              mode="outlined"
-              error={!!errors.city}
-              style={styles.input}
+              style={[inputStyle, errors.city && styles.inputError]}
+              placeholderTextColor={mutedColor}
             />
             {errors.city && (
-              <Text style={styles.errorText}>{errors.city}</Text>
+              <Text variant="body-sm" style={styles.errorText}>{errors.city}</Text>
             )}
           </View>
         </View>
 
+        <Text variant="body-sm" style={[styles.label, { color: textColor }]}>Telefon</Text>
         <TextInput
-          label="Telefon"
           value={formData.phone}
           onChangeText={(text) => updateField('phone', text)}
-          mode="outlined"
           keyboardType="phone-pad"
-          style={styles.input}
+          style={inputStyle}
+          placeholderTextColor={mutedColor}
         />
 
+        <Text variant="body-sm" style={[styles.label, { color: textColor }]}>E-post</Text>
         <TextInput
-          label="E-post"
           value={formData.email}
           onChangeText={(text) => updateField('email', text)}
-          mode="outlined"
           keyboardType="email-address"
           autoCapitalize="none"
-          style={styles.input}
+          style={inputStyle}
+          placeholderTextColor={mutedColor}
         />
       </Surface>
 
       <View style={styles.buttonContainer}>
-        <Button mode="outlined" onPress={handleSave} style={styles.saveButton}>
+        <Button variant="outline" onPress={handleSave} style={styles.saveButton}>
           Spara utkast
         </Button>
-        <Button mode="contained" onPress={handleSubmit} style={styles.submitButton}>
+        <Button variant="primary" onPress={handleSubmit} style={styles.submitButton}>
           Fortsätt
         </Button>
       </View>
@@ -238,8 +243,19 @@ const styles = StyleSheet.create({
   halfField: {
     flex: 1,
   },
+  label: {
+    marginBottom: 6,
+    fontWeight: '500',
+  },
   input: {
     marginBottom: 12,
+    padding: 12,
+    borderWidth: 1,
+    borderRadius: 8,
+    fontSize: 16,
+  },
+  inputError: {
+    borderColor: '#ef4444',
   },
   errorText: {
     color: '#ef4444',

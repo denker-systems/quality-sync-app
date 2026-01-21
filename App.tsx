@@ -8,6 +8,8 @@ import { MFAGate } from './src/features/mfa';
 import { ThemeProvider, useTheme } from './src/contexts/ThemeContext';
 import { lightTheme, darkTheme } from './src/config/theme';
 
+import './src/styles/global.css';
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, ScrollView } from 'react-native';
-import { Text, Button, Card, ProgressBar, Badge, Surface } from 'react-native-paper';
-import { SafeAreaWrapper } from '@/components/SafeAreaWrapper';
+import { StyleSheet, View, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { ScreenLayout, EmptyState } from '@/components/common';
+import { Text, Card, CardContent, Button, Badge, Surface, ProgressBar } from '@/components/ui';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useMyEmployee } from '@/hooks/useMyEmployee';
 import { useMyOnboarding, useUpdateOnboardingProgress, useUpdateOnboardingStatus, OnboardingStep } from '@/hooks/useOnboarding';
 import { CheckCircle, Clock, AlertCircle, Star } from 'lucide-react-native';
@@ -17,30 +18,23 @@ import {
 
 export const OnboardingScreen = () => {
   const navigation = useNavigation();
+  const { isDark } = useTheme();
   const { data: employee } = useMyEmployee();
   const { data: onboardingData, isLoading, error } = useMyOnboarding(employee?.id);
   const updateProgress = useUpdateOnboardingProgress();
   const updateStatus = useUpdateOnboardingStatus();
 
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
-
-  console.log('🎯 ONBOARDING_SCREEN render:', {
-    employeeId: employee?.id,
-    isLoading,
-    hasData: !!onboardingData,
-    error: error?.message,
-  });
+  
+  const textColor = isDark ? '#FAFAFA' : '#171717';
+  const mutedColor = isDark ? '#A3A3A3' : '#737373';
+  const accentColor = isDark ? '#6BBD68' : '#489A45';
 
   useEffect(() => {
     if (onboardingData?.progress) {
-      // Hitta första icke-completed steg
       const firstIncomplete = onboardingData.progress.findIndex(
         p => p.status !== 'completed'
       );
-      console.log('🔍 ONBOARDING_SCREEN finding first incomplete step:', {
-        firstIncomplete,
-        progressStatuses: onboardingData.progress.map(p => p.status),
-      });
       if (firstIncomplete !== -1) {
         setCurrentStepIndex(firstIncomplete);
       }
@@ -49,30 +43,28 @@ export const OnboardingScreen = () => {
 
   if (isLoading) {
     return (
-      <SafeAreaWrapper>
+      <ScreenLayout title="Onboarding" scrollable={false}>
         <View style={styles.loadingContainer}>
-          <Text>Laddar onboarding...</Text>
+          <ActivityIndicator size="large" color={accentColor} />
+          <Text variant="body" style={{ color: mutedColor, marginTop: 16 }}>
+            Laddar onboarding...
+          </Text>
         </View>
-      </SafeAreaWrapper>
+      </ScreenLayout>
     );
   }
 
   if (!onboardingData) {
     return (
-      <SafeAreaWrapper>
-        <View style={styles.emptyContainer}>
-          <Star size={48} color="#997328" />
-          <Text variant="headlineSmall" style={styles.emptyTitle}>
-            Ingen onboarding tillgänglig
-          </Text>
-          <Text variant="bodyMedium" style={styles.emptyText}>
-            Din onboarding kommer att visas här när den blir tillgänglig.
-          </Text>
-          <Button mode="contained" onPress={() => navigation.goBack()} style={styles.backButton}>
-            Tillbaka till profil
-          </Button>
-        </View>
-      </SafeAreaWrapper>
+      <ScreenLayout title="Onboarding" scrollable={false}>
+        <EmptyState
+          icon={Star}
+          title="Ingen onboarding tillgänglig"
+          description="Din onboarding kommer att visas här när den blir tillgängliga."
+          actionLabel="Tillbaka"
+          onAction={() => navigation.goBack()}
+        />
+      </ScreenLayout>
     );
   }
 
@@ -231,91 +223,94 @@ export const OnboardingScreen = () => {
         return <HandbookStep {...commonProps} />;
       default:
         return (
-          <Card style={styles.currentStepCard}>
-            <Card.Content>
-              <Text variant="titleLarge">{step.title}</Text>
+          <Card variant="elevated" style={styles.currentStepCard}>
+            <CardContent>
+              <Text variant="h3" style={{ color: textColor }}>{step.title}</Text>
               {step.description && (
-                <Text variant="bodyMedium" style={styles.currentStepDescription}>
+                <Text variant="body" style={[styles.currentStepDescription, { color: mutedColor }]}>
                   {step.description}
                 </Text>
               )}
-              <Button mode="contained" onPress={() => handleStepComplete({})}>
+              <Button variant="primary" onPress={() => handleStepComplete({})}>
                 Fortsätt
               </Button>
-            </Card.Content>
+            </CardContent>
           </Card>
         );
     }
   };
 
   return (
-    <SafeAreaWrapper>
-      <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-        {/* Header */}
-        <Surface style={styles.header} elevation={1}>
-          <View style={styles.headerContent}>
-            <Text variant="headlineMedium">Onboarding</Text>
-            <Badge style={[styles.statusBadge, { backgroundColor: getStatusColor(onboarding.status) }]}>
-              {onboarding.status === 'completed' ? 'Klar' : 
-               onboarding.status === 'in_progress' ? 'Pågående' : 'Väntande'}
-            </Badge>
-          </View>
-          <Text variant="bodyMedium" style={styles.headerSubtext}>
-            Steg {completedSteps} av {totalSteps} klara
+    <ScreenLayout>
+      {/* Header */}
+      <Surface elevation={1} style={styles.header}>
+        <View style={styles.headerContent}>
+          <Text variant="h2" style={{ color: textColor }}>Onboarding</Text>
+          <Badge variant={onboarding.status === 'completed' ? 'success' : 'default'}>
+            {onboarding.status === 'completed' ? 'Klar' : 
+             onboarding.status === 'in_progress' ? 'Pågående' : 'Väntande'}
+          </Badge>
+        </View>
+        <Text variant="body" style={[styles.headerSubtext, { color: mutedColor }]}>
+          Steg {completedSteps} av {totalSteps} klara
+        </Text>
+        <ProgressBar progress={progressPercentage} style={styles.progressBar} />
+      </Surface>
+
+      {/* Steps List */}
+      <Card variant="elevated" style={styles.stepsCard}>
+        <CardContent>
+          <Text variant="h3" style={[styles.sectionTitle, { color: textColor }]}>
+            Alla steg
           </Text>
-          <ProgressBar progress={progressPercentage} style={styles.progressBar} />
-        </Surface>
+          {steps.map((step, index) => {
+            const stepProgress = progress[index];
+            const isActive = index === currentStepIndex;
 
-        {/* Steps List */}
-        <Card style={styles.stepsCard}>
-          <Card.Content>
-            <Text variant="titleMedium" style={styles.sectionTitle}>
-              Alla steg
-            </Text>
-            {steps.map((step, index) => {
-              const stepProgress = progress[index];
-              const isActive = index === currentStepIndex;
-
-              return (
+            return (
+              <TouchableOpacity
+                key={step.id}
+                onPress={() => setCurrentStepIndex(index)}
+                activeOpacity={0.7}
+              >
                 <Surface
-                  key={step.id}
+                  elevation={isActive ? 2 : 0}
                   style={[
                     styles.stepItem,
                     isActive && styles.stepItemActive,
                   ]}
-                  elevation={isActive ? 2 : 0}
                 >
                   <View style={styles.stepHeader}>
                     {getStatusIcon(stepProgress?.status || 'pending')}
                     <Text
-                      variant="bodyLarge"
+                      variant="body-lg"
                       style={[
                         styles.stepTitle,
-                        isActive && styles.stepTitleActive,
+                        { color: isActive ? accentColor : textColor },
                       ]}
                     >
                       {step.title}
                     </Text>
                   </View>
                   {step.description && (
-                    <Text variant="bodySmall" style={styles.stepDescription}>
+                    <Text variant="body-sm" style={[styles.stepDescription, { color: mutedColor }]}>
                       {step.description}
                     </Text>
                   )}
                 </Surface>
-              );
-            })}
-          </Card.Content>
-        </Card>
+              </TouchableOpacity>
+            );
+          })}
+        </CardContent>
+      </Card>
 
-        {/* Current Step Content */}
-        {currentStep && currentProgress && (
-          <View style={styles.stepContentContainer}>
-            {renderStepComponent(currentStep, currentProgress)}
-          </View>
-        )}
-      </ScrollView>
-    </SafeAreaWrapper>
+      {/* Current Step Content */}
+      {currentStep && currentProgress && (
+        <View style={styles.stepContentContainer}>
+          {renderStepComponent(currentStep, currentProgress)}
+        </View>
+      )}
+    </ScreenLayout>
   );
 };
 

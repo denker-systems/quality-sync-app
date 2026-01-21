@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
-import { TextInput, Button, Text, Surface, Snackbar } from 'react-native-paper';
+import { View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, TextInput } from 'react-native';
+import { Text, Card, CardContent, Button } from '@/components/ui';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAuth } from '@/hooks/useAuth';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const loginSchema = z.object({
   email: z.string().email('Ogiltig email-adress'),
@@ -15,8 +17,16 @@ type LoginForm = z.infer<typeof loginSchema>;
 
 export const LoginScreen = () => {
   const { signIn } = useAuth();
-  const [snackbarVisible, setSnackbarVisible] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const { isDark } = useTheme();
+  const insets = useSafeAreaInsets();
+  const [errorMessage, setErrorMessage] = useState('');
+  
+  const textColor = isDark ? '#FAFAFA' : '#171717';
+  const mutedColor = isDark ? '#A3A3A3' : '#737373';
+  const accentColor = isDark ? '#6BBD68' : '#489A45';
+  const inputBg = isDark ? '#1A1A1A' : '#FFFFFF';
+  const borderColor = isDark ? '#2E2E2E' : '#E5E5E5';
+  const backgroundColor = isDark ? '#0F0F0F' : '#FFFFFF';
   
   const { control, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
@@ -27,102 +37,102 @@ export const LoginScreen = () => {
   });
 
   const onSubmit = async (data: LoginForm) => {
+    setErrorMessage('');
     const { error } = await signIn(data.email, data.password);
     
     if (error) {
-      setSnackbarMessage(error.message || 'Inloggning misslyckades');
-      setSnackbarVisible(true);
+      setErrorMessage(error.message || 'Inloggning misslyckades');
     }
   };
 
   return (
     <KeyboardAvoidingView 
-      style={styles.container}
+      style={[styles.container, { backgroundColor, paddingTop: insets.top }]}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView 
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
-        <Surface style={styles.surface} elevation={2}>
-          <View style={styles.logoContainer}>
-            <Text variant="displaySmall" style={styles.title}>
-              Quality Sync
-            </Text>
-            <Text variant="bodyLarge" style={styles.subtitle}>
-              Logga in för att fortsätta
-            </Text>
-          </View>
+        <View style={styles.logoContainer}>
+          <Text variant="display" style={{ color: accentColor }}>
+            Quality Sync
+          </Text>
+          <Text variant="body-lg" style={{ color: mutedColor, marginTop: 8 }}>
+            Logga in för att fortsätta
+          </Text>
+        </View>
 
-          <View style={styles.formContainer}>
+        <Card variant="elevated" style={styles.card}>
+          <CardContent>
+            <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>Email</Text>
             <Controller
               control={control}
               name="email"
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
-                  label="Email"
                   value={value}
                   onChangeText={onChange}
                   onBlur={onBlur}
                   keyboardType="email-address"
                   autoCapitalize="none"
                   autoComplete="email"
-                  error={!!errors.email}
-                  style={styles.input}
-                  mode="outlined"
+                  placeholder="din@email.com"
+                  placeholderTextColor={mutedColor}
+                  style={[
+                    styles.input, 
+                    { backgroundColor: inputBg, borderColor, color: textColor },
+                    errors.email && styles.inputError
+                  ]}
                 />
               )}
             />
             {errors.email && (
-              <Text style={styles.errorText}>{errors.email.message}</Text>
+              <Text variant="body-sm" style={styles.errorText}>{errors.email.message}</Text>
             )}
 
+            <Text variant="body-sm" style={[styles.label, { color: mutedColor, marginTop: 16 }]}>Lösenord</Text>
             <Controller
               control={control}
               name="password"
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
-                  label="Lösenord"
                   value={value}
                   onChangeText={onChange}
                   onBlur={onBlur}
                   secureTextEntry
                   autoComplete="password"
-                  error={!!errors.password}
-                  style={styles.input}
-                  mode="outlined"
+                  placeholder="********"
+                  placeholderTextColor={mutedColor}
+                  style={[
+                    styles.input, 
+                    { backgroundColor: inputBg, borderColor, color: textColor },
+                    errors.password && styles.inputError
+                  ]}
                 />
               )}
             />
             {errors.password && (
-              <Text style={styles.errorText}>{errors.password.message}</Text>
+              <Text variant="body-sm" style={styles.errorText}>{errors.password.message}</Text>
+            )}
+
+            {errorMessage && (
+              <View style={styles.errorContainer}>
+                <Text variant="body" style={styles.errorText}>{errorMessage}</Text>
+              </View>
             )}
 
             <Button
-              mode="contained"
+              variant="primary"
               onPress={handleSubmit(onSubmit)}
-              loading={isSubmitting}
               disabled={isSubmitting}
               style={styles.button}
-              contentStyle={styles.buttonContent}
             >
-              Logga in
+              {isSubmitting ? 'Loggar in...' : 'Logga in'}
             </Button>
-          </View>
-        </Surface>
+          </CardContent>
+        </Card>
       </ScrollView>
-
-      <Snackbar
-        visible={snackbarVisible}
-        onDismiss={() => setSnackbarVisible(false)}
-        duration={3000}
-        action={{
-          label: 'OK',
-          onPress: () => setSnackbarVisible(false),
-        }}
-      >
-        {snackbarMessage}
-      </Snackbar>
     </KeyboardAvoidingView>
   );
 };
@@ -130,47 +140,45 @@ export const LoginScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
   },
   scrollContent: {
     flexGrow: 1,
     justifyContent: 'center',
     padding: 16,
   },
-  surface: {
-    padding: 24,
-    borderRadius: 12,
-    backgroundColor: '#ffffff',
-  },
   logoContainer: {
     alignItems: 'center',
     marginBottom: 32,
   },
-  title: {
-    color: '#0056b3',
-    fontWeight: 'bold',
-    marginBottom: 8,
+  card: {
+    marginHorizontal: 0,
   },
-  subtitle: {
-    color: '#6c757d',
-    textAlign: 'center',
-  },
-  formContainer: {
-    gap: 16,
+  label: {
+    marginBottom: 6,
   },
   input: {
-    backgroundColor: '#ffffff',
+    padding: 12,
+    borderWidth: 1,
+    borderRadius: 8,
+    fontSize: 16,
+    marginBottom: 4,
+  },
+  inputError: {
+    borderColor: '#ef4444',
   },
   errorText: {
     color: '#ef4444',
     fontSize: 12,
-    marginTop: -12,
-    marginLeft: 12,
+    marginTop: 4,
+    marginBottom: 8,
+  },
+  errorContainer: {
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    padding: 12,
+    borderRadius: 8,
+    marginTop: 16,
   },
   button: {
-    marginTop: 8,
-  },
-  buttonContent: {
-    paddingVertical: 8,
+    marginTop: 24,
   },
 });

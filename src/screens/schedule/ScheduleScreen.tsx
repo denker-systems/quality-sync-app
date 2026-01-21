@@ -1,13 +1,19 @@
 import React from 'react';
-import { View, ScrollView, StyleSheet, RefreshControl } from 'react-native';
-import { Text, Card, Surface, Divider, ActivityIndicator } from 'react-native-paper';
-import { SafeAreaWrapper } from '@/components/SafeAreaWrapper';
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { ScreenLayout, EmptyState } from '@/components/common';
+import { Text, Card, CardContent } from '@/components/ui';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useMyShifts, MyShift } from '@/hooks/useMyShifts';
 import { Calendar, Clock, Coffee, MapPin } from 'lucide-react-native';
 
 const ShiftCard = ({ shift }: { shift: MyShift }) => {
+  const { isDark } = useTheme();
   const fromDate = new Date(shift.from_time);
   const toDate = new Date(shift.to_time);
+  
+  const textColor = isDark ? '#FAFAFA' : '#171717';
+  const mutedColor = isDark ? '#A3A3A3' : '#737373';
+  const accentColor = isDark ? '#6BBD68' : '#489A45';
   
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' });
@@ -30,68 +36,69 @@ const ShiftCard = ({ shift }: { shift: MyShift }) => {
   const isPast = fromDate < new Date();
 
   return (
-    <Card style={[styles.shiftCard, isToday && styles.todayCard, isPast && styles.pastCard]}>
-      <Card.Content>
+    <Card 
+      variant="elevated" 
+      style={[styles.shiftCard, isToday && styles.todayCard, isPast && styles.pastCard]}
+    >
+      <CardContent>
         <View style={styles.shiftHeader}>
           <View style={styles.dateContainer}>
-            <Calendar size={16} color="#0056b3" />
-            <Text variant="titleMedium" style={styles.dateText}>
+            <Calendar size={16} color={accentColor} />
+            <Text variant="body-lg" style={[styles.dateText, { color: textColor }]}>
               {formatDate(fromDate)}
             </Text>
             {isToday && (
-              <Surface style={styles.todayBadge}>
-                <Text style={styles.todayBadgeText}>Idag</Text>
-              </Surface>
+              <View style={[styles.todayBadge, { backgroundColor: accentColor }]}>
+                <Text variant="tiny" style={{ color: '#FFFFFF' }}>Idag</Text>
+              </View>
             )}
           </View>
         </View>
 
-        <Divider style={styles.divider} />
+        <View style={styles.divider} />
 
         <View style={styles.shiftDetails}>
           <View style={styles.detailRow}>
-            <Clock size={16} color="#6c757d" />
-            <Text variant="bodyMedium" style={styles.detailText}>
+            <Clock size={16} color={mutedColor} />
+            <Text variant="body" style={{ color: mutedColor }}>
               {formatTime(fromDate)} - {formatTime(toDate)}
             </Text>
           </View>
 
           <View style={styles.detailRow}>
-            <Coffee size={16} color="#6c757d" />
-            <Text variant="bodyMedium" style={styles.detailText}>
+            <Coffee size={16} color={mutedColor} />
+            <Text variant="body" style={{ color: mutedColor }}>
               {shift.breaks_duration} min rast
             </Text>
           </View>
 
           {shift.unit && shift.unit !== '-' && (
             <View style={styles.detailRow}>
-              <MapPin size={16} color="#6c757d" />
-              <Text variant="bodyMedium" style={styles.detailText}>
+              <MapPin size={16} color={mutedColor} />
+              <Text variant="body" style={{ color: mutedColor }}>
                 {shift.unit}
               </Text>
             </View>
           )}
         </View>
 
-        <Surface style={styles.durationBadge}>
-          <Text style={styles.durationText}>
+        <View style={[styles.durationBadge, { backgroundColor: isDark ? 'rgba(107,189,104,0.15)' : '#EDF5EC' }]}>
+          <Text variant="body-sm" style={{ color: accentColor }}>
             {workHours}h {workMins > 0 ? `${workMins}m` : ''} arbetstid
           </Text>
-        </Surface>
-      </Card.Content>
+        </View>
+      </CardContent>
     </Card>
   );
 };
 
 export const ScheduleScreen = () => {
+  const { isDark } = useTheme();
   const { data: shifts, isLoading, error, refetch } = useMyShifts();
   const [refreshing, setRefreshing] = React.useState(false);
-
-  console.log('📅 SCHEDULE_SCREEN render:', {
-    isLoading,
-    shiftsCount: shifts?.length || 0,
-    error: error?.message,
-  });
+  
+  const textColor = isDark ? '#FAFAFA' : '#171717';
+  const mutedColor = isDark ? '#A3A3A3' : '#737373';
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -99,87 +106,70 @@ export const ScheduleScreen = () => {
     setRefreshing(false);
   };
 
-  // Separera kommande och tidigare skift
   const now = new Date();
   const upcomingShifts = (shifts || []).filter(s => new Date(s.from_time) >= now);
   const pastShifts = (shifts || []).filter(s => new Date(s.from_time) < now).slice(-5);
 
   if (isLoading) {
     return (
-      <SafeAreaWrapper>
+      <ScreenLayout title="Schema" scrollable={false}>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#0056b3" />
-          <Text style={styles.loadingText}>Laddar schema...</Text>
+          <ActivityIndicator size="large" color={isDark ? '#6BBD68' : '#489A45'} />
+          <Text variant="body" style={{ color: mutedColor, marginTop: 16 }}>
+            Laddar schema...
+          </Text>
         </View>
-      </SafeAreaWrapper>
+      </ScreenLayout>
     );
   }
 
   if (error) {
     return (
-      <SafeAreaWrapper>
-        <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>Kunde inte ladda schema</Text>
-          <Text style={styles.errorDetail}>{error.message}</Text>
-        </View>
-      </SafeAreaWrapper>
+      <ScreenLayout title="Schema" scrollable={false}>
+        <EmptyState
+          icon={Calendar}
+          title="Kunde inte ladda schema"
+          description={error.message}
+        />
+      </ScreenLayout>
     );
   }
 
   return (
-    <SafeAreaWrapper>
-      <ScrollView
-        style={styles.container}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-        }
-      >
-        <View style={styles.header}>
-          <Calendar size={24} color="#0056b3" />
-          <Text variant="headlineSmall" style={styles.headerTitle}>
-            Mitt Schema
-          </Text>
-        </View>
+    <ScreenLayout title="Schema">
 
-        {upcomingShifts.length === 0 && pastShifts.length === 0 ? (
-          <Card style={styles.emptyCard}>
-            <Card.Content style={styles.emptyContent}>
-              <Calendar size={48} color="#6c757d" />
-              <Text variant="titleMedium" style={styles.emptyTitle}>
-                Inga skift
+      {upcomingShifts.length === 0 && pastShifts.length === 0 ? (
+        <EmptyState
+          icon={Calendar}
+          title="Inga skift"
+          description="Du har inga schemalagda skift just nu."
+        />
+      ) : (
+        <>
+          {upcomingShifts.length > 0 && (
+            <View style={styles.section}>
+              <Text variant="h3" style={{ color: textColor, marginBottom: 12 }}>
+                Kommande skift ({upcomingShifts.length})
               </Text>
-              <Text variant="bodyMedium" style={styles.emptyText}>
-                Du har inga schemalagda skift just nu.
-              </Text>
-            </Card.Content>
-          </Card>
-        ) : (
-          <>
-            {upcomingShifts.length > 0 && (
-              <View style={styles.section}>
-                <Text variant="titleMedium" style={styles.sectionTitle}>
-                  Kommande skift ({upcomingShifts.length})
-                </Text>
-                {upcomingShifts.map((shift, index) => (
-                  <ShiftCard key={shift.shift_id || index} shift={shift} />
-                ))}
-              </View>
-            )}
+              {upcomingShifts.map((shift, index) => (
+                <ShiftCard key={shift.shift_id || index} shift={shift} />
+              ))}
+            </View>
+          )}
 
-            {pastShifts.length > 0 && (
-              <View style={styles.section}>
-                <Text variant="titleMedium" style={styles.sectionTitle}>
-                  Tidigare skift
-                </Text>
-                {pastShifts.map((shift, index) => (
-                  <ShiftCard key={shift.shift_id || index} shift={shift} />
-                ))}
-              </View>
-            )}
-          </>
-        )}
-      </ScrollView>
-    </SafeAreaWrapper>
+          {pastShifts.length > 0 && (
+            <View style={styles.section}>
+              <Text variant="h3" style={{ color: textColor, marginBottom: 12 }}>
+                Tidigare skift
+              </Text>
+              {pastShifts.map((shift, index) => (
+                <ShiftCard key={shift.shift_id || index} shift={shift} />
+              ))}
+            </View>
+          )}
+        </>
+      )}
+    </ScreenLayout>
   );
 };
 

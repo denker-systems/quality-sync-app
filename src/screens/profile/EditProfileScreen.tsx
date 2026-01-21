@@ -1,17 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
-import { Text, TextInput, Button, Card, ActivityIndicator } from 'react-native-paper';
-import { SafeAreaWrapper } from '@/components/SafeAreaWrapper';
+import { View, StyleSheet, KeyboardAvoidingView, Platform, TextInput, ActivityIndicator } from 'react-native';
+import { ScreenLayout } from '@/components/common';
+import { Text, Card, CardContent, Button } from '@/components/ui';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useMyEmployee } from '@/hooks/useMyEmployee';
 import { useNavigation } from '@react-navigation/native';
 import { supabase } from '@/config/supabase';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { User, Save, ArrowLeft } from 'lucide-react-native';
+import { User, Save } from 'lucide-react-native';
 
 export const EditProfileScreen = () => {
   const navigation = useNavigation();
   const queryClient = useQueryClient();
+  const { isDark } = useTheme();
   const { data: employee, isLoading } = useMyEmployee();
+  
+  const textColor = isDark ? '#FAFAFA' : '#171717';
+  const mutedColor = isDark ? '#A3A3A3' : '#737373';
+  const accentColor = isDark ? '#6BBD68' : '#489A45';
+  const inputBg = isDark ? '#1A1A1A' : '#FFFFFF';
+  const borderColor = isDark ? '#2E2E2E' : '#E5E5E5';
   
   const [formData, setFormData] = useState({
     first_name: '',
@@ -88,151 +96,144 @@ export const EditProfileScreen = () => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const handleBackToProfile = () => {
+    navigation.navigate('Profile' as never);
+  };
+
   if (isLoading) {
     return (
-      <SafeAreaWrapper>
+      <ScreenLayout title="Redigera Profil" onBackPress={handleBackToProfile} scrollable={false}>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#0056b3" />
-          <Text style={styles.loadingText}>Laddar profil...</Text>
+          <ActivityIndicator size="large" color={accentColor} />
+          <Text variant="body" style={{ color: mutedColor, marginTop: 16 }}>
+            Laddar profil...
+          </Text>
         </View>
-      </SafeAreaWrapper>
+      </ScreenLayout>
     );
   }
 
   return (
-    <SafeAreaWrapper>
+    <ScreenLayout title="Redigera Profil" onBackPress={handleBackToProfile}>
       <KeyboardAvoidingView 
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <ScrollView style={styles.scrollView}>
-          <View style={styles.header}>
-            <Button 
-              mode="text" 
-              onPress={() => navigation.goBack()}
-              icon={() => <ArrowLeft size={20} color="#0056b3" />}
-            >
-              Tillbaka
-            </Button>
-          </View>
+        <Card variant="elevated" style={styles.card}>
+          <CardContent>
+            <View style={styles.sectionHeader}>
+              <User size={20} color={accentColor} />
+              <Text variant="h3" style={{ color: textColor, marginLeft: 8 }}>
+                Personuppgifter
+              </Text>
+            </View>
 
-          <Card style={styles.card}>
-            <Card.Content>
-              <View style={styles.sectionHeader}>
-                <User size={20} color="#0056b3" />
-                <Text variant="titleMedium" style={styles.sectionTitle}>
-                  Personuppgifter
-                </Text>
-              </View>
+            <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>Förnamn</Text>
+            <TextInput
+              value={formData.first_name}
+              onChangeText={(value) => updateField('first_name', value)}
+              style={[styles.input, { backgroundColor: inputBg, borderColor, color: textColor }]}
+              placeholderTextColor={mutedColor}
+            />
 
-              <TextInput
-                label="Förnamn"
-                value={formData.first_name}
-                onChangeText={(value) => updateField('first_name', value)}
-                mode="outlined"
-                style={styles.input}
-              />
+            <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>Efternamn</Text>
+            <TextInput
+              value={formData.last_name}
+              onChangeText={(value) => updateField('last_name', value)}
+              style={[styles.input, { backgroundColor: inputBg, borderColor, color: textColor }]}
+              placeholderTextColor={mutedColor}
+            />
 
-              <TextInput
-                label="Efternamn"
-                value={formData.last_name}
-                onChangeText={(value) => updateField('last_name', value)}
-                mode="outlined"
-                style={styles.input}
-              />
+            <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>Telefon</Text>
+            <TextInput
+              value={formData.phone}
+              onChangeText={(value) => updateField('phone', value)}
+              keyboardType="phone-pad"
+              style={[styles.input, { backgroundColor: inputBg, borderColor, color: textColor }]}
+              placeholderTextColor={mutedColor}
+            />
 
-              <TextInput
-                label="Telefon"
-                value={formData.phone}
-                onChangeText={(value) => updateField('phone', value)}
-                mode="outlined"
-                keyboardType="phone-pad"
-                style={styles.input}
-              />
+            <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>Email</Text>
+            <TextInput
+              value={formData.email}
+              onChangeText={(value) => updateField('email', value)}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              style={[styles.input, { backgroundColor: inputBg, borderColor, color: textColor }]}
+              placeholderTextColor={mutedColor}
+            />
+          </CardContent>
+        </Card>
 
-              <TextInput
-                label="Email"
-                value={formData.email}
-                onChangeText={(value) => updateField('email', value)}
-                mode="outlined"
-                keyboardType="email-address"
-                autoCapitalize="none"
-                style={styles.input}
-              />
-            </Card.Content>
-          </Card>
+        <Card variant="elevated" style={styles.card}>
+          <CardContent>
+            <Text variant="h3" style={{ color: textColor, marginBottom: 16 }}>
+              Adress
+            </Text>
 
-          <Card style={styles.card}>
-            <Card.Content>
-              <View style={styles.sectionHeader}>
-                <Text variant="titleMedium" style={styles.sectionTitle}>
-                  Adress
-                </Text>
-              </View>
+            <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>Adress 1</Text>
+            <TextInput
+              value={formData.address1}
+              onChangeText={(value) => updateField('address1', value)}
+              style={[styles.input, { backgroundColor: inputBg, borderColor, color: textColor }]}
+              placeholderTextColor={mutedColor}
+            />
 
-              <TextInput
-                label="Adress 1"
-                value={formData.address1}
-                onChangeText={(value) => updateField('address1', value)}
-                mode="outlined"
-                style={styles.input}
-              />
+            <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>Adress 2</Text>
+            <TextInput
+              value={formData.address2}
+              onChangeText={(value) => updateField('address2', value)}
+              style={[styles.input, { backgroundColor: inputBg, borderColor, color: textColor }]}
+              placeholderTextColor={mutedColor}
+            />
 
-              <TextInput
-                label="Adress 2"
-                value={formData.address2}
-                onChangeText={(value) => updateField('address2', value)}
-                mode="outlined"
-                style={styles.input}
-              />
-
-              <View style={styles.row}>
+            <View style={styles.row}>
+              <View style={styles.postCode}>
+                <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>Postnummer</Text>
                 <TextInput
-                  label="Postnummer"
                   value={formData.post_code}
                   onChangeText={(value) => updateField('post_code', value)}
-                  mode="outlined"
                   keyboardType="numeric"
-                  style={[styles.input, styles.postCode]}
-                />
-
-                <TextInput
-                  label="Ort"
-                  value={formData.city}
-                  onChangeText={(value) => updateField('city', value)}
-                  mode="outlined"
-                  style={[styles.input, styles.city]}
+                  style={[styles.input, { backgroundColor: inputBg, borderColor, color: textColor }]}
+                  placeholderTextColor={mutedColor}
                 />
               </View>
-            </Card.Content>
-          </Card>
 
-          <Button
-            mode="contained"
-            onPress={handleSave}
-            loading={updateProfile.isPending}
-            disabled={updateProfile.isPending}
-            style={styles.saveButton}
-            icon={() => <Save size={18} color="#ffffff" />}
-          >
-            Spara ändringar
-          </Button>
+              <View style={styles.city}>
+                <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>Ort</Text>
+                <TextInput
+                  value={formData.city}
+                  onChangeText={(value) => updateField('city', value)}
+                  style={[styles.input, { backgroundColor: inputBg, borderColor, color: textColor }]}
+                  placeholderTextColor={mutedColor}
+                />
+              </View>
+            </View>
+          </CardContent>
+        </Card>
 
-          {updateProfile.isError && (
-            <Text style={styles.errorText}>
-              Kunde inte spara ändringar. Försök igen.
-            </Text>
-          )}
-        </ScrollView>
+        <Button
+          variant="primary"
+          onPress={handleSave}
+          disabled={updateProfile.isPending}
+          style={styles.saveButton}
+        >
+          {updateProfile.isPending ? 'Sparar...' : 'Spara ändringar'}
+        </Button>
+
+        {updateProfile.isError && (
+          <Text variant="body" style={styles.errorText}>
+            Kunde inte spara ändringar. Försök igen.
+          </Text>
+        )}
       </KeyboardAvoidingView>
-    </SafeAreaWrapper>
+    </ScreenLayout>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
   },
   scrollView: {
     flex: 1,
@@ -266,9 +267,15 @@ const styles = StyleSheet.create({
     color: '#1f2937',
     fontWeight: '600',
   },
+  label: {
+    marginBottom: 6,
+  },
   input: {
     marginBottom: 12,
-    backgroundColor: '#ffffff',
+    padding: 12,
+    borderWidth: 1,
+    borderRadius: 8,
+    fontSize: 16,
   },
   row: {
     flexDirection: 'row',
@@ -283,7 +290,6 @@ const styles = StyleSheet.create({
   saveButton: {
     margin: 16,
     marginTop: 8,
-    backgroundColor: '#0056b3',
   },
   errorText: {
     textAlign: 'center',

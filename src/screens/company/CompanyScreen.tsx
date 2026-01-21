@@ -1,0 +1,246 @@
+import React from 'react';
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { ScreenLayout } from '@/components/common';
+import { MenuButton } from '@/components/common/MenuButton';
+import { Text, Card, CardContent } from '@/components/ui';
+import { useTheme } from '@/contexts/ThemeContext';
+import { useCompanyData } from '@/hooks/useCompanyData';
+import { 
+  Building2, 
+  Mail, 
+  MapPin, 
+  Hash,
+  CreditCard,
+  Users,
+  Calendar,
+} from 'lucide-react-native';
+
+interface InfoRowProps {
+  icon: React.ComponentType<{ size: number; color: string }>;
+  label: string;
+  value: string | null | undefined;
+}
+
+function InfoRow({ icon: Icon, label, value }: InfoRowProps) {
+  const { isDark } = useTheme();
+  const textColor = isDark ? '#FAFAFA' : '#171717';
+  const mutedColor = isDark ? '#A3A3A3' : '#737373';
+  const iconColor = isDark ? '#6BBD68' : '#489A45';
+
+  if (!value) return null;
+
+  return (
+    <View style={styles.infoRow}>
+      <Icon size={18} color={iconColor} />
+      <View style={styles.infoText}>
+        <Text variant="body-sm" style={{ color: mutedColor }}>{label}</Text>
+        <Text variant="body" style={{ color: textColor }}>{value}</Text>
+      </View>
+    </View>
+  );
+}
+
+export function CompanyScreen() {
+  const { isDark } = useTheme();
+  const { company, loading, error } = useCompanyData();
+
+  const textColor = isDark ? '#FAFAFA' : '#171717';
+  const mutedColor = isDark ? '#A3A3A3' : '#737373';
+  const accentColor = isDark ? '#6BBD68' : '#489A45';
+  const iconBgColor = isDark ? 'rgba(107,189,104,0.15)' : '#EDF5EC';
+
+  if (loading) {
+    return (
+      <ScreenLayout title="Företag" headerRight={<MenuButton />}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={accentColor} />
+          <Text variant="body" style={{ color: mutedColor, marginTop: 16 }}>
+            Laddar företagsinformation...
+          </Text>
+        </View>
+      </ScreenLayout>
+    );
+  }
+
+  if (error || !company) {
+    return (
+      <ScreenLayout title="Företag" headerRight={<MenuButton />}>
+        <View style={styles.loadingContainer}>
+          <Building2 size={48} color={mutedColor} />
+          <Text variant="h3" style={{ color: textColor, marginTop: 16 }}>
+            Ingen företagsinformation
+          </Text>
+          <Text variant="body" style={{ color: mutedColor, marginTop: 8, textAlign: 'center' }}>
+            Det gick inte att hämta företagsinformation.
+          </Text>
+        </View>
+      </ScreenLayout>
+    );
+  }
+
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return null;
+    return new Date(dateString).toLocaleDateString('sv-SE');
+  };
+
+  const getSubscriptionStatus = (status: string) => {
+    switch (status) {
+      case 'active': return 'Aktiv';
+      case 'trial': return 'Provperiod';
+      case 'canceled': return 'Avslutad';
+      default: return status;
+    }
+  };
+
+  return (
+    <ScreenLayout title="Företag" headerRight={<MenuButton />}>
+      {/* Company Header */}
+      <Card variant="elevated" style={styles.headerCard}>
+        <CardContent style={styles.headerContent}>
+          <View style={[styles.companyIcon, { backgroundColor: iconBgColor }]}>
+            <Building2 size={32} color={accentColor} />
+          </View>
+          <View style={styles.headerText}>
+            <Text variant="h2" style={{ color: textColor }}>{company.name}</Text>
+            {company.organization_number && (
+              <Text variant="body-sm" style={{ color: mutedColor }}>
+                Org.nr: {company.organization_number}
+              </Text>
+            )}
+          </View>
+        </CardContent>
+      </Card>
+
+      {/* Contact Information */}
+      <View style={styles.section}>
+        <Text variant="h3" style={[styles.sectionTitle, { color: textColor }]}>
+          Kontaktuppgifter
+        </Text>
+        <Card variant="elevated">
+          <CardContent>
+            <InfoRow 
+              icon={Mail} 
+              label="E-post" 
+              value={company.contact_email} 
+            />
+            {company.contact_email && company.address && (
+              <View style={[styles.divider, { backgroundColor: isDark ? '#2E2E2E' : '#E5E5E5' }]} />
+            )}
+            <InfoRow 
+              icon={MapPin} 
+              label="Adress" 
+              value={company.address} 
+            />
+          </CardContent>
+        </Card>
+      </View>
+
+      {/* Subscription Information */}
+      <View style={styles.section}>
+        <Text variant="h3" style={[styles.sectionTitle, { color: textColor }]}>
+          Prenumeration
+        </Text>
+        <Card variant="elevated">
+          <CardContent>
+            <InfoRow 
+              icon={CreditCard} 
+              label="Plan" 
+              value={company.subscription_plan} 
+            />
+            <View style={[styles.divider, { backgroundColor: isDark ? '#2E2E2E' : '#E5E5E5' }]} />
+            <InfoRow 
+              icon={Hash} 
+              label="Status" 
+              value={getSubscriptionStatus(company.subscription_status)} 
+            />
+            {company.trial_ends_at && (
+              <>
+                <View style={[styles.divider, { backgroundColor: isDark ? '#2E2E2E' : '#E5E5E5' }]} />
+                <InfoRow 
+                  icon={Calendar} 
+                  label="Provperiod slutar" 
+                  value={formatDate(company.trial_ends_at)} 
+                />
+              </>
+            )}
+            <View style={[styles.divider, { backgroundColor: isDark ? '#2E2E2E' : '#E5E5E5' }]} />
+            <InfoRow 
+              icon={Users} 
+              label="Anställningsgräns" 
+              value={`${company.employee_limit} anställda`} 
+            />
+          </CardContent>
+        </Card>
+      </View>
+
+      {/* Company Details */}
+      <View style={styles.section}>
+        <Text variant="h3" style={[styles.sectionTitle, { color: textColor }]}>
+          Övrigt
+        </Text>
+        <Card variant="elevated">
+          <CardContent>
+            <InfoRow 
+              icon={Calendar} 
+              label="Registrerad" 
+              value={formatDate(company.created_at)} 
+            />
+            <View style={[styles.divider, { backgroundColor: isDark ? '#2E2E2E' : '#E5E5E5' }]} />
+            <InfoRow 
+              icon={Hash} 
+              label="Status" 
+              value={company.is_active ? 'Aktiv' : 'Inaktiv'} 
+            />
+          </CardContent>
+        </Card>
+      </View>
+    </ScreenLayout>
+  );
+}
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 32,
+  },
+  headerCard: {
+    marginBottom: 24,
+  },
+  headerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  companyIcon: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerText: {
+    flex: 1,
+    marginLeft: 16,
+  },
+  section: {
+    marginBottom: 24,
+  },
+  sectionTitle: {
+    marginBottom: 12,
+  },
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    paddingVertical: 12,
+  },
+  infoText: {
+    flex: 1,
+    marginLeft: 12,
+  },
+  divider: {
+    height: 1,
+  },
+});
+
+export default CompanyScreen;

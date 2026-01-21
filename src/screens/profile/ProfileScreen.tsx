@@ -1,44 +1,97 @@
-import React, { useState } from 'react';
-import { ScrollView, View, StyleSheet, RefreshControl } from 'react-native';
-import { Avatar, Card, Text, List, Button, Divider, ActivityIndicator, Dialog, Portal, Badge, useTheme as usePaperTheme } from 'react-native-paper';
+import React from 'react';
+import { View, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { ScreenLayout } from '@/components/common';
+import { Text, Card, CardContent, Avatar, Badge, Button } from '@/components/ui';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/hooks/useAuth';
 import { useMyEmployee } from '@/hooks/useMyEmployee';
 import { useCompanyData } from '@/hooks/useCompanyData';
 import { useMyOnboarding } from '@/hooks/useOnboarding';
 import { useMyContracts } from '@/hooks/useContracts';
 import { useMyShifts } from '@/hooks/useMyShifts';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/config/supabase';
 import { useNavigation } from '@react-navigation/native';
-import { InterviewBookingCard } from '@/components/profile/InterviewBookingCard';
-import { AITokenUsageCard } from '@/components/profile/AITokenUsageCard';
-import { CompanyInfoCard } from '@/components/profile/CompanyInfoCard';
-import { ThemeListItem } from '@/components/common/ThemeToggle';
+import { 
+  Calendar, 
+  FileText, 
+  User, 
+  Mail, 
+  Phone, 
+  Briefcase, 
+  Building2,
+  ChevronRight,
+  Star,
+  LogOut,
+  Settings,
+  Edit,
+} from 'lucide-react-native';
+
+interface MenuItemProps {
+  icon: React.ComponentType<{ size: number; color: string }>;
+  title: string;
+  subtitle?: string;
+  onPress: () => void;
+  rightContent?: React.ReactNode;
+}
+
+function MenuItem({ icon: Icon, title, subtitle, onPress, rightContent }: MenuItemProps) {
+  const { isDark } = useTheme();
+  const iconBgColor = isDark ? 'rgba(107,189,104,0.15)' : '#F0F0F0';
+  const iconColor = isDark ? '#A8D5A2' : '#666666';
+  const textColor = isDark ? '#FAFAFA' : '#171717';
+  const mutedColor = isDark ? '#A3A3A3' : '#737373';
+
+  return (
+    <TouchableOpacity style={styles.menuItem} onPress={onPress} activeOpacity={0.7}>
+      <View style={[styles.menuIcon, { backgroundColor: iconBgColor }]}>
+        <Icon size={20} color={iconColor} />
+      </View>
+      <View style={styles.menuText}>
+        <Text variant="body-lg" style={{ color: textColor }}>{title}</Text>
+        {subtitle && <Text variant="body-sm" style={{ color: mutedColor }}>{subtitle}</Text>}
+      </View>
+      {rightContent || <ChevronRight size={20} color={mutedColor} />}
+    </TouchableOpacity>
+  );
+}
 
 export const ProfileScreen = () => {
-  const navigation = useNavigation();
-  const paperTheme = usePaperTheme();
+  const navigation = useNavigation<any>();
+  const { isDark } = useTheme();
   const { user, signOut } = useAuth();
-  const { data: employee, isLoading: employeeLoading, refetch: refetchEmployee } = useMyEmployee();
+  
+  const textColor = isDark ? '#FAFAFA' : '#171717';
+  const mutedColor = isDark ? '#A3A3A3' : '#737373';
+  const accentColor = isDark ? '#6BBD68' : '#489A45';
+  const cardBg = isDark ? '#1A1A1A' : '#FFFFFF';
+  
+  const { data: employee, isLoading: employeeLoading } = useMyEmployee();
   const { company, loading: companyLoading } = useCompanyData();
-  const { data: onboardingData, error: onboardingError } = useMyOnboarding(employee?.id);
-  const { data: contracts, error: contractsError } = useMyContracts(employee?.id);
+  const { data: onboardingData } = useMyOnboarding(employee?.id);
+  const { data: contracts } = useMyContracts(employee?.id);
   const { data: shifts } = useMyShifts();
-  const [refreshing, setRefreshing] = useState(false);
-  const [logoutDialogVisible, setLogoutDialogVisible] = useState(false);
-
-  console.log('👤 PROFILE_SCREEN render:', {
-    userId: user?.id,
-    employeeId: employee?.id,
-    companyId: company?.id,
-    onboardingStatus: onboardingData?.onboarding?.status,
-    contractsCount: contracts?.length || 0,
-    shiftsCount: shifts?.length || 0,
-    onboardingError: onboardingError?.message,
-    contractsError: contractsError?.message,
+  
+  // Fallback: Get user_profiles data if no employee
+  const { data: userProfile } = useQuery({
+    queryKey: ['user-profile', user?.id],
+    enabled: !!user?.id && !employee,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .select('first_name, last_name, email, company_id')
+        .eq('id', user!.id)
+        .single();
+      if (error) throw error;
+      return data as { first_name: string | null; last_name: string | null; email: string | null; company_id: string | null };
+    },
   });
 
   const getInitials = () => {
-    if (employee?.first_name && employee?.last_name) {
-      return `${employee.first_name[0]}${employee.last_name[0]}`.toUpperCase();
+    const firstName = employee?.first_name || userProfile?.first_name;
+    const lastName = employee?.last_name || userProfile?.last_name;
+    if (firstName && lastName) {
+      return `${firstName[0]}${lastName[0]}`.toUpperCase();
     }
     return user?.email?.[0]?.toUpperCase() || '?';
   };
@@ -48,17 +101,14 @@ export const ProfileScreen = () => {
     if (employee?.first_name || employee?.last_name) {
       return `${employee.first_name || ''} ${employee.last_name || ''}`.trim();
     }
+    // Fallback to user_profiles
+    if (userProfile?.first_name || userProfile?.last_name) {
+      return `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim();
+    }
     return user?.email || 'Användare';
   };
 
-  const handleRefresh = async () => {
-    setRefreshing(true);
-    await refetchEmployee();
-    setRefreshing(false);
-  };
-
   const handleLogout = async () => {
-    setLogoutDialogVisible(false);
     await signOut();
   };
 
@@ -66,295 +116,257 @@ export const ProfileScreen = () => {
 
   if (isLoading) {
     return (
-      <View style={[styles.loadingContainer, { backgroundColor: paperTheme.colors.background }]}>
-        <ActivityIndicator size="large" color={paperTheme.colors.primary} />
-        <Text style={[styles.loadingText, { color: paperTheme.colors.onSurfaceVariant }]}>Laddar profil...</Text>
-      </View>
+      <ScreenLayout title="Profil" scrollable={false}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={accentColor} />
+          <Text variant="body" style={{ color: mutedColor, marginTop: 16 }}>
+            Laddar profil...
+          </Text>
+        </View>
+      </ScreenLayout>
     );
   }
 
   return (
-    <>
-      <ScrollView 
-        style={[styles.container, { backgroundColor: paperTheme.colors.background }]}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-        }
-      >
-        <Card style={styles.card}>
-          <Card.Content style={styles.headerContent}>
-            <Avatar.Text 
-              size={80} 
-              label={getInitials()} 
-              style={[styles.avatar, { backgroundColor: paperTheme.colors.primary }]}
-            />
-            <Text variant="headlineSmall" style={[styles.name, { color: paperTheme.colors.onSurface }]}>
+    <ScreenLayout title="Profil">
+      {/* Profile Header Card */}
+      <View style={styles.profileHeaderContainer}>
+        {/* Avatar with border - positioned to overlap */}
+        <View style={styles.avatarWrapper}>
+          <View style={[styles.avatarBorder, { borderColor: isDark ? '#2A2A2A' : '#FFFFFF' }]}>
+            <Avatar name={getDisplayName()} size="xl" />
+          </View>
+        </View>
+        
+        {/* Card with curved top */}
+        <View style={[styles.profileCard, { backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF' }]}>
+          <View style={styles.profileCardContent}>
+            <Text variant="h2" style={{ color: textColor, textAlign: 'center' }}>
               {getDisplayName()}
             </Text>
-            {company && (
-              <View style={[styles.companyBadge, { backgroundColor: paperTheme.colors.secondaryContainer }]}>
-                <List.Icon icon="office-building" color={paperTheme.colors.secondary} />
-                <Text variant="bodyMedium" style={[styles.companyName, { color: paperTheme.colors.secondary }]}>
-                  {company.name}
+            <Text variant="body" style={{ color: mutedColor, textAlign: 'center', marginTop: 4 }}>
+              {user?.email}
+            </Text>
+            
+            {/* Edit button */}
+            <TouchableOpacity 
+              style={[styles.editButton, { backgroundColor: isDark ? '#2A2A2A' : '#F5F5F5' }]}
+              onPress={() => navigation.navigate('EditProfile')}
+            >
+              <Edit size={14} color={textColor} />
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+
+      {/* Account Section */}
+      <View style={styles.section}>
+        <Text variant="h3" style={[styles.sectionTitle, { color: textColor }]}>
+          Konto
+        </Text>
+        <Text variant="body-sm" style={[styles.sectionSubtitle, { color: mutedColor }]}>
+          Hantera din information
+        </Text>
+        
+        <Card variant="elevated">
+          <CardContent style={styles.menuContainer}>
+            <MenuItem
+              icon={Calendar}
+              title="Mitt Schema"
+              subtitle={shifts?.length ? `${shifts.length} kommande skift` : 'Visa dina skift'}
+              onPress={() => navigation.navigate('Schedule')}
+              rightContent={shifts?.length ? (
+                <Badge variant="success">{shifts.length}</Badge>
+              ) : undefined}
+            />
+            <View style={[styles.divider, { backgroundColor: isDark ? '#2E2E2E' : '#E5E5E5' }]} />
+            
+            <MenuItem
+              icon={Star}
+              title="Onboarding"
+              subtitle={
+                onboardingData?.onboarding?.status === 'completed' 
+                  ? 'Slutförd' 
+                  : 'Pågående'
+              }
+              onPress={() => navigation.navigate('Onboarding')}
+              rightContent={
+                onboardingData?.onboarding?.status === 'completed' 
+                  ? <Badge variant="success">✓</Badge>
+                  : <Badge variant="warning">
+                      {`${onboardingData?.progress?.filter(p => p.status === 'completed').length || 0}/${onboardingData?.steps?.length || 0}`}
+                    </Badge>
+              }
+            />
+            <View style={[styles.divider, { backgroundColor: isDark ? '#2E2E2E' : '#E5E5E5' }]} />
+            
+            <MenuItem
+              icon={FileText}
+              title="Avtal"
+              subtitle={`${contracts?.length || 0} signerade avtal`}
+              onPress={() => navigation.navigate('Contracts')}
+              rightContent={contracts?.length ? (
+                <Badge variant="default">{contracts.length}</Badge>
+              ) : undefined}
+            />
+          </CardContent>
+        </Card>
+      </View>
+
+      {/* Contact Info Section */}
+      <View style={styles.section}>
+        <Text variant="h3" style={[styles.sectionTitle, { color: textColor }]}>
+          Kontaktuppgifter
+        </Text>
+        
+        <Card variant="elevated">
+          <CardContent style={styles.menuContainer}>
+            {/* Email - always show from employee or user */}
+            <View style={styles.infoRow}>
+              <Mail size={18} color={mutedColor} />
+              <View style={styles.infoText}>
+                <Text variant="body-sm" style={{ color: mutedColor }}>Email</Text>
+                <Text variant="body" style={{ color: textColor }}>
+                  {employee?.email || user?.email || '-'}
                 </Text>
               </View>
-            )}
-          </Card.Content>
-        </Card>
-
-        {/* Interview Booking - only shows if candidate has interview */}
-        <InterviewBookingCard />
-
-        {/* Quick Actions */}
-        <Card style={styles.card}>
-          <Card.Content>
-            <Text variant="titleMedium" style={[styles.sectionTitle, { color: paperTheme.colors.onSurface }]}>
-              Snabbval
-            </Text>
-            <Divider style={styles.divider} />
+            </View>
             
-            <List.Item
-              title="Mitt Schema"
-              description={shifts && shifts.length > 0 ? `${shifts.length} kommande skift` : 'Visa dina skift'}
-              left={props => <List.Icon {...props} icon="calendar" />}
-              right={() => shifts && shifts.length > 0 ? (
-                <Badge style={styles.shiftsBadge}>{shifts.length}</Badge>
-              ) : null}
-              onPress={() => (navigation as any).navigate('Schedule')}
-              titleStyle={[styles.listTitle, { color: paperTheme.colors.onSurface }]}
-              descriptionStyle={[styles.listDescription, { color: paperTheme.colors.onSurfaceVariant }]}
-            />
-            
-            <List.Item
-              title="Redigera Profil"
-              description="Uppdatera dina uppgifter"
-              left={props => <List.Icon {...props} icon="account-edit" />}
-              onPress={() => (navigation as any).navigate('EditProfile')}
-              titleStyle={[styles.listTitle, { color: paperTheme.colors.onSurface }]}
-              descriptionStyle={[styles.listDescription, { color: paperTheme.colors.onSurfaceVariant }]}
-            />
-          </Card.Content>
-        </Card>
-
-        {/* Onboarding & Contracts Section */}
-        <Card style={styles.card}>
-          <Card.Content>
-            <Text variant="titleMedium" style={[styles.sectionTitle, { color: paperTheme.colors.onSurface }]}>
-              Mina Uppgifter
-            </Text>
-            <Divider style={styles.divider} />
-            
-            <List.Item
-              title="Onboarding"
-              description={
-                onboardingData?.onboarding.status === 'completed' 
-                  ? 'Slutförd' 
-                  : onboardingData?.onboarding.status === 'in_progress'
-                  ? 'Pågående'
-                  : 'Väntande'
-              }
-              left={props => <List.Icon {...props} icon="star-circle" />}
-              right={() => (
-                onboardingData?.onboarding.status === 'completed' ? (
-                  <Badge style={styles.completedBadge}>✓</Badge>
-                ) : (
-                  <Badge style={styles.pendingBadge}>
-                    {`${onboardingData?.progress.filter(p => p.status === 'completed').length || 0}/${onboardingData?.steps.length || 0}`}
-                  </Badge>
-                )
-              )}
-              onPress={() => (navigation as any).navigate('Onboarding')}
-              titleStyle={styles.listTitle}
-              descriptionStyle={styles.listDescription}
-            />
-            
-            <List.Item
-              title="Avtal"
-              description={`${contracts?.length || 0} signerade avtal`}
-              left={props => <List.Icon {...props} icon="file-document" />}
-              right={() => contracts && contracts.length > 0 ? (
-                <Badge style={styles.contractsBadge}>{contracts.length}</Badge>
-              ) : null}
-              onPress={() => (navigation as any).navigate('Contracts')}
-              titleStyle={styles.listTitle}
-              descriptionStyle={styles.listDescription}
-            />
-          </Card.Content>
-        </Card>
-
-        <Card style={styles.card}>
-          <Card.Content>
-            <Text variant="titleMedium" style={styles.sectionTitle}>
-              Kontaktinformation
-            </Text>
-            <Divider style={styles.divider} />
-            
-            {employee?.email && (
-              <List.Item
-                title="Email"
-                description={employee.email}
-                left={props => <List.Icon {...props} icon="email" />}
-                titleStyle={styles.listTitle}
-                descriptionStyle={styles.listDescription}
-              />
-            )}
-            
+            {/* Phone - show if available */}
             {employee?.phone && (
-              <List.Item
-                title="Telefon"
-                description={employee.phone}
-                left={props => <List.Icon {...props} icon="phone" />}
-                titleStyle={styles.listTitle}
-                descriptionStyle={styles.listDescription}
-              />
+              <>
+                <View style={[styles.divider, { backgroundColor: isDark ? '#2E2E2E' : '#E5E5E5' }]} />
+                <View style={styles.infoRow}>
+                  <Phone size={18} color={mutedColor} />
+                  <View style={styles.infoText}>
+                    <Text variant="body-sm" style={{ color: mutedColor }}>Telefon</Text>
+                    <Text variant="body" style={{ color: textColor }}>{employee.phone}</Text>
+                  </View>
+                </View>
+              </>
             )}
             
-            <List.Item
-              title="Roll"
-              description={employee?.role || 'Sjuksköterska'}
-              left={props => <List.Icon {...props} icon="briefcase" />}
-              titleStyle={styles.listTitle}
-              descriptionStyle={styles.listDescription}
-            />
-
-            {employee?.personal_identity_number && (
-              <List.Item
-                title="Personnummer"
-                description={employee.personal_identity_number}
-                left={props => <List.Icon {...props} icon="card-account-details" />}
-                titleStyle={styles.listTitle}
-                descriptionStyle={styles.listDescription}
-              />
-            )}
-          </Card.Content>
-        </Card>
-
-        {/* Company Info */}
-        <CompanyInfoCard />
-
-        {/* AI Token Usage */}
-        <AITokenUsageCard />
-
-        {/* Settings Section */}
-        <Card style={styles.card}>
-          <Card.Content>
-            <Text variant="titleMedium" style={styles.sectionTitle}>
-              Inställningar
-            </Text>
-            <Divider style={styles.divider} />
+            {/* Role */}
+            <View style={[styles.divider, { backgroundColor: isDark ? '#2E2E2E' : '#E5E5E5' }]} />
+            <View style={styles.infoRow}>
+              <Briefcase size={18} color={mutedColor} />
+              <View style={styles.infoText}>
+                <Text variant="body-sm" style={{ color: mutedColor }}>Roll</Text>
+                <Text variant="body" style={{ color: textColor }}>{employee?.role || 'Anställd'}</Text>
+              </View>
+            </View>
             
-            <ThemeListItem />
-          </Card.Content>
+            {/* Company */}
+            {company && (
+              <>
+                <View style={[styles.divider, { backgroundColor: isDark ? '#2E2E2E' : '#E5E5E5' }]} />
+                <View style={styles.infoRow}>
+                  <Building2 size={18} color={mutedColor} />
+                  <View style={styles.infoText}>
+                    <Text variant="body-sm" style={{ color: mutedColor }}>Företag</Text>
+                    <Text variant="body" style={{ color: textColor }}>{company.name}</Text>
+                  </View>
+                </View>
+              </>
+            )}
+          </CardContent>
         </Card>
+      </View>
 
-        <Button 
-          mode="outlined" 
-          onPress={() => setLogoutDialogVisible(true)}
-          style={styles.logoutButton}
-          icon="logout"
-          textColor="#ef4444"
-        >
-          Logga ut
-        </Button>
-      </ScrollView>
-
-      <Portal>
-        <Dialog visible={logoutDialogVisible} onDismiss={() => setLogoutDialogVisible(false)}>
-          <Dialog.Title>Logga ut</Dialog.Title>
-          <Dialog.Content>
-            <Text variant="bodyMedium">Är du säker på att du vill logga ut?</Text>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={() => setLogoutDialogVisible(false)}>Avbryt</Button>
-            <Button onPress={handleLogout} textColor="#ef4444">Logga ut</Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
-    </>
+    </ScreenLayout>
   );
 };
 
-// Note: Using dynamic theming - colors will be applied via paperTheme
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  loadingText: {
-    marginTop: 16,
-    color: '#6c757d',
-  },
-  card: {
-    margin: 16,
-    marginBottom: 8,
-  },
-  headerContent: {
+  profileHeaderContainer: {
+    marginBottom: 24,
     alignItems: 'center',
-    paddingVertical: 16,
   },
-  avatar: {
-    backgroundColor: '#0056b3',
-    marginBottom: 16,
+  avatarWrapper: {
+    zIndex: 10,
+    marginBottom: -50,
   },
-  name: {
-    fontWeight: 'bold',
-    color: '#1f1f1f',
-    marginBottom: 8,
+  avatarBorder: {
+    borderWidth: 4,
+    borderRadius: 50,
+    padding: 4,
+    backgroundColor: 'transparent',
   },
-  companyBadge: {
-    flexDirection: 'row',
+  profileCard: {
+    width: '100%',
+    borderRadius: 20,
+    paddingTop: 60,
+    paddingBottom: 24,
+    paddingHorizontal: 20,
+  },
+  profileCardContent: {
     alignItems: 'center',
-    backgroundColor: '#fff8e1',
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 16,
-    marginTop: 8,
   },
-  companyName: {
-    color: '#997328',
-    fontWeight: '500',
-    marginLeft: -8,
+  editButton: {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  section: {
+    marginBottom: 24,
   },
   sectionTitle: {
-    fontWeight: 'bold',
-    color: '#1f1f1f',
-    marginBottom: 8,
+    marginBottom: 4,
+  },
+  sectionSubtitle: {
+    marginBottom: 12,
+  },
+  menuContainer: {
+    paddingVertical: 4,
+  },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+  },
+  menuIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  menuText: {
+    flex: 1,
+    marginLeft: 12,
   },
   divider: {
-    marginBottom: 8,
+    height: 1,
+    marginLeft: 52,
   },
-  listTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#1f1f1f',
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    paddingVertical: 12,
+    paddingLeft: 8,
   },
-  listDescription: {
-    fontSize: 14,
-    color: '#6c757d',
+  infoText: {
+    flex: 1,
+    marginLeft: 16,
   },
   logoutButton: {
-    margin: 16,
-    marginTop: 8,
-    borderColor: '#ef4444',
-  },
-  completedBadge: {
-    backgroundColor: '#10b981',
-    color: '#ffffff',
-  },
-  pendingBadge: {
-    backgroundColor: '#f59e0b',
-    color: '#ffffff',
-  },
-  contractsBadge: {
-    backgroundColor: '#0056b3',
-    color: '#ffffff',
-  },
-  shiftsBadge: {
-    backgroundColor: '#22c55e',
-    color: '#ffffff',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+    borderWidth: 1,
+    borderRadius: 12,
+    marginBottom: 32,
   },
 });
