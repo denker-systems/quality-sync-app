@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, ActivityIndicator, Image, ImageSourcePropType } from 'react-native';
 import { MotiPressable } from 'moti/interactions';
 import Animated from 'react-native-reanimated';
 import { ScreenLayout, EmptyState } from '@/components/common';
@@ -11,6 +11,18 @@ import { useMyEmployee } from '@/hooks/useMyEmployee';
 import { useMyContracts, SignedContract } from '@/hooks/useContracts';
 import { FileText, Calendar, Eye, CheckCircle } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
+
+const getContractImage = (contractType?: string): ImageSourcePropType => {
+  switch (contractType) {
+    case 'employment':
+      return require('../../../assets/images/contract.png');
+    case 'nda':
+      return require('../../../assets/images/profile.png');
+    case 'custom':
+    default:
+      return require('../../../assets/images/schedule.png');
+  }
+};
 
 export const ContractsScreen = () => {
   const navigation = useNavigation();
@@ -93,27 +105,35 @@ export const ContractsScreen = () => {
                   transition={SPRING_CONFIGS.snappy}
                 >
                   <Card variant="elevated" style={styles.contractCard}>
-                    <CardContent>
-                      <View style={styles.contractHeader}>
-                        <View style={styles.contractTitleRow}>
-                          <FileText size={20} color={accentColor} />
-                          <Text variant="body-lg" style={{ color: textColor, flex: 1 }}>
+                    <CardContent style={styles.contractCardContent}>
+                      {/* Contract Image */}
+                      <View style={[styles.contractImageContainer, { backgroundColor: isDark ? '#2A2A2A' : '#F5F5F5' }]}>
+                        <Image 
+                          source={getContractImage(contract.contract_type)} 
+                          style={styles.contractImage}
+                          resizeMode="contain"
+                        />
+                      </View>
+                      
+                      {/* Contract Info */}
+                      <View style={styles.contractInfo}>
+                        <View style={styles.contractHeader}>
+                          <Text variant="body-lg" style={{ color: textColor, fontWeight: '600' }}>
                             {contract.contract_title}
                           </Text>
+                          <Eye size={16} color={mutedColor} />
                         </View>
-                        <Eye size={16} color={mutedColor} />
-                      </View>
 
-                      <View style={styles.contractMeta}>
-                        <Badge variant="default">{getTypeText(contract.contract_type)}</Badge>
-                        <View style={styles.dateRow}>
-                          <Calendar size={14} color={mutedColor} />
-                          <Text variant="body-sm" style={{ color: mutedColor }}>
-                            {t('contracts.signed')} {new Date(contract.signed_at).toLocaleDateString('sv-SE')}
-                          </Text>
+                        <View style={styles.contractMeta}>
+                          <Badge variant="default">{getTypeText(contract.contract_type)}</Badge>
+                          <View style={styles.dateRow}>
+                            <Calendar size={12} color={mutedColor} />
+                            <Text variant="body-sm" style={{ color: mutedColor }}>
+                              {new Date(contract.signed_at).toLocaleDateString('sv-SE')}
+                            </Text>
+                          </View>
                         </View>
                       </View>
-
                     </CardContent>
                   </Card>
                 </MotiPressable>
@@ -178,17 +198,31 @@ const styles = StyleSheet.create({
   contractCard: {
     marginBottom: 12,
   },
+  contractCardContent: {
+    flexDirection: 'row',
+    gap: 12,
+    alignItems: 'center',
+  },
+  contractImageContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 8,
+  },
+  contractImage: {
+    width: 64,
+    height: 64,
+  },
+  contractInfo: {
+    flex: 1,
+  },
   contractHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 12,
-  },
-  contractTitleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    flex: 1,
+    marginBottom: 8,
   },
   contractTitle: {
     flex: 1,
