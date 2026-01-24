@@ -5,6 +5,7 @@ import { ScreenLayout } from '@/components/common';
 import { Text, Card, CardContent, Avatar, Badge, Button } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
 import { SPRING_CONFIGS, STAGGER_DELAYS } from '@/constants/animations';
+import { Award, Zap, TrendingUp } from 'lucide-react-native';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
 import { useMyEmployee } from '@/hooks/useMyEmployee';
@@ -131,37 +132,116 @@ export const ProfileScreen = () => {
     );
   }
 
+  const completedOnboarding = onboardingData?.progress?.filter(p => p.status === 'completed').length || 0;
+  const totalOnboarding = onboardingData?.steps?.length || 1;
+  const onboardingProgress = (completedOnboarding / totalOnboarding) * 100;
+  const level = Math.floor((shifts?.length || 0) / 5) + 1;
+  const xpProgress = ((shifts?.length || 0) % 5) * 20;
+
   return (
-    <ScreenLayout title={t('profile.title')}>
-      {/* Profile Header Card */}
-      <View style={styles.profileHeaderContainer}>
-        {/* Avatar with border - positioned to overlap */}
-        <View style={styles.avatarWrapper}>
-          <View style={[styles.avatarBorder, { borderColor: isDark ? '#2A2A2A' : '#FFFFFF' }]}>
-            <Avatar name={getDisplayName()} size="xl" />
+    <ScreenLayout title={t('profile.title')} isRoot={true}>
+      {/* Profile Header Card with Level & XP */}
+      <MotiView
+        from={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={SPRING_CONFIGS.bouncy}
+      >
+        <View style={styles.profileHeaderContainer}>
+          {/* Avatar with Level Badge */}
+          <View style={styles.avatarWrapper}>
+            <View style={[styles.avatarBorder, { borderColor: isDark ? '#2A2A2A' : '#FFFFFF' }]}>
+              <Avatar name={getDisplayName()} size="xl" />
+            </View>
+            <View style={[styles.levelBadge, { backgroundColor: accentColor }]}>
+              <Text variant="tiny" style={{ color: '#FFFFFF', fontWeight: '700' }}>LVL {level}</Text>
+            </View>
+          </View>
+          
+          {/* Card with curved top */}
+          <View style={[styles.profileCard, { backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF' }]}>
+            <View style={styles.profileCardContent}>
+              <Text variant="h2" style={{ color: textColor, textAlign: 'center' }}>
+                {getDisplayName()}
+              </Text>
+              <Text variant="body" style={{ color: mutedColor, textAlign: 'center', marginTop: 4 }}>
+                {user?.email}
+              </Text>
+              
+              {/* XP Progress Bar */}
+              <View style={styles.xpContainer}>
+                <View style={styles.xpHeader}>
+                  <View style={styles.xpLabel}>
+                    <Zap size={14} color="#F59E0B" />
+                    <Text variant="body-sm" style={{ color: mutedColor }}>Experience</Text>
+                  </View>
+                  <Text variant="body-sm" style={{ color: accentColor, fontWeight: '600' }}>
+                    {shifts?.length || 0} / {level * 5} XP
+                  </Text>
+                </View>
+                <View style={[styles.progressBar, { backgroundColor: isDark ? '#2A2A2A' : '#E5E5E5' }]}>
+                  <MotiView
+                    from={{ width: '0%' }}
+                    animate={{ width: `${xpProgress}%` }}
+                    transition={{ type: 'spring', damping: 20, stiffness: 100, delay: 300 }}
+                    style={[styles.progressFill, { backgroundColor: accentColor }]}
+                  />
+                </View>
+              </View>
+              
+              {/* Edit button */}
+              <TouchableOpacity 
+                style={[styles.editButton, { backgroundColor: isDark ? '#2A2A2A' : '#F5F5F5' }]}
+                onPress={() => navigation.navigate('EditProfile')}
+              >
+                <Edit size={14} color={textColor} />
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-        
-        {/* Card with curved top */}
-        <View style={[styles.profileCard, { backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF' }]}>
-          <View style={styles.profileCardContent}>
-            <Text variant="h2" style={{ color: textColor, textAlign: 'center' }}>
-              {getDisplayName()}
-            </Text>
-            <Text variant="body" style={{ color: mutedColor, textAlign: 'center', marginTop: 4 }}>
-              {user?.email}
-            </Text>
-            
-            {/* Edit button */}
-            <TouchableOpacity 
-              style={[styles.editButton, { backgroundColor: isDark ? '#2A2A2A' : '#F5F5F5' }]}
-              onPress={() => navigation.navigate('EditProfile')}
-            >
-              <Edit size={14} color={textColor} />
-            </TouchableOpacity>
-          </View>
+      </MotiView>
+
+      {/* Achievements Section */}
+      <MotiView
+        from={{ opacity: 0, translateY: 20 }}
+        animate={{ opacity: 1, translateY: 0 }}
+        transition={{ ...SPRING_CONFIGS.bouncy, delay: STAGGER_DELAYS.medium }}
+      >
+        <View style={styles.section}>
+          <Text variant="h3" style={[styles.sectionTitle, { color: textColor }]}>
+            🏆 {t('profile.achievements')}
+          </Text>
+          <Card variant="elevated">
+            <CardContent>
+              <View style={styles.achievementsGrid}>
+                <View style={styles.achievementItem}>
+                  <View style={[styles.achievementIcon, { backgroundColor: onboardingProgress >= 100 ? '#FEF3C7' : (isDark ? '#2A2A2A' : '#F5F5F5') }]}>
+                    <Award size={24} color={onboardingProgress >= 100 ? '#F59E0B' : mutedColor} />
+                  </View>
+                  <Text variant="tiny" style={{ color: mutedColor, textAlign: 'center', marginTop: 4 }}>Onboarding</Text>
+                </View>
+                <View style={styles.achievementItem}>
+                  <View style={[styles.achievementIcon, { backgroundColor: (shifts?.length || 0) >= 5 ? '#EDF5EC' : (isDark ? '#2A2A2A' : '#F5F5F5') }]}>
+                    <TrendingUp size={24} color={(shifts?.length || 0) >= 5 ? accentColor : mutedColor} />
+                  </View>
+                  <Text variant="tiny" style={{ color: mutedColor, textAlign: 'center', marginTop: 4 }}>5 Shifts</Text>
+                </View>
+                <View style={styles.achievementItem}>
+                  <View style={[styles.achievementIcon, { backgroundColor: (contracts?.length || 0) >= 1 ? '#DBEAFE' : (isDark ? '#2A2A2A' : '#F5F5F5') }]}>
+                    <FileText size={24} color={(contracts?.length || 0) >= 1 ? '#3B82F6' : mutedColor} />
+                  </View>
+                  <Text variant="tiny" style={{ color: mutedColor, textAlign: 'center', marginTop: 4 }}>Contract</Text>
+                </View>
+                <View style={[styles.achievementItem, { opacity: 0.5 }]}>
+                  <View style={[styles.achievementIcon, { backgroundColor: isDark ? '#2A2A2A' : '#F5F5F5' }]}>
+                    <Award size={24} color={mutedColor} />
+                  </View>
+                  <Text variant="tiny" style={{ color: mutedColor, textAlign: 'center', marginTop: 4 }}>Locked</Text>
+                </View>
+              </View>
+            </CardContent>
+          </Card>
         </View>
-      </View>
+      </MotiView>
 
       {/* Account Section */}
       <View style={styles.section}>
@@ -310,24 +390,85 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   avatarWrapper: {
-    zIndex: 10,
-    marginBottom: -50,
+    position: 'absolute',
+    top: -50,
+    left: '50%',
+    marginLeft: -50,
+    zIndex: 2,
   },
   avatarBorder: {
-    borderWidth: 4,
-    borderRadius: 50,
     padding: 4,
-    backgroundColor: 'transparent',
+    borderRadius: 60,
+    borderWidth: 4,
+    backgroundColor: '#FFFFFF',
+  },
+  levelBadge: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
   },
   profileCard: {
     width: '100%',
-    borderRadius: 20,
     paddingTop: 60,
-    paddingBottom: 24,
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+    borderRadius: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
   },
   profileCardContent: {
     alignItems: 'center',
+  },
+  xpContainer: {
+    width: '100%',
+    marginTop: 16,
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#E5E5E5',
+  },
+  xpHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  xpLabel: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  progressBar: {
+    height: 8,
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+  progressFill: {
+    height: '100%',
+    borderRadius: 4,
+  },
+  achievementsGrid: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingVertical: 8,
+  },
+  achievementItem: {
+    alignItems: 'center',
+    width: 70,
+  },
+  achievementIcon: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   editButton: {
     position: 'absolute',
