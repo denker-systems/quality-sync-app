@@ -26,9 +26,10 @@ export function useMyContracts(employeeId?: string) {
       console.log('📄 Fetching contracts for employee:', employeeId);
 
       const { data, error } = await supabase
-        .from('signed_contracts')
+        .from('employee_contracts')
         .select('*')
         .eq('employee_id', employeeId)
+        .eq('signed_at', 'not.is.null')
         .order('signed_at', { ascending: false });
 
       if (error) {
@@ -56,7 +57,7 @@ export function useContract(contractId?: string) {
       console.log('📄 Fetching contract:', contractId);
 
       const { data, error } = await supabase
-        .from('signed_contracts')
+        .from('employee_contracts')
         .select('*')
         .eq('id', contractId)
         .single();
