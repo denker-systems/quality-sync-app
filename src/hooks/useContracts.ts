@@ -163,17 +163,49 @@ export function useContract(contractId?: string) {
 
       const p = data as any;
       const cleanTitle = (p.step?.title || 'Avtal').replace(/^Signera\s+/i, '');
+      let contractContent = p.step?.content?.contract_text || '';
+
+      // Hämta employee-uppgifter från onboarding för att fylla i avtalet
+      const { data: onboarding } = await supabase
+        .from('employee_onboarding_progress')
+        .select('employee_id')
+        .eq('id', contractId)
+        .single();
+
+      if (onboarding) {
+        const { data: employeeData } = await supabase
+          .from('employees')
+          .select('first_name, last_name, personal_identity_number, email, phone, address1, post_code, city, employment_date, monthly_salary, hourly_wage')
+          .eq('id', (onboarding as any).employee_id)
+          .single();
+
+        // Fyll i employee-uppgifter i avtalet om de finns
+        if (employeeData && contractContent) {
+          const emp = employeeData as any;
+          contractContent = contractContent
+            .replace(/\[Namn\]|\[Medarbetarens namn\]/g, `${emp.first_name || ''} ${emp.last_name || ''}`.trim())
+            .replace(/\[Personnummer\]|\[XXXXXX-XXXX\]/g, emp.personal_identity_number || 'Ej angivet')
+            .replace(/\[E-post\]/g, emp.email || 'Ej angivet')
+            .replace(/\[Telefon\]/g, emp.phone || 'Ej angivet')
+            .replace(/\[Adress\]/g, emp.address1 || 'Ej angivet')
+            .replace(/\[Postnummer\]/g, emp.post_code || 'Ej angivet')
+            .replace(/\[Ort\]/g, emp.city || 'Ej angivet')
+            .replace(/\[Anställningsdatum\]/g, emp.employment_date ? new Date(emp.employment_date).toLocaleDateString('sv-SE') : 'Ej angivet')
+            .replace(/\[Månadslön\]/g, emp.monthly_salary ? `${emp.monthly_salary} SEK` : 'Enligt överenskommelse')
+            .replace(/\[Timlön\]/g, emp.hourly_wage ? `${emp.hourly_wage} SEK` : 'Enligt överenskommelse');
+        }
+      }
 
       const contract: SignedContract = {
         id: p.id,
-        employee_id: '', // Not available from this query
+        employee_id: (onboarding as any)?.employee_id || '',
         contract_id: p.step?.id || p.id,
         signed_at: p.completed_at,
         signature_data: { signature: p.step_data?.signature },
         created_at: p.completed_at,
         contract_title: cleanTitle,
         contract_type: (p.step?.content?.contract_type || 'custom') as 'employment' | 'nda' | 'custom',
-        contract_content: p.step?.content?.contract_text || '',
+        contract_content: contractContent,
       };
 
       console.log('✅ Contract loaded');
