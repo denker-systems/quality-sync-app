@@ -1,8 +1,9 @@
 import React from 'react';
-import { StyleSheet, View, ActivityIndicator, ScrollView, Image } from 'react-native';
+import { StyleSheet, View, ActivityIndicator, ScrollView } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { ScreenLayout, EmptyState } from '@/components/common';
 import { Text, Card, CardContent, Badge } from '@/components/ui';
+import { ContractDocument } from '@/components/ui/ContractDocument';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useContract } from '@/hooks/useContracts';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
@@ -93,9 +94,7 @@ export const ContractViewerScreen = () => {
         <AnimatedEntrance preset="fadeInUp" delay={200}>
           <Card variant="elevated" style={styles.contentCard}>
             <CardContent>
-              <Text variant="body" style={{ color: textColor, lineHeight: 24 }}>
-                {contract.contract_content}
-              </Text>
+              <ContractDocument content={contract.contract_content || ''} />
             </CardContent>
           </Card>
         </AnimatedEntrance>
