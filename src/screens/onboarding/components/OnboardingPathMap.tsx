@@ -3,6 +3,7 @@ import { ImageSourcePropType, Pressable, StyleSheet, View } from 'react-native';
 import { MotiPressable } from 'moti/interactions';
 import { Text, OnboardingPathNode, OnboardingStepDialog } from '@/components/ui';
 import type { OnboardingProgress, OnboardingStep } from '@/hooks/useOnboarding';
+import { SPRING_CONFIGS } from '@/lib/animations';
 
 const getStepImage = (stepType: string): ImageSourcePropType | undefined => {
   switch (stepType) {
@@ -94,7 +95,7 @@ const StepNode = memo(function StepNode({
         disabled={!canAccess}
         onPress={handlePress}
         animate={animateStyle}
-        transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+        transition={SPRING_CONFIGS.snappy}
         style={styles.stepNodePressable}
       >
         <OnboardingPathNode 

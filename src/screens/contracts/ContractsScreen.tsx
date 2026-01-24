@@ -1,12 +1,11 @@
 import React from 'react';
 import { StyleSheet, View, ActivityIndicator } from 'react-native';
-import { MotiView } from 'moti';
 import { MotiPressable } from 'moti/interactions';
 import Animated from 'react-native-reanimated';
 import { ScreenLayout, EmptyState } from '@/components/common';
 import { Text, Card, CardContent, Badge } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
-import { SPRING_CONFIGS, PRESS_ANIMATIONS, STAGGER_DELAYS } from '@/constants/animations';
+import { AnimatedEntrance, AnimatedListItem, SPRING_CONFIGS, useLiftPress, STAGGER_DELAYS } from '@/lib/animations';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useMyEmployee } from '@/hooks/useMyEmployee';
 import { useMyContracts, SignedContract } from '@/hooks/useContracts';
@@ -55,11 +54,7 @@ export const ContractsScreen = () => {
       {contracts && contracts.length > 0 ? (
         <>
           {/* Progress Header */}
-          <MotiView
-            from={{ opacity: 0, translateY: -20 }}
-            animate={{ opacity: 1, translateY: 0 }}
-            transition={SPRING_CONFIGS.bouncy}
-          >
+          <AnimatedEntrance preset="fadeInUpSubtle">
             <Card variant="elevated" style={styles.progressCard}>
               <CardContent>
                 <View style={styles.progressHeader}>
@@ -74,21 +69,16 @@ export const ContractsScreen = () => {
                 </View>
               </CardContent>
             </Card>
-          </MotiView>
+          </AnimatedEntrance>
 
           <View style={styles.contractsList}>
             {contracts.map((contract, index) => (
-            <MotiView
-              key={contract.id}
-              from={{ opacity: 0, translateX: -40, scale: 0.85, rotate: '-3deg' }}
-              animate={{ opacity: 1, translateX: 0, scale: 1, rotate: '0deg' }}
-              transition={{ ...SPRING_CONFIGS.bouncy, delay: index * STAGGER_DELAYS.medium }}
-            >
+            <AnimatedListItem key={contract.id} index={index} staggerDelay={STAGGER_DELAYS.medium}>
               {/* @ts-expect-error sharedTransitionTag is supported at runtime */}
               <Animated.View sharedTransitionTag={`contract-${contract.id}`}>
                 <MotiPressable
                   onPress={() => handleViewContract(contract)}
-                  animate={PRESS_ANIMATIONS.lift}
+                  animate={useLiftPress()}
                   transition={SPRING_CONFIGS.snappy}
                 >
                   <Card variant="elevated" style={styles.contractCard}>
@@ -125,7 +115,7 @@ export const ContractsScreen = () => {
                   </Card>
                 </MotiPressable>
               </Animated.View>
-            </MotiView>
+            </AnimatedListItem>
           ))}
           </View>
         </>

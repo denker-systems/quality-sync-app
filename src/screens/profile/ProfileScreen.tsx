@@ -4,7 +4,7 @@ import { MotiView } from 'moti';
 import { ScreenLayout } from '@/components/common';
 import { Text, Card, CardContent, Avatar, Badge, Button } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
-import { SPRING_CONFIGS, STAGGER_DELAYS } from '@/constants/animations';
+import { AnimatedEntrance, SPRING_CONFIGS, STAGGER_DELAYS } from '@/lib/animations';
 import { Award, Zap, TrendingUp } from 'lucide-react-native';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
@@ -141,11 +141,7 @@ export const ProfileScreen = () => {
   return (
     <ScreenLayout title={t('profile.title')} isRoot={true}>
       {/* Profile Header Card with Level & XP */}
-      <MotiView
-        from={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={SPRING_CONFIGS.bouncy}
-      >
+      <AnimatedEntrance preset="scaleIn">
         <View style={styles.profileHeaderContainer}>
           {/* Avatar with Level Badge */}
           <View style={styles.avatarWrapper}>
@@ -198,14 +194,10 @@ export const ProfileScreen = () => {
             </View>
           </View>
         </View>
-      </MotiView>
+      </AnimatedEntrance>
 
       {/* Achievements Section */}
-      <MotiView
-        from={{ opacity: 0, translateY: 20 }}
-        animate={{ opacity: 1, translateY: 0 }}
-        transition={{ ...SPRING_CONFIGS.bouncy, delay: STAGGER_DELAYS.medium }}
-      >
+      <AnimatedEntrance preset="fadeInUp" delay={STAGGER_DELAYS.medium}>
         <View style={styles.section}>
           <Text variant="h3" style={[styles.sectionTitle, { color: textColor }]}>
             🏆 {t('profile.achievements')}
@@ -241,7 +233,7 @@ export const ProfileScreen = () => {
             </CardContent>
           </Card>
         </View>
-      </MotiView>
+      </AnimatedEntrance>
 
       {/* Account Section */}
       <View style={styles.section}>

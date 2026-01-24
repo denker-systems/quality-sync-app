@@ -4,6 +4,7 @@ import { MotiView } from 'moti';
 import { Text } from '@/components/ui/Text';
 import { Button } from '@/components/ui/Button';
 import { useTheme } from '@/contexts/ThemeContext';
+import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/lib/animations';
 
 interface OnboardingStepDialogProps {
   visible: boolean;
@@ -39,7 +40,7 @@ export const OnboardingStepDialog = memo(function OnboardingStepDialog({
         from={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        transition={{ type: 'timing', duration: 150 }}
+        transition={TIMING_CONFIGS.fast}
       >
         <Pressable style={styles.backdrop} onPress={onClose} />
         <MotiView
@@ -47,7 +48,7 @@ export const OnboardingStepDialog = memo(function OnboardingStepDialog({
           from={{ opacity: 0, scale: 0.9, translateY: 20 }}
           animate={{ opacity: 1, scale: 1, translateY: 0 }}
           exit={{ opacity: 0, scale: 0.95, translateY: 10 }}
-          transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+          transition={SPRING_CONFIGS.snappy}
           pointerEvents="auto"
         >
           <View style={[styles.dialogHeader, { backgroundColor: theme.accentColor }]}>

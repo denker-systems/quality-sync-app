@@ -1,13 +1,12 @@
 import React from 'react';
 import { View, StyleSheet, ActivityIndicator, Image } from 'react-native';
-import { MotiView } from 'moti';
 import { ScreenLayout, EmptyState } from '@/components/common';
 import { Text, Card, CardContent, Badge } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useMyShifts, MyShift } from '@/hooks/useMyShifts';
 import { Calendar, Clock, Coffee, MapPin, Flame, Trophy, Target } from 'lucide-react-native';
-import { SPRING_CONFIGS, STAGGER_DELAYS } from '@/constants/animations';
+import { AnimatedEntrance, AnimatedListItem, SPRING_CONFIGS, STAGGER_DELAYS } from '@/lib/animations';
 
 const ShiftCard = ({ shift, t }: { shift: MyShift; t: (key: string) => string }) => {
   const { isDark } = useTheme();
@@ -156,11 +155,7 @@ export const ScheduleScreen = () => {
   return (
     <ScreenLayout title={t('schedule.title')} isRoot={true}>
       {upcomingShifts.length === 0 && pastShifts.length === 0 ? (
-        <MotiView
-          from={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={SPRING_CONFIGS.smooth}
-        >
+        <AnimatedEntrance preset="scaleIn">
           <View style={styles.emptyStateContainer}>
             <Image 
               source={require('../../../assets/images/schedule.png')} 
@@ -174,15 +169,11 @@ export const ScheduleScreen = () => {
               {t('schedule.noShiftsDesc')}
             </Text>
           </View>
-        </MotiView>
+        </AnimatedEntrance>
       ) : (
         <>
           {/* Stats Header */}
-          <MotiView
-            from={{ opacity: 0, translateY: -20 }}
-            animate={{ opacity: 1, translateY: 0 }}
-            transition={SPRING_CONFIGS.bouncy}
-          >
+          <AnimatedEntrance preset="fadeInUpSubtle">
             <Card variant="elevated" style={styles.statsCard}>
               <CardContent>
                 <View style={styles.statsGrid}>
@@ -210,7 +201,7 @@ export const ScheduleScreen = () => {
                 </View>
               </CardContent>
             </Card>
-          </MotiView>
+          </AnimatedEntrance>
 
           {upcomingShifts.length > 0 && (
             <View style={styles.section}>
@@ -218,14 +209,9 @@ export const ScheduleScreen = () => {
                 {t('schedule.upcomingShifts')} ({upcomingShifts.length})
               </Text>
               {upcomingShifts.map((shift, index) => (
-                <MotiView
-                  key={shift.shift_id || index}
-                  from={{ opacity: 0, translateX: -30, scale: 0.95 }}
-                  animate={{ opacity: 1, translateX: 0, scale: 1 }}
-                  transition={{ ...SPRING_CONFIGS.bouncy, delay: index * STAGGER_DELAYS.fast }}
-                >
+                <AnimatedListItem key={shift.shift_id || index} index={index} staggerDelay={STAGGER_DELAYS.fast}>
                   <ShiftCard shift={shift} t={t} />
-                </MotiView>
+                </AnimatedListItem>
               ))}
             </View>
           )}
@@ -236,14 +222,9 @@ export const ScheduleScreen = () => {
                 {t('schedule.pastShifts')}
               </Text>
               {pastShifts.slice(-5).map((shift, index) => (
-                <MotiView
-                  key={shift.shift_id || index}
-                  from={{ opacity: 0, translateX: -30, scale: 0.95 }}
-                  animate={{ opacity: 1, translateX: 0, scale: 1 }}
-                  transition={{ ...SPRING_CONFIGS.bouncy, delay: (upcomingShifts.length + index) * STAGGER_DELAYS.fast }}
-                >
+                <AnimatedListItem key={shift.shift_id || index} index={upcomingShifts.length + index} staggerDelay={STAGGER_DELAYS.fast}>
                   <ShiftCard shift={shift} t={t} />
-                </MotiView>
+                </AnimatedListItem>
               ))}
             </View>
           )}
