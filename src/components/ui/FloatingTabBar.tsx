@@ -2,8 +2,10 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Home, User, Calendar, Settings } from 'lucide-react-native';
+import { MotiView } from 'moti';
 import { MotiPressable } from 'moti/interactions';
 import { useTheme } from '@/contexts/ThemeContext';
+import { SPRING_CONFIGS, PRESS_ANIMATIONS, STAGGER_DELAYS } from '@/constants/animations';
 
 interface TabItem {
   key: string;
@@ -43,31 +45,43 @@ export function FloatingTabBar({ activeTab, onTabPress }: FloatingTabBarProps) {
           const Icon = tab.icon;
           
           return (
-            <MotiPressable
+            <MotiView
               key={tab.key}
-              onPress={() => handlePress(tab.key)}
-              style={[
-                styles.tabButton,
-                isActive && (isDark ? styles.activeButtonDark : styles.activeButtonLight),
-                !isActive && (isDark ? styles.inactiveButtonDark : styles.inactiveButtonLight),
-              ]}
-              animate={({ pressed }) => {
-                'worklet';
-                return {
-                  scale: pressed ? 0.94 : isActive ? 1.06 : 1,
-                  opacity: pressed ? 0.85 : 1,
-                };
-              }}
-              transition={{ type: 'spring', damping: 16, stiffness: 220 }}
+              from={{ opacity: 0, scale: 0.3, translateY: 30 }}
+              animate={{ opacity: 1, scale: 1, translateY: 0 }}
+              transition={{ ...SPRING_CONFIGS.bouncy, delay: index * STAGGER_DELAYS.fast }}
             >
-              <Icon 
-                size={28} 
-                color={isActive 
-                  ? (isDark ? '#0F0F0F' : '#FFFFFF')
-                  : (isDark ? '#A3A3A3' : '#737373')
-                } 
-              />
-            </MotiPressable>
+              <MotiPressable
+                onPress={() => handlePress(tab.key)}
+                style={[
+                  styles.tabButton,
+                  isActive && (isDark ? styles.activeButtonDark : styles.activeButtonLight),
+                  !isActive && (isDark ? styles.inactiveButtonDark : styles.inactiveButtonLight),
+                ]}
+                animate={PRESS_ANIMATIONS.active(isActive)}
+                transition={SPRING_CONFIGS.snappy}
+              >
+                <MotiView
+                  animate={{
+                    scale: isActive ? [1, 1.15, 1] : 1,
+                    rotate: isActive ? ['0deg', '5deg', '-5deg', '0deg'] : '0deg',
+                  }}
+                  transition={{
+                    type: 'timing',
+                    duration: 600,
+                    loop: isActive,
+                  }}
+                >
+                  <Icon 
+                    size={28} 
+                    color={isActive 
+                      ? (isDark ? '#0F0F0F' : '#FFFFFF')
+                      : (isDark ? '#A3A3A3' : '#737373')
+                    } 
+                  />
+                </MotiView>
+              </MotiPressable>
+            </MotiView>
           );
         })}
       </View>

@@ -8,6 +8,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
 import { useMyEmployee } from '@/hooks/useMyEmployee';
+import { SPRING_CONFIGS, ENTRANCE_ANIMATIONS, STAGGER_DELAYS } from '@/constants/animations';
 
 export function HomeScreen() {
   const navigation = useNavigation<any>();
@@ -32,9 +33,9 @@ export function HomeScreen() {
           <View style={styles.gridRow}>
             <MotiView
               style={styles.gridButton}
-              from={{ opacity: 0, translateY: 10 }}
-              animate={{ opacity: 1, translateY: 0 }}
-              transition={{ type: 'timing', duration: 320, delay: 80 }}
+              from={{ opacity: 0, scale: 0.7, translateY: 30, rotate: '-5deg' }}
+              animate={{ opacity: 1, scale: 1, translateY: 0, rotate: '0deg' }}
+              transition={{ ...SPRING_CONFIGS.bouncy, delay: STAGGER_DELAYS.medium }}
             >
               <ImageButton
                 title={t('home.mySchedule')}
@@ -44,9 +45,9 @@ export function HomeScreen() {
             </MotiView>
             <MotiView
               style={styles.gridButton}
-              from={{ opacity: 0, translateY: 10 }}
-              animate={{ opacity: 1, translateY: 0 }}
-              transition={{ type: 'timing', duration: 320, delay: 140 }}
+              from={{ opacity: 0, scale: 0.7, translateY: 30, rotate: '5deg' }}
+              animate={{ opacity: 1, scale: 1, translateY: 0, rotate: '0deg' }}
+              transition={{ ...SPRING_CONFIGS.bouncy, delay: STAGGER_DELAYS.medium * 2 }}
             >
               <ImageButton
                 title={t('home.onboarding')}
@@ -58,9 +59,9 @@ export function HomeScreen() {
           <View style={styles.gridRow}>
             <MotiView
               style={styles.gridButton}
-              from={{ opacity: 0, translateY: 10 }}
-              animate={{ opacity: 1, translateY: 0 }}
-              transition={{ type: 'timing', duration: 320, delay: 200 }}
+              from={{ opacity: 0, scale: 0.7, translateY: 30, rotate: '-5deg' }}
+              animate={{ opacity: 1, scale: 1, translateY: 0, rotate: '0deg' }}
+              transition={{ ...SPRING_CONFIGS.bouncy, delay: STAGGER_DELAYS.medium * 3 }}
             >
               <ImageButton
                 title={t('home.myContracts')}
@@ -70,9 +71,9 @@ export function HomeScreen() {
             </MotiView>
             <MotiView
               style={styles.gridButton}
-              from={{ opacity: 0, translateY: 10 }}
-              animate={{ opacity: 1, translateY: 0 }}
-              transition={{ type: 'timing', duration: 320, delay: 260 }}
+              from={{ opacity: 0, scale: 0.7, translateY: 30, rotate: '5deg' }}
+              animate={{ opacity: 1, scale: 1, translateY: 0, rotate: '0deg' }}
+              transition={{ ...SPRING_CONFIGS.bouncy, delay: STAGGER_DELAYS.medium * 4 }}
             >
               <ImageButton
                 title={t('home.myProfile')}
@@ -90,9 +91,9 @@ export function HomeScreen() {
         </Text>
 
         <MotiView
-          from={{ opacity: 0, translateY: 10 }}
-          animate={{ opacity: 1, translateY: 0 }}
-          transition={{ type: 'timing', duration: 320, delay: 320 }}
+          from={{ opacity: 0, scale: 0.9, translateY: 25 }}
+          animate={{ opacity: 1, scale: 1, translateY: 0 }}
+          transition={{ ...SPRING_CONFIGS.smooth, delay: STAGGER_DELAYS.medium * 5 }}
         >
           <Card variant="elevated">
             <CardContent>

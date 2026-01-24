@@ -6,6 +6,7 @@ import Animated from 'react-native-reanimated';
 import { ScreenLayout, EmptyState } from '@/components/common';
 import { Text, Card, CardContent, Badge } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
+import { SPRING_CONFIGS, PRESS_ANIMATIONS, STAGGER_DELAYS } from '@/constants/animations';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useMyEmployee } from '@/hooks/useMyEmployee';
 import { useMyContracts, SignedContract } from '@/hooks/useContracts';
@@ -57,22 +58,16 @@ export const ContractsScreen = () => {
           {contracts.map((contract, index) => (
             <MotiView
               key={contract.id}
-              from={{ opacity: 0, translateY: 12 }}
-              animate={{ opacity: 1, translateY: 0 }}
-              transition={{ type: 'timing', duration: 320, delay: index * 60 }}
+              from={{ opacity: 0, translateX: -40, scale: 0.85, rotate: '-3deg' }}
+              animate={{ opacity: 1, translateX: 0, scale: 1, rotate: '0deg' }}
+              transition={{ ...SPRING_CONFIGS.bouncy, delay: index * STAGGER_DELAYS.medium }}
             >
               {/* @ts-expect-error sharedTransitionTag is supported at runtime */}
               <Animated.View sharedTransitionTag={`contract-${contract.id}`}>
                 <MotiPressable
                   onPress={() => handleViewContract(contract)}
-                  animate={({ pressed }: { pressed: boolean }) => {
-                    'worklet';
-                    return {
-                      scale: pressed ? 0.98 : 1,
-                      opacity: pressed ? 0.92 : 1,
-                    };
-                  }}
-                  transition={{ type: 'spring', damping: 18, stiffness: 220 }}
+                  animate={PRESS_ANIMATIONS.lift}
+                  transition={SPRING_CONFIGS.snappy}
                 >
                   <Card variant="elevated" style={styles.contractCard}>
                     <CardContent>

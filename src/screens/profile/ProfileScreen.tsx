@@ -4,6 +4,7 @@ import { MotiView } from 'moti';
 import { ScreenLayout } from '@/components/common';
 import { Text, Card, CardContent, Avatar, Badge, Button } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
+import { SPRING_CONFIGS, STAGGER_DELAYS } from '@/constants/animations';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
 import { useMyEmployee } from '@/hooks/useMyEmployee';
@@ -174,9 +175,9 @@ export const ProfileScreen = () => {
         <Card variant="elevated">
           <CardContent style={styles.menuContainer}>
             <MotiView
-              from={{ opacity: 0, translateY: 10 }}
-              animate={{ opacity: 1, translateY: 0 }}
-              transition={{ type: 'timing', duration: 320, delay: 60 }}
+              from={{ opacity: 0, translateX: -30, scale: 0.9 }}
+              animate={{ opacity: 1, translateX: 0, scale: 1 }}
+              transition={{ ...SPRING_CONFIGS.bouncy, delay: STAGGER_DELAYS.medium }}
             >
               <MenuItem
                 icon={Calendar}
@@ -191,9 +192,9 @@ export const ProfileScreen = () => {
             <View style={[styles.divider, { backgroundColor: isDark ? '#2E2E2E' : '#E5E5E5' }]} />
             
             <MotiView
-              from={{ opacity: 0, translateY: 10 }}
-              animate={{ opacity: 1, translateY: 0 }}
-              transition={{ type: 'timing', duration: 320, delay: 120 }}
+              from={{ opacity: 0, translateX: -30, scale: 0.9 }}
+              animate={{ opacity: 1, translateX: 0, scale: 1 }}
+              transition={{ ...SPRING_CONFIGS.bouncy, delay: STAGGER_DELAYS.medium * 2 }}
             >
               <MenuItem
                 icon={Star}
@@ -216,9 +217,9 @@ export const ProfileScreen = () => {
             <View style={[styles.divider, { backgroundColor: isDark ? '#2E2E2E' : '#E5E5E5' }]} />
             
             <MotiView
-              from={{ opacity: 0, translateY: 10 }}
-              animate={{ opacity: 1, translateY: 0 }}
-              transition={{ type: 'timing', duration: 320, delay: 180 }}
+              from={{ opacity: 0, translateX: -30, scale: 0.9 }}
+              animate={{ opacity: 1, translateX: 0, scale: 1 }}
+              transition={{ ...SPRING_CONFIGS.bouncy, delay: STAGGER_DELAYS.medium * 3 }}
             >
               <MenuItem
                 icon={FileText}

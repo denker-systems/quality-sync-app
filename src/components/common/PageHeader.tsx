@@ -6,6 +6,7 @@ import { MotiView } from 'moti';
 import { MotiPressable } from 'moti/interactions';
 import { Text } from '@/components/ui/Text';
 import { useTheme } from '@/contexts/ThemeContext';
+import { SPRING_CONFIGS, ENTRANCE_ANIMATIONS, PRESS_ANIMATIONS } from '@/constants/animations';
 
 interface PageHeaderProps {
   title: string;
@@ -41,20 +42,20 @@ export function PageHeader({
       {/* Left - Back button */}
       <View style={styles.leftSection}>
         {showBack ? (
-          <MotiPressable
-            onPress={handleBack}
-            style={[styles.backButton, { backgroundColor: bgColor }]}
-            animate={({ pressed }) => {
-              'worklet';
-              return {
-                scale: pressed ? 0.94 : 1,
-                opacity: pressed ? 0.85 : 1,
-              };
-            }}
-            transition={{ type: 'spring', damping: 16, stiffness: 220 }}
+          <MotiView
+            from={{ opacity: 0, translateX: -20, scale: 0.8 }}
+            animate={{ opacity: 1, translateX: 0, scale: 1 }}
+            transition={SPRING_CONFIGS.bouncy}
           >
-            <ArrowLeft size={20} color={textColor} />
-          </MotiPressable>
+            <MotiPressable
+              onPress={handleBack}
+              style={[styles.backButton, { backgroundColor: bgColor }]}
+              animate={PRESS_ANIMATIONS.bouncy}
+              transition={SPRING_CONFIGS.snappy}
+            >
+              <ArrowLeft size={20} color={textColor} />
+            </MotiPressable>
+          </MotiView>
         ) : (
           <View style={styles.placeholder} />
         )}
@@ -63,9 +64,9 @@ export function PageHeader({
       {/* Center - Title */}
       <View style={styles.centerSection}>
         <MotiView
-          from={{ opacity: 0, translateY: 6 }}
-          animate={{ opacity: 1, translateY: 0 }}
-          transition={{ type: 'timing', duration: 260 }}
+          from={{ opacity: 0, translateY: -15, scale: 0.9 }}
+          animate={{ opacity: 1, translateY: 0, scale: 1 }}
+          transition={SPRING_CONFIGS.smooth}
         >
           <Text variant="h3" style={[styles.title, { color: textColor }]}>
             {title}
@@ -76,9 +77,9 @@ export function PageHeader({
       {/* Right - Optional content */}
       <View style={styles.rightSection}>
         <MotiView
-          from={{ opacity: 0, translateY: 6 }}
-          animate={{ opacity: 1, translateY: 0 }}
-          transition={{ type: 'timing', duration: 260, delay: 40 }}
+          from={{ opacity: 0, translateX: 20, scale: 0.8 }}
+          animate={{ opacity: 1, translateX: 0, scale: 1 }}
+          transition={{ ...SPRING_CONFIGS.bouncy, delay: 50 }}
         >
           {rightContent || <View style={styles.placeholder} />}
         </MotiView>
