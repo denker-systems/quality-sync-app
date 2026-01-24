@@ -76,7 +76,7 @@ export const OnboardingStepDialog = memo(function OnboardingStepDialog({
       </MotiView>
     </Modal>
   );
-}
+});
 
 const styles = StyleSheet.create({
   overlay: {

@@ -169,7 +169,7 @@ export const OnboardingPathMap = memo(function OnboardingPathMap({
       />
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   stepsSection: {
