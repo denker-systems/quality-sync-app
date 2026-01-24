@@ -1,11 +1,13 @@
 import React from 'react';
-import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, Image } from 'react-native';
+import { MotiView } from 'moti';
 import { ScreenLayout, EmptyState } from '@/components/common';
-import { Text, Card, CardContent } from '@/components/ui';
+import { Text, Card, CardContent, Badge } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useMyShifts, MyShift } from '@/hooks/useMyShifts';
-import { Calendar, Clock, Coffee, MapPin } from 'lucide-react-native';
+import { Calendar, Clock, Coffee, MapPin, Flame, Trophy, Target } from 'lucide-react-native';
+import { SPRING_CONFIGS, STAGGER_DELAYS } from '@/constants/animations';
 
 const ShiftCard = ({ shift, t }: { shift: MyShift; t: (key: string) => string }) => {
   const { isDark } = useTheme();
@@ -101,16 +103,30 @@ export const ScheduleScreen = () => {
   
   const textColor = isDark ? '#FAFAFA' : '#171717';
   const mutedColor = isDark ? '#A3A3A3' : '#737373';
+  const accentColor = isDark ? '#6BBD68' : '#489A45';
+
+  // Calculate streak and stats
+  const now = new Date();
+  const upcomingShifts = (shifts || []).filter(s => new Date(s.from_time) >= now);
+  const pastShifts = (shifts || []).filter(s => new Date(s.from_time) < now);
+  const thisWeekShifts = upcomingShifts.filter(s => {
+    const shiftDate = new Date(s.from_time);
+    const weekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+    return shiftDate <= weekFromNow;
+  });
+  
+  const totalHoursThisWeek = thisWeekShifts.reduce((acc, shift) => {
+    const from = new Date(shift.from_time);
+    const to = new Date(shift.to_time);
+    const hours = (to.getTime() - from.getTime()) / (1000 * 60 * 60);
+    return acc + hours - ((shift.breaks_duration || 0) / 60);
+  }, 0);
 
   const handleRefresh = async () => {
     setRefreshing(true);
     await refetch();
     setRefreshing(false);
   };
-
-  const now = new Date();
-  const upcomingShifts = (shifts || []).filter(s => new Date(s.from_time) >= now);
-  const pastShifts = (shifts || []).filter(s => new Date(s.from_time) < now).slice(-5);
 
   if (isLoading) {
     return (
@@ -139,33 +155,95 @@ export const ScheduleScreen = () => {
 
   return (
     <ScreenLayout title={t('schedule.title')} isRoot={true}>
-
       {upcomingShifts.length === 0 && pastShifts.length === 0 ? (
-        <EmptyState
-          icon={Calendar}
-          title={t('schedule.noShifts')}
-          description={t('schedule.noShiftsDesc')}
-        />
+        <MotiView
+          from={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={SPRING_CONFIGS.smooth}
+        >
+          <View style={styles.emptyStateContainer}>
+            <Image 
+              source={require('../../../assets/images/schedule.png')} 
+              style={styles.emptyImage}
+              resizeMode="contain"
+            />
+            <Text variant="h2" style={[styles.emptyTitle, { color: textColor }]}>
+              {t('schedule.noShifts')}
+            </Text>
+            <Text variant="body" style={[styles.emptyDescription, { color: mutedColor }]}>
+              {t('schedule.noShiftsDesc')}
+            </Text>
+          </View>
+        </MotiView>
       ) : (
         <>
+          {/* Stats Header */}
+          <MotiView
+            from={{ opacity: 0, translateY: -20 }}
+            animate={{ opacity: 1, translateY: 0 }}
+            transition={SPRING_CONFIGS.bouncy}
+          >
+            <Card variant="elevated" style={styles.statsCard}>
+              <CardContent>
+                <View style={styles.statsGrid}>
+                  <View style={styles.statItem}>
+                    <View style={[styles.statIcon, { backgroundColor: isDark ? 'rgba(239,68,68,0.15)' : '#FEE2E2' }]}>
+                      <Flame size={24} color="#EF4444" />
+                    </View>
+                    <Text variant="display" style={{ color: '#EF4444' }}>{pastShifts.length}</Text>
+                    <Text variant="body-sm" style={{ color: mutedColor }}>{t('schedule.streak')}</Text>
+                  </View>
+                  <View style={styles.statItem}>
+                    <View style={[styles.statIcon, { backgroundColor: isDark ? 'rgba(107,189,104,0.15)' : '#EDF5EC' }]}>
+                      <Target size={24} color={accentColor} />
+                    </View>
+                    <Text variant="display" style={{ color: accentColor }}>{thisWeekShifts.length}</Text>
+                    <Text variant="body-sm" style={{ color: mutedColor }}>{t('schedule.thisWeek')}</Text>
+                  </View>
+                  <View style={styles.statItem}>
+                    <View style={[styles.statIcon, { backgroundColor: isDark ? 'rgba(251,191,36,0.15)' : '#FEF3C7' }]}>
+                      <Trophy size={24} color="#F59E0B" />
+                    </View>
+                    <Text variant="display" style={{ color: '#F59E0B' }}>{Math.round(totalHoursThisWeek)}</Text>
+                    <Text variant="body-sm" style={{ color: mutedColor }}>{t('schedule.hours')}</Text>
+                  </View>
+                </View>
+              </CardContent>
+            </Card>
+          </MotiView>
+
           {upcomingShifts.length > 0 && (
             <View style={styles.section}>
               <Text variant="h3" style={{ color: textColor, marginBottom: 12 }}>
                 {t('schedule.upcomingShifts')} ({upcomingShifts.length})
               </Text>
               {upcomingShifts.map((shift, index) => (
-                <ShiftCard key={shift.shift_id || index} shift={shift} t={t} />
+                <MotiView
+                  key={shift.shift_id || index}
+                  from={{ opacity: 0, translateX: -30, scale: 0.95 }}
+                  animate={{ opacity: 1, translateX: 0, scale: 1 }}
+                  transition={{ ...SPRING_CONFIGS.bouncy, delay: index * STAGGER_DELAYS.fast }}
+                >
+                  <ShiftCard shift={shift} t={t} />
+                </MotiView>
               ))}
             </View>
           )}
 
-          {pastShifts.length > 0 && (
+          {pastShifts.slice(-5).length > 0 && (
             <View style={styles.section}>
               <Text variant="h3" style={{ color: textColor, marginBottom: 12 }}>
                 {t('schedule.pastShifts')}
               </Text>
-              {pastShifts.map((shift, index) => (
-                <ShiftCard key={shift.shift_id || index} shift={shift} t={t} />
+              {pastShifts.slice(-5).map((shift, index) => (
+                <MotiView
+                  key={shift.shift_id || index}
+                  from={{ opacity: 0, translateX: -30, scale: 0.95 }}
+                  animate={{ opacity: 1, translateX: 0, scale: 1 }}
+                  transition={{ ...SPRING_CONFIGS.bouncy, delay: (upcomingShifts.length + index) * STAGGER_DELAYS.fast }}
+                >
+                  <ShiftCard shift={shift} t={t} />
+                </MotiView>
               ))}
             </View>
           )}
@@ -216,8 +294,44 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   section: {
-    paddingHorizontal: 16,
     marginBottom: 24,
+  },
+  statsCard: {
+    marginBottom: 24,
+  },
+  statsGrid: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingVertical: 8,
+  },
+  statItem: {
+    alignItems: 'center',
+    gap: 8,
+  },
+  statIcon: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyStateContainer: {
+    alignItems: 'center',
+    paddingVertical: 48,
+    paddingHorizontal: 32,
+  },
+  emptyImage: {
+    width: 200,
+    height: 200,
+    marginBottom: 24,
+  },
+  emptyTitle: {
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  emptyDescription: {
+    textAlign: 'center',
+    lineHeight: 22,
   },
   sectionTitle: {
     color: '#6c757d',
@@ -285,22 +399,6 @@ const styles = StyleSheet.create({
     color: '#0056b3',
     fontWeight: '500',
     fontSize: 13,
-  },
-  emptyCard: {
-    margin: 16,
-  },
-  emptyContent: {
-    alignItems: 'center',
-    paddingVertical: 32,
-  },
-  emptyTitle: {
-    marginTop: 16,
-    color: '#1f2937',
-  },
-  emptyText: {
-    marginTop: 8,
-    color: '#6c757d',
-    textAlign: 'center',
   },
 });
 
