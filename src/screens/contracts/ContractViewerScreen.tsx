@@ -1,13 +1,12 @@
 import React from 'react';
-import { StyleSheet, View, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, ActivityIndicator, ScrollView } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { ScreenLayout, EmptyState } from '@/components/common';
-import { Text, Card, CardContent, Button } from '@/components/ui';
+import { Text, Card, CardContent } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useContract } from '@/hooks/useContracts';
-import { WebView } from 'react-native-webview';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
-import { FileText, Download } from 'lucide-react-native';
+import { FileText } from 'lucide-react-native';
 import type { RootStackParamList } from '@/types';
 
 type ContractViewerRouteProp = RouteProp<RootStackParamList, 'ContractViewer'>;
@@ -51,8 +50,6 @@ export const ContractViewerScreen = () => {
     );
   }
 
-  const hasPdf = !!contract.pdf_url;
-
   return (
     <ScreenLayout title="Avtal" scrollable={false} noPadding>
       {/* Contract Info */}
@@ -73,40 +70,14 @@ export const ContractViewerScreen = () => {
         </Card>
       </Animated.View>
 
-      {/* PDF Viewer or Content */}
+      {/* Contract Content */}
       <View style={styles.contentContainer}>
-        {hasPdf ? (
-          <WebView
-            source={{ uri: contract.pdf_url! }}
-            style={styles.webview}
-            startInLoadingState={true}
-            renderLoading={() => (
-              <View style={styles.webviewLoading}>
-                <ActivityIndicator size="large" color={accentColor} />
-              </View>
-            )}
-          />
-        ) : (
-          <View style={styles.textContent}>
-            <Text variant="body" style={{ color: textColor, lineHeight: 24 }}>
-              {contract.contract_content}
-            </Text>
-          </View>
-        )}
+        <ScrollView style={styles.contentScroll} contentContainerStyle={styles.contentScrollInner}>
+          <Text variant="body" style={{ color: textColor, lineHeight: 24 }}>
+            {contract.contract_content}
+          </Text>
+        </ScrollView>
       </View>
-
-      {/* Download Button */}
-      {hasPdf && (
-        <View style={styles.footer}>
-          <Button
-            variant="outline"
-            onPress={() => console.log('Download PDF:', contract.pdf_url)}
-            style={styles.downloadButton}
-          >
-            Ladda ner PDF
-          </Button>
-        </View>
-      )}
     </ScreenLayout>
   );
 };
@@ -160,28 +131,10 @@ const styles = StyleSheet.create({
   contentContainer: {
     flex: 1,
   },
-  webview: {
+  contentScroll: {
     flex: 1,
   },
-  webviewLoading: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#ffffff',
-  },
-  textContent: {
-    flex: 1,
+  contentScrollInner: {
     padding: 16,
-  },
-  contractText: {
-    lineHeight: 24,
-  },
-  footer: {
-    padding: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
-  },
-  downloadButton: {
-    width: '100%',
   },
 });

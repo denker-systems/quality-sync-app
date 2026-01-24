@@ -23,7 +23,7 @@ export const ContractsScreen = () => {
   const mutedColor = isDark ? '#A3A3A3' : '#737373';
   const accentColor = isDark ? '#6BBD68' : '#489A45';
 
-  const getTypeText = (type: string) => {
+  const getTypeText = (type?: string) => {
     switch (type) {
       case 'employment': return t('contracts.employment');
       case 'nda': return t('contracts.nda');
@@ -103,14 +103,6 @@ export const ContractsScreen = () => {
                         </View>
                       </View>
 
-                      {contract.pdf_url && (
-                        <View style={styles.pdfIndicator}>
-                          <CheckCircle size={14} color="#10b981" />
-                          <Text variant="body-sm" style={{ color: '#10b981' }}>
-                            {t('contracts.pdfAvailable')}
-                          </Text>
-                        </View>
-                      )}
                     </CardContent>
                   </Card>
                 </MotiPressable>

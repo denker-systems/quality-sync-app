@@ -5,13 +5,18 @@ export interface SignedContract {
   id: string;
   employee_id: string;
   contract_id: string;
-  contract_title: string;
-  contract_type: 'employment' | 'nda' | 'custom';
-  contract_content: string;
   signed_at: string;
   signature_data?: Record<string, any>;
-  pdf_url?: string;
   created_at: string;
+  contract?: {
+    title: string;
+    contract_type: string;
+    content: string;
+  };
+  // Flattened for backwards compatibility
+  contract_title?: string;
+  contract_type?: 'employment' | 'nda' | 'custom';
+  contract_content?: string;
 }
 
 /**
@@ -26,10 +31,21 @@ export function useMyContracts(employeeId?: string) {
       console.log('📄 Fetching contracts for employee:', employeeId);
 
       const { data, error } = await supabase
-        .from('employee_contracts')
-        .select('*')
+        .from('employee_contract_signatures')
+        .select(`
+          id,
+          contract_id,
+          employee_id,
+          signed_at,
+          signature_data,
+          created_at,
+          contract:employee_contracts(
+            title,
+            contract_type,
+            content
+          )
+        `)
         .eq('employee_id', employeeId)
-        .eq('signed_at', 'not.is.null')
         .order('signed_at', { ascending: false });
 
       if (error) {
@@ -37,8 +53,16 @@ export function useMyContracts(employeeId?: string) {
         throw error;
       }
 
-      console.log('✅ Contracts loaded:', data?.length || 0);
-      return data || [];
+      // Flatten contract data for backwards compatibility
+      const contracts = (data || []).map((item: any) => ({
+        ...item,
+        contract_title: item.contract?.title,
+        contract_type: item.contract?.contract_type as 'employment' | 'nda' | 'custom',
+        contract_content: item.contract?.content,
+      })) as SignedContract[];
+
+      console.log('✅ Contracts loaded:', contracts.length);
+      return contracts;
     },
     enabled: !!employeeId,
     staleTime: 60000, // 1 minute
@@ -54,11 +78,23 @@ export function useContract(contractId?: string) {
     queryFn: async (): Promise<SignedContract | null> => {
       if (!contractId) return null;
 
-      console.log('📄 Fetching contract:', contractId);
+      console.log('📄 Fetching contract signature:', contractId);
 
       const { data, error } = await supabase
-        .from('employee_contracts')
-        .select('*')
+        .from('employee_contract_signatures')
+        .select(`
+          id,
+          contract_id,
+          employee_id,
+          signed_at,
+          signature_data,
+          created_at,
+          contract:employee_contracts(
+            title,
+            contract_type,
+            content
+          )
+        `)
         .eq('id', contractId)
         .single();
 
@@ -67,8 +103,16 @@ export function useContract(contractId?: string) {
         throw error;
       }
 
+      // Flatten contract data
+      const contract = data ? {
+        ...(data as any),
+        contract_title: (data as any).contract?.title,
+        contract_type: (data as any).contract?.contract_type as 'employment' | 'nda' | 'custom',
+        contract_content: (data as any).contract?.content,
+      } as SignedContract : null;
+
       console.log('✅ Contract loaded');
-      return data;
+      return contract;
     },
     enabled: !!contractId,
     staleTime: 300000, // 5 minutes
