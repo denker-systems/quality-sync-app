@@ -12,24 +12,7 @@ interface OnboardingPathNodeProps {
   image?: ImageSourcePropType;
 }
 
-const getStepImage = (stepType: string): ImageSourcePropType | undefined => {
-  switch (stepType) {
-    case 'welcome':
-      return require('../../../../assets/images/onboarding.png');
-    case 'personal_info':
-      return require('../../../../assets/images/profile.png');
-    case 'contract_signing':
-    case 'handbook':
-      return require('../../../../assets/images/contract.png');
-    case 'emergency_contact':
-    case 'bank_details':
-      return require('../../../../assets/images/schedule.png');
-    default:
-      return undefined;
-  }
-};
-
-export const OnboardingPathNode = function OnboardingPathNode({ status, accentColor, image }: OnboardingPathNodeProps) {
+export const OnboardingPathNode = memo(function OnboardingPathNode({ status, accentColor, image }: OnboardingPathNodeProps) {
   const { isDark } = useTheme();
   
   const nodeStyle = useMemo(() => {
@@ -68,7 +51,7 @@ export const OnboardingPathNode = function OnboardingPathNode({ status, accentCo
       )}
     </MotiView>
   );
-}
+});
 
 const styles = StyleSheet.create({
   node: {
