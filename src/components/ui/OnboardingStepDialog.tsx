@@ -4,6 +4,7 @@ import { MotiView } from 'moti';
 import { Text } from '@/components/ui/Text';
 import { Button } from '@/components/ui/Button';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/lib/animations';
 
 interface OnboardingStepDialogProps {
@@ -19,11 +20,12 @@ export const OnboardingStepDialog = memo(function OnboardingStepDialog({
   visible,
   title,
   description,
-  actionLabel = 'Öppna',
+  actionLabel,
   onAction,
   onClose,
 }: OnboardingStepDialogProps) {
   const { isDark } = useTheme();
+  const { t } = useLanguage();
   
   const theme = useMemo(() => ({
     textColor: isDark ? '#FAFAFA' : '#171717',
@@ -70,7 +72,7 @@ export const OnboardingStepDialog = memo(function OnboardingStepDialog({
               }}
               style={[styles.actionButton, { backgroundColor: theme.accentColor }]}
             >
-              {actionLabel}
+              {actionLabel || t('onboarding.openButton')}
             </Button>
           </View>
         </MotiView>

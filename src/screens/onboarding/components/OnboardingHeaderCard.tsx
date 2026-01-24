@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Badge, Button, Card, CardContent, ProgressBar, Text } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface OnboardingHeaderCardProps {
   title: string;
@@ -25,6 +26,7 @@ export function OnboardingHeaderCard({
   onStart,
 }: OnboardingHeaderCardProps) {
   const { isDark } = useTheme();
+  const { t } = useLanguage();
   const textColor = isDark ? '#FAFAFA' : '#171717';
   const mutedColor = isDark ? '#A3A3A3' : '#737373';
   const accentColor = isDark ? '#6BBD68' : '#489A45';
@@ -38,21 +40,21 @@ export function OnboardingHeaderCard({
               {title}
             </Text>
             <Text variant="body" style={{ color: mutedColor, marginTop: 4 }}>
-              {welcomeName ? `Välkommen ${welcomeName}!` : 'Välkommen!'}
+              {welcomeName ? t('onboarding.welcomeName', { name: welcomeName }) : t('onboarding.welcomeMessage')}
             </Text>
           </View>
           <Badge variant={status === 'completed' ? 'success' : status === 'in_progress' ? 'warning' : 'default'}>
-            {status === 'completed' ? 'Klar' : status === 'in_progress' ? 'Pågår' : 'Ej startad'}
+            {status === 'completed' ? t('onboarding.completed') : status === 'in_progress' ? t('onboarding.inProgress') : t('onboarding.notStarted')}
           </Badge>
         </View>
 
         <View style={styles.progressSection}>
           <View style={styles.progressHeader}>
             <Text variant="body-sm" style={{ color: mutedColor }}>
-              Framsteg
+              {t('onboarding.progressLabel')}
             </Text>
             <Text variant="body-sm" style={{ color: textColor, fontWeight: '600' }}>
-              {completedSteps} av {totalSteps} slutförda
+              {t('onboarding.completedStepsLabel', { completed: completedSteps, total: totalSteps })}
             </Text>
           </View>
           <ProgressBar progress={progressPercentage} style={styles.progressBar} />
@@ -66,7 +68,7 @@ export function OnboardingHeaderCard({
               disabled={isPending}
               style={{ backgroundColor: accentColor }}
             >
-              {isPending ? 'Startar...' : status === 'in_progress' ? 'Fortsätt Onboarding' : 'Starta Onboarding'}
+              {isPending ? t('onboarding.starting') : status === 'in_progress' ? t('onboarding.continueButton') : t('onboarding.startButton')}
             </Button>
           </View>
         )}

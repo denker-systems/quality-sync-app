@@ -3,6 +3,8 @@ import { StyleSheet, View, ScrollView } from 'react-native';
 import { ScreenLayout } from '@/components/common';
 import { Text, Button, Surface, ProgressBar } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { getOnboardingStepTitle } from '@/utils/onboardingLanguage';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useMyEmployee } from '@/hooks/useMyEmployee';
@@ -26,6 +28,7 @@ export const OnboardingStepScreen = () => {
   const route = useRoute<OnboardingStepScreenRouteProp>();
   const navigation = useNavigation<OnboardingStepScreenNavigationProp>();
   const { isDark } = useTheme();
+  const { t, language } = useLanguage();
   const { data: employee } = useMyEmployee();
   const stepSubmitRef = useRef<(() => void) | null>(null);
 
@@ -182,6 +185,7 @@ export const OnboardingStepScreen = () => {
   const renderStepComponent = () => {
     const commonProps = {
       content: currentStep.content,
+      step: currentStep,
       stepData: currentProgress?.step_data || {},
       onComplete: handleStepComplete,
       onSave: handleStepSave,
@@ -229,7 +233,7 @@ export const OnboardingStepScreen = () => {
 
   return (
     <ScreenLayout 
-      title="Onboarding" 
+      title={t('onboarding.title')} 
       scrollable={false} 
       noPadding
       onBackPress={handleBack}
@@ -240,10 +244,10 @@ export const OnboardingStepScreen = () => {
         <Surface elevation={0} style={styles.header}>
           <View style={styles.headerContent}>
             <Text variant="body-sm" style={{ color: mutedColor }}>
-              Step {stepIndex + 1} of {totalSteps}
+              {t('onboarding.stepsCompleted', { completed: stepIndex + 1, total: totalSteps })}
             </Text>
             <Text variant="h3" style={{ color: textColor }}>
-              {currentStep.title}
+              {getOnboardingStepTitle(currentStep, language === 'sv' ? 'sv' : 'en')}
             </Text>
           </View>
           <ProgressBar 
@@ -272,7 +276,7 @@ export const OnboardingStepScreen = () => {
             <View style={styles.navButtonContent}>
               <ChevronLeft size={20} color={hasPrevious ? accentColor : mutedColor} />
               <Text variant="body" style={{ color: hasPrevious ? accentColor : mutedColor }}>
-                Previous
+                {t('common.back')}
               </Text>
             </View>
           </Button>
@@ -285,7 +289,7 @@ export const OnboardingStepScreen = () => {
           >
             <View style={styles.navButtonContent}>
               <Text variant="body" style={{ color: hasNext ? accentColor : mutedColor }}>
-                Next
+                {t('common.next')}
               </Text>
               <ChevronRight size={20} color={hasNext ? accentColor : mutedColor} />
             </View>

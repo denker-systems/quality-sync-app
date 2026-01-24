@@ -3,6 +3,7 @@ import { StyleSheet, View, Dimensions, Platform } from 'react-native';
 import { Button, Surface, Text } from 'react-native-paper';
 import SignatureScreen from 'react-native-signature-canvas';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface SignatureCanvasProps {
   onComplete: (signatureData: string) => void;
@@ -21,6 +22,7 @@ export const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
   onScrollChange,
 }) => {
   const { isDark } = useTheme();
+  const { t } = useLanguage();
   const canvasRef = useRef<any>(null);
   const [isEmpty, setIsEmpty] = useState(true);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -136,7 +138,7 @@ export const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
     return (
       <View style={styles.container}>
         <Text variant="bodySmall" style={[styles.instruction, { color: mutedColor }]}>
-          Rita din signatur nedan
+          {t('signature.instruction')}
         </Text>
         
         <div
@@ -177,10 +179,10 @@ export const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
 
         <View style={styles.buttonRow}>
           <Button mode="outlined" onPress={onCancel} style={styles.button}>
-            Avbryt
+            {t('signature.cancel')}
           </Button>
           <Button mode="outlined" onPress={handleClear} style={styles.button}>
-            Rensa
+            {t('signature.clear')}
           </Button>
           <Button 
             mode="contained" 
@@ -188,7 +190,7 @@ export const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
             style={styles.button}
             disabled={isEmpty}
           >
-            Bekräfta
+            {t('signature.confirm')}
           </Button>
         </View>
       </View>
@@ -233,7 +235,7 @@ export const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
   return (
     <View style={styles.container}>
       <Text variant="bodySmall" style={[styles.instruction, { color: mutedColor }]}>
-        Rita din signatur nedan
+        {t('signature.instruction')}
       </Text>
       
       <View 
@@ -263,17 +265,17 @@ export const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
 
       <View style={styles.buttonRow}>
         <Button mode="outlined" onPress={onCancel} style={styles.button}>
-          Avbryt
+          {t('signature.cancel')}
         </Button>
         <Button mode="outlined" onPress={handleNativeClear} style={styles.button}>
-          Rensa
+          {t('signature.clear')}
         </Button>
         <Button 
           mode="contained" 
           onPress={handleNativeEnd} 
           style={styles.button}
         >
-          Bekräfta
+          {t('signature.confirm')}
         </Button>
       </View>
     </View>

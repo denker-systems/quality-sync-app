@@ -2,10 +2,14 @@ import React, { useEffect } from 'react';
 import { StyleSheet, View, Image } from 'react-native';
 import { Text, Button, Surface } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { PartyPopper } from 'lucide-react-native';
+import type { OnboardingStep } from '@/hooks/useOnboarding';
+import { getOnboardingStepTitle, getOnboardingStepDescription } from '@/utils/onboardingLanguage';
 
 interface WelcomeStepProps {
   content: Record<string, any>;
+  step: OnboardingStep;
   stepData: Record<string, any>;
   onComplete: (data: Record<string, any>) => void;
   onSave: (data: Record<string, any>) => void;
@@ -15,11 +19,13 @@ interface WelcomeStepProps {
 
 export const WelcomeStep: React.FC<WelcomeStepProps> = ({
   content,
+  step,
   onComplete,
   employeeName,
   submitRef,
 }) => {
   const { isDark } = useTheme();
+  const { t, language } = useLanguage();
   const textColor = isDark ? '#FAFAFA' : '#171717';
   const mutedColor = isDark ? '#A3A3A3' : '#737373';
   const accentColor = isDark ? '#6BBD68' : '#489A45';
@@ -29,11 +35,13 @@ export const WelcomeStep: React.FC<WelcomeStepProps> = ({
     onComplete({ started: true, started_at: new Date().toISOString() });
   };
 
-  const title = content?.welcome_message || content?.message || 
-    'Välkommen till vårt team! Vi är glada att ha dig ombord.';
+  const title = getOnboardingStepTitle(step, language === 'sv' ? 'sv' : 'en') || 
+    content?.welcome_message || content?.message || 
+    t('onboarding.welcome.defaultTitle');
     
-  const description = content?.company_intro || content?.description || 
-    'Vi är glada att ha dig ombord och ser fram emot att arbeta med dig.';
+  const description = getOnboardingStepDescription(step, language === 'sv' ? 'sv' : 'en') || 
+    content?.company_intro || content?.description || 
+    t('onboarding.welcome.defaultDescription');
 
   const imageUrl = content?.welcome_image_url;
 

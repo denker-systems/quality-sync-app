@@ -56,6 +56,7 @@ export function HomeScreen() {
             <AnimatedGridItem index={3} staggerDelay={STAGGER_DELAYS.medium} style={styles.gridButton}>
               <ImageButton
                 title={t('home.myProfile')}
+                image={require('../../../assets/images/profile.png')}
                 onPress={() => navigation.navigate('Profile')}
               />
             </AnimatedGridItem>

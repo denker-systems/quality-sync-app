@@ -40,8 +40,14 @@ export function FloatingTabBar({ activeTab, onTabPress }: FloatingTabBarProps) {
         styles.container, 
         { paddingBottom: Math.max(insets.bottom, 16) }
       ]}
+      pointerEvents="box-none"
     >
-      <View style={styles.tabContainer}>
+      <View 
+        style={[
+          styles.tabContainer,
+          isDark ? styles.tabContainerDark : styles.tabContainerLight
+        ]}
+      >
         {tabs.map((tab, index) => {
           const isActive = activeTab === tab.key;
           const Icon = tab.icon;
@@ -108,6 +114,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 32,
+  },
+  tabContainerLight: {
+    backgroundColor: 'transparent',
+  },
+  tabContainerDark: {
+    backgroundColor: 'transparent',
   },
   tabButton: {
     width: 52,

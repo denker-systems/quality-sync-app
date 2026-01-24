@@ -2,7 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, ScrollView, TextInput, Image, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { Text, Button, Surface } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { User, Upload, FileText, X } from 'lucide-react-native';
+import type { OnboardingStep } from '@/hooks/useOnboarding';
+import { getOnboardingStepTitle, getOnboardingStepDescription } from '@/utils/onboardingLanguage';
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import { supabase } from '@/config/supabase';
@@ -12,6 +15,7 @@ import { useUpdateMyEmployee } from '@/hooks/useMyEmployee';
 
 interface PersonalInfoStepProps {
   content: Record<string, any>;
+  step: OnboardingStep;
   stepData: Record<string, any>;
   onComplete: (data: Record<string, any>) => void;
   onSave: (data: Record<string, any>) => void;
@@ -21,6 +25,7 @@ interface PersonalInfoStepProps {
 
 export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
   content,
+  step,
   stepData,
   onComplete,
   onSave,
@@ -28,6 +33,7 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
   employee,
 }) => {
   const { isDark } = useTheme();
+  const { t, language } = useLanguage();
   const textColor = isDark ? '#FAFAFA' : '#171717';
   const mutedColor = isDark ? '#A3A3A3' : '#737373';
   const accentColor = isDark ? '#6BBD68' : '#489A45';
@@ -89,24 +95,24 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
     console.log('🔍 PERSONAL_INFO_STEP validate:', formData);
     const newErrors: Record<string, string> = {};
     if (!formData.first_name.trim()) {
-      newErrors.first_name = 'Förnamn krävs';
+      newErrors.first_name = t('onboarding.personalInfo.errorFirstName');
     }
     if (!formData.last_name.trim()) {
-      newErrors.last_name = 'Efternamn krävs';
+      newErrors.last_name = t('onboarding.personalInfo.errorLastName');
     }
     if (!formData.personal_number.trim()) {
-      newErrors.personal_number = 'Personnummer krävs';
+      newErrors.personal_number = t('onboarding.personalInfo.errorPersonalNumber');
     } else if (!/^\d{6,8}-?\d{4}$/.test(formData.personal_number)) {
-      newErrors.personal_number = 'Ogiltigt personnummer (ÅÅÅÅMMDD-XXXX)';
+      newErrors.personal_number = t('onboarding.personalInfo.errorInvalidPersonalNumber');
     }
     if (!formData.address.trim()) {
-      newErrors.address = 'Adress krävs';
+      newErrors.address = t('onboarding.personalInfo.errorAddress');
     }
     if (!formData.postal_code.trim()) {
-      newErrors.postal_code = 'Postnummer krävs';
+      newErrors.postal_code = t('onboarding.personalInfo.errorPostalCode');
     }
     if (!formData.city.trim()) {
-      newErrors.city = 'Ort krävs';
+      newErrors.city = t('onboarding.personalInfo.errorCity');
     }
     
     if (Object.keys(newErrors).length > 0) {
@@ -143,7 +149,7 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
       onComplete(formData);
     } catch (error) {
       console.error('❌ PERSONAL_INFO_STEP: Failed to update employee:', error);
-      Alert.alert('Fel', 'Kunde inte spara dina uppgifter. Försök igen.');
+      Alert.alert(t('onboarding.personalInfo.errorTitle'), t('onboarding.personalInfo.errorSave'));
     }
   };
 
@@ -159,7 +165,7 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
         
         // Validate file size (max 5MB)
         if (file.size && file.size > 5 * 1024 * 1024) {
-          Alert.alert('Fel', 'Filen är för stor. Max 5MB tillåtet.');
+          Alert.alert(t('onboarding.personalInfo.errorTitle'), t('onboarding.personalInfo.errorFileSize'));
           return;
         }
 
@@ -167,7 +173,7 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
       }
     } catch (error) {
       console.error('Error picking document:', error);
-      Alert.alert('Fel', 'Kunde inte välja dokument');
+      Alert.alert(t('onboarding.personalInfo.errorTitle'), t('onboarding.personalInfo.errorPickDocument'));
     }
   };
 
@@ -175,7 +181,7 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
     try {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert('Behörighet krävs', 'Vi behöver tillgång till dina foton för att ladda upp ID-handling.');
+        Alert.alert(t('onboarding.personalInfo.permissionRequired'), t('onboarding.personalInfo.permissionMessage'));
         return;
       }
 
@@ -196,7 +202,7 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
       }
     } catch (error) {
       console.error('Error picking image:', error);
-      Alert.alert('Fel', 'Kunde inte välja bild');
+      Alert.alert(t('onboarding.personalInfo.errorTitle'), t('onboarding.personalInfo.errorPickImage'));
     }
   };
 
@@ -224,7 +230,7 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
 
       if (error) {
         console.error('Upload error:', error);
-        Alert.alert('Fel', 'Kunde inte ladda upp filen');
+        Alert.alert(t('onboarding.personalInfo.errorTitle'), t('onboarding.personalInfo.errorUpload'));
         return;
       }
 
@@ -242,7 +248,7 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
       });
 
       setFormData(prev => ({ ...prev, id_document_url: urlData.publicUrl }));
-      Alert.alert('Klart!', 'ID-handling uppladdad');
+      Alert.alert(t('onboarding.personalInfo.uploadSuccess'), t('onboarding.personalInfo.uploadSuccessMessage'));
     } catch (error) {
       console.error('Upload error:', error);
       Alert.alert('Fel', 'Kunde inte ladda upp filen');
@@ -279,17 +285,17 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
         <View style={styles.header}>
           <User size={24} color={accentColor} />
           <Text variant="h3" style={{ color: textColor }}>
-            Personuppgifter
+            {getOnboardingStepTitle(step, language === 'sv' ? 'sv' : 'en') || t('onboarding.personalInfo.title')}
           </Text>
         </View>
         
         <Text variant="body" style={[styles.description, { color: mutedColor }]}>
-          {content?.description || 'Fyll i dina personuppgifter nedan.'}
+          {getOnboardingStepDescription(step, language === 'sv' ? 'sv' : 'en') || content?.description || t('onboarding.personalInfo.description')}
         </Text>
 
         <View style={styles.row}>
           <View style={styles.halfField}>
-            <Text variant="body-sm" style={[styles.label, { color: textColor }]}>Förnamn *</Text>
+            <Text variant="body-sm" style={[styles.label, { color: textColor }]}>{t('onboarding.personalInfo.firstName')} {t('onboarding.personalInfo.required')}</Text>
             <TextInput
               value={formData.first_name}
               onChangeText={(text) => updateField('first_name', text)}
@@ -301,7 +307,7 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
             )}
           </View>
           <View style={styles.halfField}>
-            <Text variant="body-sm" style={[styles.label, { color: textColor }]}>Efternamn *</Text>
+            <Text variant="body-sm" style={[styles.label, { color: textColor }]}>{t('onboarding.personalInfo.lastName')} {t('onboarding.personalInfo.required')}</Text>
             <TextInput
               value={formData.last_name}
               onChangeText={(text) => updateField('last_name', text)}
@@ -314,11 +320,11 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
           </View>
         </View>
 
-        <Text variant="body-sm" style={[styles.label, { color: textColor }]}>Personnummer *</Text>
+        <Text variant="body-sm" style={[styles.label, { color: textColor }]}>{t('onboarding.personalInfo.personalNumber')} {t('onboarding.personalInfo.required')}</Text>
         <TextInput
           value={formData.personal_number}
           onChangeText={(text) => updateField('personal_number', text)}
-          placeholder="ÅÅÅÅMMDD-XXXX"
+          placeholder={t('onboarding.personalInfo.personalNumberPlaceholder')}
           style={[inputStyle, errors.personal_number && styles.inputError]}
           placeholderTextColor={mutedColor}
         />
@@ -326,7 +332,7 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
           <Text variant="body-sm" style={styles.errorText}>{errors.personal_number}</Text>
         )}
 
-        <Text variant="body-sm" style={[styles.label, { color: textColor }]}>Adress *</Text>
+        <Text variant="body-sm" style={[styles.label, { color: textColor }]}>{t('onboarding.personalInfo.address')} {t('onboarding.personalInfo.required')}</Text>
         <TextInput
           value={formData.address}
           onChangeText={(text) => updateField('address', text)}
@@ -339,7 +345,7 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
 
         <View style={styles.row}>
           <View style={styles.halfField}>
-            <Text variant="body-sm" style={[styles.label, { color: textColor }]}>Postnummer *</Text>
+            <Text variant="body-sm" style={[styles.label, { color: textColor }]}>{t('onboarding.personalInfo.postalCode')} {t('onboarding.personalInfo.required')}</Text>
             <TextInput
               value={formData.postal_code}
               onChangeText={(text) => updateField('postal_code', text)}
@@ -352,7 +358,7 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
             )}
           </View>
           <View style={styles.halfField}>
-            <Text variant="body-sm" style={[styles.label, { color: textColor }]}>Ort *</Text>
+            <Text variant="body-sm" style={[styles.label, { color: textColor }]}>{t('onboarding.personalInfo.city')} {t('onboarding.personalInfo.required')}</Text>
             <TextInput
               value={formData.city}
               onChangeText={(text) => updateField('city', text)}
@@ -365,7 +371,7 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
           </View>
         </View>
 
-        <Text variant="body-sm" style={[styles.label, { color: textColor }]}>Telefon</Text>
+        <Text variant="body-sm" style={[styles.label, { color: textColor }]}>{t('onboarding.personalInfo.phone')}</Text>
         <TextInput
           value={formData.phone}
           onChangeText={(text) => updateField('phone', text)}
@@ -374,7 +380,7 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
           placeholderTextColor={mutedColor}
         />
 
-        <Text variant="body-sm" style={[styles.label, { color: textColor }]}>E-post</Text>
+        <Text variant="body-sm" style={[styles.label, { color: textColor }]}>{t('onboarding.personalInfo.email')}</Text>
         <TextInput
           value={formData.email}
           onChangeText={(text) => updateField('email', text)}
@@ -386,9 +392,9 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
 
         {/* ID Document Upload */}
         <View style={styles.uploadSection}>
-          <Text variant="body-sm" style={[styles.label, { color: textColor }]}>ID-handling (valfritt)</Text>
+          <Text variant="body-sm" style={[styles.label, { color: textColor }]}>{t('onboarding.personalInfo.idDocument')}</Text>
           <Text variant="body-sm" style={{ color: mutedColor, marginBottom: 12 }}>
-            Ladda upp kopia av körkort, pass eller nationellt ID-kort (JPG, PNG eller PDF, max 5MB)
+            {t('onboarding.personalInfo.idDocumentDesc')}
           </Text>
 
           {!uploadedFile && !formData.id_document_url && (
@@ -401,7 +407,7 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
               >
                 <Upload size={16} color={accentColor} />
                 <Text variant="body-sm" style={{ color: accentColor, marginLeft: 8 }}>
-                  Välj bild
+                  {t('onboarding.personalInfo.chooseImage')}
                 </Text>
               </Button>
               <Button
@@ -412,7 +418,7 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
               >
                 <FileText size={16} color={accentColor} />
                 <Text variant="body-sm" style={{ color: accentColor, marginLeft: 8 }}>
-                  Välj dokument
+                  {t('onboarding.personalInfo.chooseDocument')}
                 </Text>
               </Button>
             </View>
@@ -422,7 +428,7 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
             <View style={[styles.uploadPreview, { backgroundColor: isDark ? '#1A1A1A' : '#f3f4f6' }]}>
               <ActivityIndicator size="small" color={accentColor} />
               <Text variant="body-sm" style={{ color: mutedColor, marginLeft: 12 }}>
-                Laddar upp...
+                {t('onboarding.personalInfo.uploading')}
               </Text>
             </View>
           )}
@@ -437,10 +443,10 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
               )}
               <View style={styles.fileInfo}>
                 <Text variant="body-sm" style={{ color: textColor, fontWeight: '600' }}>
-                  {uploadedFile?.name || 'ID-handling uppladdad'}
+                  {uploadedFile?.name || t('onboarding.personalInfo.idDocumentUploaded')}
                 </Text>
                 <Text variant="body-sm" style={{ color: mutedColor }}>
-                  Uppladdad
+                  {t('onboarding.personalInfo.uploaded')}
                 </Text>
               </View>
               <TouchableOpacity onPress={removeFile} style={styles.removeButton}>

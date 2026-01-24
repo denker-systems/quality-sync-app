@@ -6,9 +6,14 @@ import { SignatureModal } from '@/components/SignatureModal';
 import { useContractTemplate } from '@/hooks/useContracts';
 import { useCompanyData } from '@/hooks/useCompanyData';
 import { useMyEmployee } from '@/hooks/useMyEmployee';
+import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
+import type { OnboardingStep } from '@/hooks/useOnboarding';
+import { getOnboardingStepTitle, getOnboardingStepDescription } from '@/utils/onboardingLanguage';
 
 interface ContractSigningStepProps {
   content: Record<string, any>;
+  step: OnboardingStep;
   stepData: Record<string, any>;
   onComplete: (data: Record<string, any>) => void;
   onSave: (data: Record<string, any>) => void;
@@ -17,11 +22,14 @@ interface ContractSigningStepProps {
 
 export const ContractSigningStep: React.FC<ContractSigningStepProps> = ({
   content,
+  step,
   stepData,
   onComplete,
   onSave,
   submitRef,
 }) => {
+  const { isDark } = useTheme();
+  const { t, language } = useLanguage();
   console.log('📝 CONTRACT_SIGNING_STEP render:', { stepData, hasRead: stepData?.has_read });
   
   const { company } = useCompanyData();
@@ -131,13 +139,13 @@ Arbetstagaren förbinder sig att inte röja konfidentiell information.`;
     
     if (!hasReadContract) {
       console.warn('⚠️ CONTRACT_SIGNING_STEP cannot sign - contract not read');
-      Alert.alert('Läs avtalet först', 'Du måste läsa igenom avtalet innan du kan fortsätta.');
+      Alert.alert(t('onboarding.contract.alertReadFirst'), t('onboarding.contract.alertReadMessage'));
       return false;
     }
 
     if (!signature) {
       console.warn('⚠️ CONTRACT_SIGNING_STEP cannot sign - no signature');
-      Alert.alert('Signatur saknas', 'Du måste signera avtalet för att fortsätta.');
+      Alert.alert(t('onboarding.contract.alertSignatureMissing'), t('onboarding.contract.alertSignatureMessage'));
       return false;
     }
 
@@ -161,12 +169,12 @@ Arbetstagaren förbinder sig att inte röja konfidentiell information.`;
         <View style={styles.header}>
           <FileText size={24} color="#0056b3" />
           <Text variant="titleLarge" style={styles.title}>
-            {contractTitle}
+            {getOnboardingStepTitle(step, language === 'sv' ? 'sv' : 'en') || contractTitle}
           </Text>
         </View>
         
         <Text variant="bodyMedium" style={styles.description}>
-          Läs igenom avtalet nedan och signera för att godkänna.
+          {getOnboardingStepDescription(step, language === 'sv' ? 'sv' : 'en') || t('onboarding.contract.description')}
         </Text>
 
         {/* Contract Content */}
@@ -192,7 +200,7 @@ Arbetstagaren förbinder sig att inte röja konfidentiell information.`;
             style={styles.checkboxLabel}
             onPress={() => setHasReadContract(!hasReadContract)}
           >
-            Jag har läst och förstått avtalet
+            {t('onboarding.contract.readConfirmation')}
           </Text>
         </View>
       </Surface>
@@ -202,7 +210,7 @@ Arbetstagaren förbinder sig att inte röja konfidentiell information.`;
         <View style={styles.header}>
           <PenTool size={24} color="#0056b3" />
           <Text variant="titleMedium" style={styles.title}>
-            Signatur
+            {t('onboarding.contract.signatureTitle')}
           </Text>
         </View>
 
@@ -210,13 +218,13 @@ Arbetstagaren förbinder sig att inte röja konfidentiell information.`;
           <View style={styles.signaturePreview}>
             <View style={styles.signatureImageContainer}>
               <Text variant="bodySmall" style={styles.signatureLabel}>
-                Din signatur:
+                {t('onboarding.contract.yourSignature')}
               </Text>
               {/* Display signature preview */}
               <View style={styles.signaturePlaceholder}>
                 <Check size={32} color="#10b981" />
                 <Text variant="bodyMedium" style={styles.signedText}>
-                  Signerat
+                  {t('onboarding.contract.signed')}
                 </Text>
               </View>
             </View>
@@ -225,7 +233,7 @@ Arbetstagaren förbinder sig att inte röja konfidentiell information.`;
               onPress={handleClearSignature}
               style={styles.clearButton}
             >
-              Rensa signatur
+              {t('onboarding.contract.clearSignature')}
             </Button>
           </View>
         ) : (
@@ -237,11 +245,11 @@ Arbetstagaren förbinder sig att inte röja konfidentiell information.`;
               style={styles.signButton}
               disabled={!hasReadContract}
             >
-              Öppna Signeringsvyn
+              {t('onboarding.contract.openSignatureView')}
             </Button>
             {!hasReadContract && (
               <Text variant="bodySmall" style={styles.warningText}>
-                Du måste läsa avtalet först
+                {t('onboarding.contract.mustReadFirst')}
               </Text>
             )}
           </View>
@@ -253,8 +261,8 @@ Arbetstagaren förbinder sig att inte röja konfidentiell information.`;
         visible={signatureModalVisible}
         onComplete={handleSignatureComplete}
         onClose={() => setSignatureModalVisible(false)}
-        title="Signera Anställningsavtal"
-        description="Rita din signatur nedan för att godkänna avtalet"
+        title={t('onboarding.contract.signatureModalTitle')}
+        description={t('onboarding.contract.signatureModalDesc')}
       />
     </>
   );

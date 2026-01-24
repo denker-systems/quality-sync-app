@@ -2,9 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, ScrollView } from 'react-native';
 import { Text, TextInput, Button, Surface, SegmentedButtons } from 'react-native-paper';
 import { Phone } from 'lucide-react-native';
+import { useLanguage } from '@/contexts/LanguageContext';
+import type { OnboardingStep } from '@/hooks/useOnboarding';
+import { getOnboardingStepTitle, getOnboardingStepDescription } from '@/utils/onboardingLanguage';
 
 interface EmergencyContactStepProps {
   content: Record<string, any>;
+  step: OnboardingStep;
   stepData: Record<string, any>;
   onComplete: (data: Record<string, any>) => void;
   onSave: (data: Record<string, any>) => void;
@@ -13,11 +17,13 @@ interface EmergencyContactStepProps {
 
 export const EmergencyContactStep: React.FC<EmergencyContactStepProps> = ({
   content,
+  step,
   stepData,
   onComplete,
   onSave,
   submitRef,
 }) => {
+  const { t, language } = useLanguage();
   console.log('🆘 EMERGENCY_CONTACT_STEP render:', { stepData });
   
   useEffect(() => {
@@ -41,9 +47,9 @@ export const EmergencyContactStep: React.FC<EmergencyContactStepProps> = ({
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const relationOptions = [
-    { value: 'family', label: 'Familj' },
-    { value: 'friend', label: 'Vän' },
-    { value: 'other', label: 'Annan' },
+    { value: 'family', label: t('onboarding.emergencyContact.relationFamily') },
+    { value: 'friend', label: t('onboarding.emergencyContact.relationFriend') },
+    { value: 'other', label: t('onboarding.emergencyContact.relationOther') },
   ];
 
   const validate = () => {
@@ -51,10 +57,10 @@ export const EmergencyContactStep: React.FC<EmergencyContactStepProps> = ({
     const newErrors: Record<string, string> = {};
     
     if (!formData.contact_name.trim()) {
-      newErrors.contact_name = 'Namn krävs';
+      newErrors.contact_name = t('onboarding.emergencyContact.errorName');
     }
     if (!formData.contact_phone.trim()) {
-      newErrors.contact_phone = 'Telefon krävs';
+      newErrors.contact_phone = t('onboarding.emergencyContact.errorPhone');
     }
     
     if (Object.keys(newErrors).length > 0) {
@@ -87,22 +93,22 @@ export const EmergencyContactStep: React.FC<EmergencyContactStepProps> = ({
         <View style={styles.header}>
           <Phone size={24} color="#0056b3" />
           <Text variant="titleLarge" style={styles.title}>
-            Nödkontakt
+            {getOnboardingStepTitle(step, language === 'sv' ? 'sv' : 'en') || t('onboarding.emergencyContact.title')}
           </Text>
         </View>
         
         <Text variant="bodyMedium" style={styles.description}>
-          {content?.description || 'Ange en person vi kan kontakta vid nödsituation.'}
+          {getOnboardingStepDescription(step, language === 'sv' ? 'sv' : 'en') || content?.description || t('onboarding.emergencyContact.description')}
         </Text>
 
         <View style={styles.infoBox}>
           <Text variant="bodySmall" style={styles.infoText}>
-            ℹ️ Denna information används endast i nödsituationer och behandlas konfidentiellt.
+            {t('onboarding.emergencyContact.securityInfo')}
           </Text>
         </View>
 
         <TextInput
-          label="Kontaktpersonens namn *"
+          label={`${t('onboarding.emergencyContact.contactName')} ${t('onboarding.emergencyContact.required')}`}
           value={formData.contact_name}
           onChangeText={(text) => updateField('contact_name', text)}
           mode="outlined"
@@ -113,7 +119,7 @@ export const EmergencyContactStep: React.FC<EmergencyContactStepProps> = ({
           <Text style={styles.errorText}>{errors.contact_name}</Text>
         )}
 
-        <Text variant="labelLarge" style={styles.label}>Relation</Text>
+        <Text variant="labelLarge" style={styles.label}>{t('onboarding.emergencyContact.relation')}</Text>
         <SegmentedButtons
           value={formData.contact_relation}
           onValueChange={(value) => updateField('contact_relation', value)}
@@ -122,7 +128,7 @@ export const EmergencyContactStep: React.FC<EmergencyContactStepProps> = ({
         />
 
         <TextInput
-          label="Telefonnummer *"
+          label={`${t('onboarding.emergencyContact.phone')} ${t('onboarding.emergencyContact.required')}`}
           value={formData.contact_phone}
           onChangeText={(text) => updateField('contact_phone', text)}
           mode="outlined"
@@ -135,7 +141,7 @@ export const EmergencyContactStep: React.FC<EmergencyContactStepProps> = ({
         )}
 
         <TextInput
-          label="E-post (valfritt)"
+          label={t('onboarding.emergencyContact.email')}
           value={formData.contact_email}
           onChangeText={(text) => updateField('contact_email', text)}
           mode="outlined"

@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { StyleSheet, View, ScrollView, Image, Linking } from 'react-native';
 import { Text, Button, Surface } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { FileText, Video as VideoIcon, Image as ImageIcon, ExternalLink } from 'lucide-react-native';
 
 interface CustomStepProps {
@@ -30,6 +31,7 @@ export const CustomStep: React.FC<CustomStepProps> = ({
   submitRef,
 }) => {
   const { isDark } = useTheme();
+  const { t } = useLanguage();
   const textColor = isDark ? '#FAFAFA' : '#171717';
   const mutedColor = isDark ? '#A3A3A3' : '#737373';
   const accentColor = isDark ? '#6BBD68' : '#489A45';
@@ -81,14 +83,14 @@ export const CustomStep: React.FC<CustomStepProps> = ({
           <Surface style={styles.mediaCard} elevation={0}>
             <VideoIcon size={48} color={accentColor} />
             <Text variant="body" style={{ color: textColor, marginTop: 8 }}>
-              {content.title || 'Video'}
+              {content.title || t('onboarding.custom.video')}
             </Text>
             <Button 
               variant="outline" 
               onPress={() => handleOpenLink(content.media_url!)}
               style={styles.mediaButton}
             >
-              Öppna video
+              {t('onboarding.custom.openVideo')}
             </Button>
           </Surface>
         );
@@ -98,7 +100,7 @@ export const CustomStep: React.FC<CustomStepProps> = ({
           <Surface style={styles.mediaCard} elevation={0}>
             <FileText size={48} color="#3b82f6" />
             <Text variant="body" style={{ color: textColor, marginTop: 8 }}>
-              {content.title || 'Dokument'}
+              {content.title || t('onboarding.custom.document')}
             </Text>
             <Button 
               variant="outline" 
@@ -106,7 +108,7 @@ export const CustomStep: React.FC<CustomStepProps> = ({
               style={styles.mediaButton}
             >
               <ExternalLink size={16} color={accentColor} style={{ marginRight: 8 }} />
-              Öppna
+              {t('onboarding.custom.open')}
             </Button>
           </Surface>
         );
@@ -116,7 +118,7 @@ export const CustomStep: React.FC<CustomStepProps> = ({
           <Surface style={styles.mediaCard} elevation={0}>
             <ExternalLink size={48} color="#3b82f6" />
             <Text variant="body" style={{ color: textColor, marginTop: 8 }}>
-              {content.title || 'Extern länk'}
+              {content.title || t('onboarding.custom.externalLink')}
             </Text>
             <Text variant="body-sm" style={{ color: mutedColor, marginTop: 4 }}>
               {content.media_url}
@@ -126,7 +128,7 @@ export const CustomStep: React.FC<CustomStepProps> = ({
               onPress={() => handleOpenLink(content.media_url!)}
               style={styles.mediaButton}
             >
-              Besök
+              {t('onboarding.custom.visit')}
             </Button>
           </Surface>
         );
@@ -174,7 +176,7 @@ export const CustomStep: React.FC<CustomStepProps> = ({
               variant="primary"
               onPress={() => handleOpenLink(content.button_url!)}
             >
-              {content.button_text || 'Läs mer'}
+              {content.button_text || t('onboarding.custom.readMore')}
             </Button>
           </View>
         )}
@@ -184,10 +186,10 @@ export const CustomStep: React.FC<CustomStepProps> = ({
           <View style={styles.emptyState}>
             <FileText size={64} color={mutedColor} style={{ opacity: 0.5 }} />
             <Text variant="body-lg" style={[styles.emptyTitle, { color: textColor }]}>
-              Detta är ett anpassat steg
+              {t('onboarding.custom.emptyTitle')}
             </Text>
             <Text variant="body-sm" style={{ color: mutedColor, textAlign: 'center', marginTop: 8 }}>
-              Innehåll har inte konfigurerats ännu
+              {t('onboarding.custom.emptyDescription')}
             </Text>
           </View>
         )}

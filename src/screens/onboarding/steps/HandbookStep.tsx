@@ -2,9 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, ScrollView, Alert } from 'react-native';
 import { Text, Button, Surface, Checkbox, List } from 'react-native-paper';
 import { BookOpen, ChevronDown, ChevronUp } from 'lucide-react-native';
+import { useLanguage } from '@/contexts/LanguageContext';
+import type { OnboardingStep } from '@/hooks/useOnboarding';
+import { getOnboardingStepTitle, getOnboardingStepDescription } from '@/utils/onboardingLanguage';
 
 interface HandbookStepProps {
   content: Record<string, any>;
+  step: OnboardingStep;
   stepData: Record<string, any>;
   onComplete: (data: Record<string, any>) => void;
   onSave: (data: Record<string, any>) => void;
@@ -13,11 +17,13 @@ interface HandbookStepProps {
 
 export const HandbookStep: React.FC<HandbookStepProps> = ({
   content,
+  step,
   stepData,
   onComplete,
   onSave,
   submitRef,
 }) => {
+  const { t, language } = useLanguage();
   console.log('📚 HANDBOOK_STEP render:', { stepData, readSections: stepData?.read_sections });
   
   const [hasReadAll, setHasReadAll] = useState(stepData?.has_read_all || false);
@@ -44,8 +50,8 @@ export const HandbookStep: React.FC<HandbookStepProps> = ({
   const sections: Section[] = content?.sections || [
     {
       id: 'welcome',
-      title: 'Välkommen',
-      content: 'Välkommen till företaget! Vi är glada att ha dig med i teamet.',
+      title: t('onboarding.handbook.defaultSectionWelcome'),
+      content: t('onboarding.handbook.defaultSectionWelcomeContent'),
     },
     {
       id: 'values',
@@ -103,16 +109,16 @@ export const HandbookStep: React.FC<HandbookStepProps> = ({
     
     if (readSections.length < sections.length) {
       Alert.alert(
-        'Läs alla avsnitt först',
-        `Du måste läsa alla ${sections.length} avsnitt innan du kan fortsätta. Du har läst ${readSections.length} av ${sections.length}.`
+        t('onboarding.handbook.alertReadAll'),
+        t('onboarding.handbook.alertReadAllMessage', { total: sections.length, read: readSections.length })
       );
       return;
     }
 
     if (!hasReadAll) {
       Alert.alert(
-        'Bekräfta att du har läst',
-        'Du måste bocka i att du har läst och förstått personalhandboken.'
+        t('onboarding.handbook.alertConfirm'),
+        t('onboarding.handbook.alertConfirmMessage')
       );
       return;
     }
@@ -131,17 +137,17 @@ export const HandbookStep: React.FC<HandbookStepProps> = ({
         <View style={styles.header}>
           <BookOpen size={24} color="#0056b3" />
           <Text variant="titleLarge" style={styles.title}>
-            Personalhandbok
+            {getOnboardingStepTitle(step, language === 'sv' ? 'sv' : 'en') || t('onboarding.handbook.title')}
           </Text>
         </View>
         
         <Text variant="bodyMedium" style={styles.description}>
-          {content?.description || 'Läs igenom personalhandboken för att lära dig mer om företaget.'}
+          {getOnboardingStepDescription(step, language === 'sv' ? 'sv' : 'en') || content?.description || t('onboarding.handbook.description')}
         </Text>
 
         <View style={styles.progressContainer}>
           <Text variant="bodySmall" style={styles.progressText}>
-            {readSections.length} av {sections.length} avsnitt lästa
+            {t('onboarding.handbook.sectionsRead', { read: readSections.length, total: sections.length })}
           </Text>
           <View style={styles.progressBar}>
             <View 
@@ -168,7 +174,7 @@ export const HandbookStep: React.FC<HandbookStepProps> = ({
                   styles.sectionTitle,
                   isRead && styles.sectionTitleRead,
                 ]}
-                description={isRead ? 'Läst' : 'Ej läst'}
+                description={isRead ? t('onboarding.handbook.read') : t('onboarding.handbook.unread')}
                 descriptionStyle={[
                   styles.sectionStatus,
                   isRead && styles.sectionStatusRead,
@@ -205,7 +211,7 @@ export const HandbookStep: React.FC<HandbookStepProps> = ({
                       onPress={() => markSectionAsRead(section.id)}
                       style={styles.markReadButton}
                     >
-                      Markera som läst
+                      {t('onboarding.handbook.markAsRead')}
                     </Button>
                   )}
                 </View>
@@ -236,7 +242,7 @@ export const HandbookStep: React.FC<HandbookStepProps> = ({
               readSections.length < sections.length && styles.checkboxLabelDisabled,
             ]}
           >
-            Jag har läst och förstått personalhandboken
+            {t('onboarding.handbook.confirmation')}
           </Text>
         </View>
         {readSections.length < sections.length && (

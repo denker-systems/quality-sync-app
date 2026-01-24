@@ -4,6 +4,8 @@ import { MotiPressable } from 'moti/interactions';
 import { Text, OnboardingPathNode, OnboardingStepDialog } from '@/components/ui';
 import type { OnboardingProgress, OnboardingStep } from '@/hooks/useOnboarding';
 import { SPRING_CONFIGS } from '@/lib/animations';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { getOnboardingStepTitle, getOnboardingStepDescription } from '@/utils/onboardingLanguage';
 
 const getStepImage = (stepType: string): ImageSourcePropType | undefined => {
   switch (stepType) {
@@ -46,7 +48,9 @@ const StepNode = memo(function StepNode({
   openStepId, 
   onToggleBubble, 
   accentColor, 
-  textColor 
+  textColor,
+  t,
+  language
 }: {
   step: OnboardingStep;
   index: number;
@@ -57,6 +61,8 @@ const StepNode = memo(function StepNode({
   onToggleBubble: (stepId: string) => void;
   accentColor: string;
   textColor: string;
+  t: (key: string, params?: any) => string;
+  language: string;
 }) {
   const isCompleted = stepProgress?.status === 'completed';
   const isActive = hasStarted ? !isCompleted && index === activeIndex : index === 0;
@@ -107,7 +113,7 @@ const StepNode = memo(function StepNode({
           variant="body-sm"
           style={[styles.stepLabel, { color: textColor, opacity: isLocked ? 0.6 : 1 }]}
         >
-          {step.title || `Steg ${index + 1}`}
+          {getOnboardingStepTitle(step, language === 'sv' ? 'sv' : 'en') || t('onboarding.stepNumber', { number: index + 1 })}
         </Text>
       </MotiPressable>
     </View>
@@ -128,6 +134,7 @@ export const OnboardingPathMap = memo(function OnboardingPathMap({
   accentColor,
   isDark,
 }: OnboardingPathMapProps) {
+  const { t, language } = useLanguage();
   const openIndex = useMemo(() => steps.findIndex((step) => step.id === openStepId), [steps, openStepId]);
   const openStep = openIndex >= 0 ? steps[openIndex] : null;
 
@@ -145,14 +152,16 @@ export const OnboardingPathMap = memo(function OnboardingPathMap({
         onToggleBubble={onToggleBubble}
         accentColor={accentColor}
         textColor={textColor}
+        t={t}
+        language={language}
       />
     );
-  }), [steps, progressMap, hasStarted, activeIndex, openStepId, onToggleBubble, accentColor, textColor]);
+  }), [steps, progressMap, hasStarted, activeIndex, openStepId, onToggleBubble, accentColor, textColor, t, language]);
 
   return (
     <View style={styles.stepsSection}>
       <Text variant="h3" style={[styles.sectionTitle, { color: textColor }]}>
-        Din onboarding‑resa
+        {t('onboarding.journeyTitle')}
       </Text>
       <View style={styles.pathContainer} pointerEvents="box-none">
         {openStepId && (
@@ -162,9 +171,9 @@ export const OnboardingPathMap = memo(function OnboardingPathMap({
       </View>
       <OnboardingStepDialog
         visible={!!openStep && openIndex >= 0}
-        title={openStep?.title || `Steg ${openIndex + 1}`}
-        description={openStep?.description}
-        actionLabel="Öppna"
+        title={openStep ? getOnboardingStepTitle(openStep, language === 'sv' ? 'sv' : 'en') : ''}
+        description={openStep ? getOnboardingStepDescription(openStep, language === 'sv' ? 'sv' : 'en') : undefined}
+        actionLabel={t('onboarding.openButton')}
         onAction={() => openIndex >= 0 && onOpenStep(openIndex)}
         onClose={onCloseBubble}
       />

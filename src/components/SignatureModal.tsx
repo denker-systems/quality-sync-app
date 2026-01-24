@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Modal, SafeAreaView, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Modal, TouchableOpacity } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text, Button } from 'react-native-paper';
 import { X } from 'lucide-react-native';
 import { SignatureCanvas } from './SignatureCanvas';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface SignatureModalProps {
   visible: boolean;
@@ -21,11 +23,15 @@ export const SignatureModal: React.FC<SignatureModalProps> = ({
   visible,
   onComplete,
   onClose,
-  title = 'Signera Dokument',
-  description = 'Rita din signatur nedan för att godkänna dokumentet',
+  title,
+  description,
 }) => {
   const { isDark } = useTheme();
+  const { t } = useLanguage();
   const [isProcessing, setIsProcessing] = useState(false);
+  
+  const modalTitle = title || t('signature.modalTitle');
+  const modalDescription = description || t('signature.modalDescription');
 
   const bgColor = isDark ? '#1A1A1A' : '#ffffff';
   const headerBg = isDark ? '#262626' : '#f9fafb';
@@ -70,11 +76,11 @@ export const SignatureModal: React.FC<SignatureModalProps> = ({
             <X size={24} color={textColor} />
           </TouchableOpacity>
           <View style={styles.headerContent}>
-            <Text variant="headlineMedium" style={[styles.title, { color: textColor }]}>
-              {title}
+            <Text variant="titleLarge" style={[styles.title, { color: textColor }]}>
+              {modalTitle}
             </Text>
             <Text variant="bodyMedium" style={[styles.description, { color: mutedColor }]}>
-              {description}
+              {modalDescription}
             </Text>
           </View>
         </View>

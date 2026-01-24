@@ -9,6 +9,7 @@ import { AppNavigator } from './src/navigation/AppNavigator';
 import { MFAGate } from './src/features/mfa';
 import { ThemeProvider, useTheme } from './src/contexts/ThemeContext';
 import { LanguageProvider } from './src/contexts/LanguageContext';
+import { DevConnectionProvider } from './src/components/dev';
 import { lightTheme, darkTheme } from './src/config/theme';
 
 import './src/styles/global.css';
@@ -29,10 +30,12 @@ const ThemedApp = () => {
 
   return (
     <PaperProvider theme={theme}>
-      <MFAGate>
-        <AppNavigator />
-      </MFAGate>
-      <StatusBar style={isDark ? 'light' : 'dark'} />
+      <DevConnectionProvider enabled={__DEV__}>
+        <MFAGate>
+          <AppNavigator />
+        </MFAGate>
+        <StatusBar style={isDark ? 'light' : 'dark'} />
+      </DevConnectionProvider>
     </PaperProvider>
   );
 };

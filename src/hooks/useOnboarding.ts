@@ -21,6 +21,10 @@ export interface OnboardingStep {
   step_type: 'welcome' | 'personal_info' | 'emergency_contact' | 'bank_details' | 'contract_signing' | 'handbook' | 'custom';
   title: string;
   description?: string;
+  title_sv?: string;
+  title_en?: string;
+  description_sv?: string;
+  description_en?: string;
   content: Record<string, any>;
   order_index: number;
   is_required: boolean;
