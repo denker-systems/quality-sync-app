@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Home, User, Calendar, Settings } from 'lucide-react-native';
+import { Home, User, Calendar, Settings, Star, FileText } from 'lucide-react-native';
 import { MotiView } from 'moti';
 import { MotiPressable } from 'moti/interactions';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -15,8 +15,10 @@ interface TabItem {
 
 const tabs: TabItem[] = [
   { key: 'home', icon: Home, labelKey: 'nav.home' },
-  { key: 'profile', icon: User, labelKey: 'nav.profile' },
+  { key: 'onboarding', icon: Star, labelKey: 'nav.onboarding' },
   { key: 'schedule', icon: Calendar, labelKey: 'nav.schedule' },
+  { key: 'contracts', icon: FileText, labelKey: 'nav.contracts' },
+  { key: 'profile', icon: User, labelKey: 'nav.profile' },
   { key: 'settings', icon: Settings, labelKey: 'nav.settings' },
 ];
 
