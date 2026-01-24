@@ -19,6 +19,9 @@ export const ContractsScreen = () => {
   const { data: employee } = useMyEmployee();
   const { data: contracts, isLoading, error } = useMyContracts(employee?.id);
   
+  // Always call hooks at top level
+  const liftPressAnimation = useLiftPress();
+  
   const textColor = isDark ? '#FAFAFA' : '#171717';
   const mutedColor = isDark ? '#A3A3A3' : '#737373';
   const accentColor = isDark ? '#6BBD68' : '#489A45';
@@ -78,7 +81,7 @@ export const ContractsScreen = () => {
               <Animated.View sharedTransitionTag={`contract-${contract.id}`}>
                 <MotiPressable
                   onPress={() => handleViewContract(contract)}
-                  animate={useLiftPress()}
+                  animate={liftPressAnimation}
                   transition={SPRING_CONFIGS.snappy}
                 >
                   <Card variant="elevated" style={styles.contractCard}>
