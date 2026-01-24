@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, ActivityIndicator, ScrollView } from 'react-native';
+import { StyleSheet, View, ActivityIndicator, ScrollView, Image } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { ScreenLayout, EmptyState } from '@/components/common';
 import { Text, Card, CardContent, Badge } from '@/components/ui';
@@ -106,17 +106,31 @@ export const ContractViewerScreen = () => {
               <CardContent>
                 <View style={styles.signatureHeader}>
                   <PenTool size={20} color={accentColor} />
-                  <Text variant="h3" style={{ color: textColor }}>Signatur</Text>
+                  <Text variant="h3" style={{ color: textColor }}>Digital signatur</Text>
                 </View>
-                <View style={[styles.signatureBox, { backgroundColor: isDark ? '#2A2A2A' : '#F5F5F5' }]}>
-                  <View style={styles.signatureContent}>
-                    <CheckCircle size={48} color={accentColor} />
-                    <Text variant="body" style={{ color: accentColor, fontWeight: '600', marginTop: 12 }}>
-                      Digitalt signerat
+                
+                {/* Signature Status */}
+                <View style={styles.signatureStatus}>
+                  <CheckCircle size={20} color={accentColor} />
+                  <View style={styles.signatureStatusText}>
+                    <Text variant="body" style={{ color: textColor, fontWeight: '600' }}>
+                      Signerat digitalt
                     </Text>
-                    <Text variant="body-sm" style={{ color: mutedColor, marginTop: 4 }}>
+                    <Text variant="body-sm" style={{ color: mutedColor }}>
                       {new Date(contract.signed_at).toLocaleString('sv-SE')}
                     </Text>
+                  </View>
+                </View>
+
+                {/* Signature Image */}
+                <View style={styles.signatureImageContainer}>
+                  <Text variant="body-sm" style={{ color: mutedColor, marginBottom: 8 }}>Signatur:</Text>
+                  <View style={[styles.signatureImageBox, { backgroundColor: isDark ? '#0F0F0F' : '#FFFFFF', borderColor: isDark ? '#3D3D3D' : '#E5E5E5' }]}>
+                    <Image
+                      source={{ uri: contract.signature_data.signature }}
+                      style={styles.signatureImage}
+                      resizeMode="contain"
+                    />
                   </View>
                 </View>
               </CardContent>
@@ -207,12 +221,31 @@ const styles = StyleSheet.create({
     gap: 8,
     marginBottom: 16,
   },
-  signatureBox: {
-    borderRadius: 12,
-    padding: 24,
+  signatureStatus: {
+    flexDirection: 'row',
     alignItems: 'center',
+    gap: 12,
+    marginBottom: 16,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E5E5',
   },
-  signatureContent: {
+  signatureStatusText: {
+    flex: 1,
+  },
+  signatureImageContainer: {
+    marginTop: 8,
+  },
+  signatureImageBox: {
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 16,
     alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 120,
+  },
+  signatureImage: {
+    width: '100%',
+    height: 100,
   },
 });
