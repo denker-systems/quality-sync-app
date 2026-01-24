@@ -5,10 +5,22 @@
  */
 
 import React, { useState } from 'react';
-import { View, StyleSheet, Alert, ActivityIndicator, TouchableOpacity, Image } from 'react-native';
-import { Modal, Pressable } from 'react-native';
+import { 
+  View, 
+  ScrollView, 
+  Pressable, 
+  Modal, 
+  StyleSheet,
+  Alert,
+  ActivityIndicator,
+  TouchableOpacity,
+  Image,
+  Platform,
+} from 'react-native';
 import { MotiView } from 'moti';
-import { Text, Button, Card, CardContent } from '@/components/ui';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Text } from '@/components/ui/Text';
+import { Button } from '@/components/ui/Button';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Camera, Image as ImageIcon, X } from 'lucide-react-native';
 import * as ImagePicker from 'expo-image-picker';
@@ -92,32 +104,54 @@ export function AvatarUploadDialog({
     try {
       setUploading(true);
 
-      // Read file as base64
-      console.log('📷 Reading image file:', selectedImage);
-      const base64 = await FileSystem.readAsStringAsync(selectedImage, {
-        encoding: 'base64',
-      });
-
       const fileName = `${employeeId}_${Date.now()}.jpg`;
       const filePath = fileName;
 
-      console.log('📤 Uploading avatar to Supabase Storage:', { fileName, employeeId });
+      console.log('📤 Uploading avatar to Supabase Storage:', { fileName, employeeId, platform: Platform.OS });
 
-      // Upload to Supabase Storage
-      const { data, error } = await supabase.storage
-        .from('avatars')
-        .upload(filePath, decode(base64), {
-          contentType: 'image/jpeg',
-          upsert: true,
+      let uploadData;
+      let uploadError;
+
+      if (Platform.OS === 'web') {
+        // On web, fetch the blob and upload directly
+        console.log('🌐 Web platform - fetching blob:', selectedImage);
+        const response = await fetch(selectedImage);
+        const blob = await response.blob();
+        
+        const { data, error } = await supabase.storage
+          .from('avatars')
+          .upload(filePath, blob, {
+            contentType: 'image/jpeg',
+            upsert: true,
+          });
+        
+        uploadData = data;
+        uploadError = error;
+      } else {
+        // On native, read as base64
+        console.log('📱 Native platform - reading file:', selectedImage);
+        const base64 = await FileSystem.readAsStringAsync(selectedImage, {
+          encoding: 'base64',
         });
+        
+        const { data, error } = await supabase.storage
+          .from('avatars')
+          .upload(filePath, decode(base64), {
+            contentType: 'image/jpeg',
+            upsert: true,
+          });
+        
+        uploadData = data;
+        uploadError = error;
+      }
 
-      if (error) {
-        console.error('❌ Upload error:', error);
-        Alert.alert('Fel', `Kunde inte ladda upp bilden: ${error.message}`);
+      if (uploadError) {
+        console.error('❌ Upload error:', uploadError);
+        Alert.alert('Fel', `Kunde inte ladda upp bilden: ${uploadError.message}`);
         return;
       }
 
-      console.log('✅ Upload successful:', data);
+      console.log('✅ Upload successful:', uploadData);
 
       // Get public URL
       const { data: urlData } = supabase.storage
