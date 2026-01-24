@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { MotiView } from 'moti';
 import { useNavigation } from '@react-navigation/native';
 import { ScreenLayout } from '@/components/common';
 import { Text, Card, CardContent, ImageButton } from '@/components/ui';
@@ -8,7 +7,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
 import { useMyEmployee } from '@/hooks/useMyEmployee';
-import { SPRING_CONFIGS, ENTRANCE_ANIMATIONS, STAGGER_DELAYS } from '@/constants/animations';
+import { AnimatedGridItem, AnimatedEntrance, STAGGER_DELAYS } from '@/lib/animations';
 
 export function HomeScreen() {
   const navigation = useNavigation<any>();
@@ -31,55 +30,35 @@ export function HomeScreen() {
 
         <View style={styles.gridContainer}>
           <View style={styles.gridRow}>
-            <MotiView
-              style={styles.gridButton}
-              from={{ opacity: 0, scale: 0.7, translateY: 30, rotate: '-5deg' }}
-              animate={{ opacity: 1, scale: 1, translateY: 0, rotate: '0deg' }}
-              transition={{ ...SPRING_CONFIGS.bouncy, delay: STAGGER_DELAYS.medium }}
-            >
+            <AnimatedGridItem index={0} staggerDelay={STAGGER_DELAYS.medium} style={styles.gridButton}>
               <ImageButton
                 title={t('home.mySchedule')}
                 image={require('../../../assets/images/schedule.png')}
                 onPress={() => navigation.navigate('Schedule')}
               />
-            </MotiView>
-            <MotiView
-              style={styles.gridButton}
-              from={{ opacity: 0, scale: 0.7, translateY: 30, rotate: '5deg' }}
-              animate={{ opacity: 1, scale: 1, translateY: 0, rotate: '0deg' }}
-              transition={{ ...SPRING_CONFIGS.bouncy, delay: STAGGER_DELAYS.medium * 2 }}
-            >
+            </AnimatedGridItem>
+            <AnimatedGridItem index={1} staggerDelay={STAGGER_DELAYS.medium} style={styles.gridButton}>
               <ImageButton
                 title={t('home.onboarding')}
                 image={require('../../../assets/images/onboarding.png')}
                 onPress={() => navigation.navigate('Onboarding')}
               />
-            </MotiView>
+            </AnimatedGridItem>
           </View>
           <View style={styles.gridRow}>
-            <MotiView
-              style={styles.gridButton}
-              from={{ opacity: 0, scale: 0.7, translateY: 30, rotate: '-5deg' }}
-              animate={{ opacity: 1, scale: 1, translateY: 0, rotate: '0deg' }}
-              transition={{ ...SPRING_CONFIGS.bouncy, delay: STAGGER_DELAYS.medium * 3 }}
-            >
+            <AnimatedGridItem index={2} staggerDelay={STAGGER_DELAYS.medium} style={styles.gridButton}>
               <ImageButton
                 title={t('home.myContracts')}
                 image={require('../../../assets/images/contract.png')}
                 onPress={() => navigation.navigate('Contracts')}
               />
-            </MotiView>
-            <MotiView
-              style={styles.gridButton}
-              from={{ opacity: 0, scale: 0.7, translateY: 30, rotate: '5deg' }}
-              animate={{ opacity: 1, scale: 1, translateY: 0, rotate: '0deg' }}
-              transition={{ ...SPRING_CONFIGS.bouncy, delay: STAGGER_DELAYS.medium * 4 }}
-            >
+            </AnimatedGridItem>
+            <AnimatedGridItem index={3} staggerDelay={STAGGER_DELAYS.medium} style={styles.gridButton}>
               <ImageButton
                 title={t('home.myProfile')}
                 onPress={() => navigation.navigate('Profile')}
               />
-            </MotiView>
+            </AnimatedGridItem>
           </View>
         </View>
       </View>
@@ -90,11 +69,7 @@ export function HomeScreen() {
           {t('home.thisWeek')}
         </Text>
 
-        <MotiView
-          from={{ opacity: 0, scale: 0.9, translateY: 25 }}
-          animate={{ opacity: 1, scale: 1, translateY: 0 }}
-          transition={{ ...SPRING_CONFIGS.smooth, delay: STAGGER_DELAYS.medium * 5 }}
-        >
+        <AnimatedEntrance preset="scaleIn" delay={STAGGER_DELAYS.medium * 5}>
           <Card variant="elevated">
             <CardContent>
               <View style={styles.statsRow}>
@@ -115,7 +90,7 @@ export function HomeScreen() {
               </View>
             </CardContent>
           </Card>
-        </MotiView>
+        </AnimatedEntrance>
       </View>
     </ScreenLayout>
   );

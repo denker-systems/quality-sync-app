@@ -5,7 +5,7 @@ import { Home, User, Calendar, Settings } from 'lucide-react-native';
 import { MotiView } from 'moti';
 import { MotiPressable } from 'moti/interactions';
 import { useTheme } from '@/contexts/ThemeContext';
-import { SPRING_CONFIGS, PRESS_ANIMATIONS, STAGGER_DELAYS } from '@/constants/animations';
+import { SPRING_CONFIGS, useBouncyPress, STAGGER_DELAYS } from '@/lib/animations';
 
 interface TabItem {
   key: string;
@@ -58,7 +58,7 @@ export function FloatingTabBar({ activeTab, onTabPress }: FloatingTabBarProps) {
                   isActive && (isDark ? styles.activeButtonDark : styles.activeButtonLight),
                   !isActive && (isDark ? styles.inactiveButtonDark : styles.inactiveButtonLight),
                 ]}
-                animate={PRESS_ANIMATIONS.active(isActive)}
+                animate={useBouncyPress(isActive)}
                 transition={SPRING_CONFIGS.snappy}
               >
                 <MotiView

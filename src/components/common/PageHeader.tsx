@@ -6,7 +6,7 @@ import { MotiView } from 'moti';
 import { MotiPressable } from 'moti/interactions';
 import { Text } from '@/components/ui/Text';
 import { useTheme } from '@/contexts/ThemeContext';
-import { SPRING_CONFIGS, ENTRANCE_ANIMATIONS, PRESS_ANIMATIONS } from '@/constants/animations';
+import { SPRING_CONFIGS, usePressAnimation } from '@/lib/animations';
 
 interface PageHeaderProps {
   title: string;
@@ -50,7 +50,7 @@ export function PageHeader({
             <MotiPressable
               onPress={handleBack}
               style={[styles.backButton, { backgroundColor: bgColor }]}
-              animate={PRESS_ANIMATIONS.bouncy}
+              animate={usePressAnimation({ scaleDown: 0.92 })}
               transition={SPRING_CONFIGS.snappy}
             >
               <ArrowLeft size={20} color={textColor} />
