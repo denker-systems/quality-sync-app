@@ -6,6 +6,8 @@ interface MenuContextType {
   closeMenu: () => void;
 }
 
+export type MenuContextResult = MenuContextType | null;
+
 const MenuContext = createContext<MenuContextType | undefined>(undefined);
 
 export function MenuProvider({ children }: { children: React.ReactNode }) {
@@ -21,10 +23,11 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function useMenu() {
+export function useMenu(): MenuContextResult {
   const context = useContext(MenuContext);
   if (!context) {
-    throw new Error('useMenu must be used within a MenuProvider');
+    // Return a safe default instead of throwing error
+    return null;
   }
   return context;
 }

@@ -36,7 +36,7 @@ function AppNavigatorContent() {
   const { user, loading, signOut } = useAuth();
   const { isDark } = useTheme();
   const paperTheme = usePaperTheme();
-  const { menuVisible, closeMenu } = useMenu();
+  const { menuVisible, closeMenu } = useMenu() || { menuVisible: false, closeMenu: () => {} };
   const [activeTab, setActiveTab] = useState('home');
   const [currentRoute, setCurrentRoute] = useState<string>('Home');
 
@@ -54,7 +54,7 @@ function AppNavigatorContent() {
   };
 
   // Screens where tab bar should be hidden
-  const hideTabBarScreens = ['OnboardingAdmin', 'OnboardingPreview', 'OnboardingStep'];
+  const hideTabBarScreens = ['Onboarding', 'OnboardingAdmin', 'OnboardingPreview', 'OnboardingStep'];
   const shouldShowTabBar = user && !hideTabBarScreens.includes(currentRoute);
 
   const handleTabPress = (key: string) => {
@@ -139,19 +139,18 @@ function AppNavigatorContent() {
         </Stack.Navigator>
 
         {shouldShowTabBar && (
-          <>
-            <FloatingTabBar
-              activeTab={activeTab}
-              onTabPress={handleTabPress}
-            />
-            <FullscreenMenu
-              visible={menuVisible}
-              onClose={closeMenu}
-              onNavigate={handleNavigate}
-              onLogout={handleLogout}
-            />
-          </>
+          <FloatingTabBar
+            activeTab={activeTab}
+            onTabPress={handleTabPress}
+          />
         )}
+        
+        <FullscreenMenu
+          visible={menuVisible}
+          onClose={closeMenu}
+          onNavigate={handleNavigate}
+          onLogout={handleLogout}
+        />
         </View>
       </SwipeEdgeDetector>
     </NavigationContainer>

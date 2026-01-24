@@ -41,7 +41,12 @@ export interface MyEmployee {
   full_name: string | null;
   email: string | null;
   phone?: string | null;
+  mobile_phone?: string | null;
   personal_identity_number?: string | null;
+  personal_number?: string | null;
+  address1?: string | null;
+  post_code?: string | null;
+  city?: string | null;
   role?: string | null;
   hr_status?: string | null;
 }

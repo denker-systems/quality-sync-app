@@ -2,6 +2,7 @@ import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { StyleSheet, View, Dimensions, Platform } from 'react-native';
 import { Button, Surface, Text } from 'react-native-paper';
 import SignatureScreen from 'react-native-signature-canvas';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface SignatureCanvasProps {
   onComplete: (signatureData: string) => void;
@@ -19,10 +20,16 @@ export const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
   onCancel,
   onScrollChange,
 }) => {
+  const { isDark } = useTheme();
   const canvasRef = useRef<any>(null);
   const [isEmpty, setIsEmpty] = useState(true);
   const [isDrawing, setIsDrawing] = useState(false);
   const lastPointRef = useRef<{ x: number; y: number } | null>(null);
+
+  const canvasBg = isDark ? '#262626' : '#ffffff';
+  const penColor = isDark ? '#FAFAFA' : '#000000';
+  const borderColor = isDark ? '#333' : '#e5e7eb';
+  const mutedColor = isDark ? '#A3A3A3' : '#6b7280';
 
   const canvasWidth = Math.min(Dimensions.get('window').width - 64, 400);
   const canvasHeight = 180;
@@ -32,15 +39,15 @@ export const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
     if (Platform.OS === 'web' && canvasRef.current) {
       const ctx = canvasRef.current.getContext('2d');
       if (ctx) {
-        ctx.fillStyle = '#ffffff';
+        ctx.fillStyle = canvasBg;
         ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-        ctx.strokeStyle = '#000000';
+        ctx.strokeStyle = penColor;
         ctx.lineWidth = 2;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
       }
     }
-  }, [canvasWidth, canvasHeight]);
+  }, [canvasWidth, canvasHeight, canvasBg, penColor]);
 
   const getCanvasPoint = useCallback((e: React.MouseEvent | React.TouchEvent) => {
     if (!canvasRef.current) return null;
@@ -108,12 +115,12 @@ export const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
     if (canvasRef.current) {
       const ctx = canvasRef.current.getContext('2d');
       if (ctx) {
-        ctx.fillStyle = '#ffffff';
+        ctx.fillStyle = canvasBg;
         ctx.fillRect(0, 0, canvasWidth, canvasHeight);
       }
     }
     setIsEmpty(true);
-  }, [canvasWidth, canvasHeight]);
+  }, [canvasWidth, canvasHeight, canvasBg]);
 
   const handleConfirm = useCallback(() => {
     console.log('📝 SignatureCanvas: Reading signature');
@@ -128,7 +135,7 @@ export const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
   if (Platform.OS === 'web') {
     return (
       <View style={styles.container}>
-        <Text variant="bodySmall" style={styles.instruction}>
+        <Text variant="bodySmall" style={[styles.instruction, { color: mutedColor }]}>
           Rita din signatur nedan
         </Text>
         
@@ -150,7 +157,7 @@ export const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
             style={{
               width: canvasWidth,
               height: canvasHeight,
-              backgroundColor: '#ffffff',
+              backgroundColor: canvasBg,
               borderRadius: 8,
               cursor: 'crosshair',
               touchAction: 'none',
@@ -225,12 +232,12 @@ export const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
 
   return (
     <View style={styles.container}>
-      <Text variant="bodySmall" style={styles.instruction}>
+      <Text variant="bodySmall" style={[styles.instruction, { color: mutedColor }]}>
         Rita din signatur nedan
       </Text>
       
       <View 
-        style={[styles.canvas, { width: canvasWidth, height: canvasHeight }]}
+        style={[styles.canvas, { width: canvasWidth, height: canvasHeight, backgroundColor: canvasBg, borderColor }]}
         onStartShouldSetResponder={() => true}
         onMoveShouldSetResponder={() => true}
       >
@@ -249,8 +256,8 @@ export const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
           }}
           descriptionText=""
           webStyle={style}
-          backgroundColor="#ffffff"
-          penColor="#000000"
+          backgroundColor={canvasBg}
+          penColor={penColor}
         />
       </View>
 
@@ -279,7 +286,6 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   instruction: {
-    color: '#6b7280',
     textAlign: 'center',
   },
   canvasContainer: {
@@ -288,9 +294,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   canvas: {
-    backgroundColor: '#ffffff',
     borderWidth: 1,
-    borderColor: '#e5e7eb',
     borderRadius: 8,
     overflow: 'hidden',
   },

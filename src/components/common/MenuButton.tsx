@@ -6,7 +6,12 @@ import { useMenu } from '@/contexts/MenuContext';
 
 export function MenuButton() {
   const { isDark } = useTheme();
-  const { openMenu } = useMenu();
+  const menuContext = useMenu();
+  
+  // Don't render if menu context is not available
+  if (!menuContext) {
+    return null;
+  }
   
   const bgColor = isDark ? '#1A1A1A' : '#F5F5F5';
   const iconColor = isDark ? '#FAFAFA' : '#171717';
@@ -14,7 +19,7 @@ export function MenuButton() {
   return (
     <TouchableOpacity 
       style={[styles.button, { backgroundColor: bgColor }]}
-      onPress={openMenu}
+      onPress={menuContext.openMenu}
       activeOpacity={0.7}
     >
       <Menu size={20} color={iconColor} />

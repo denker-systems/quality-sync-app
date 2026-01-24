@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { StyleSheet, View, ScrollView, Dimensions } from 'react-native';
+import { StyleSheet, View, ScrollView, Dimensions, Alert } from 'react-native';
 import { Text, Button, Surface, Checkbox, ActivityIndicator } from 'react-native-paper';
 import { FileText, PenTool, Check } from 'lucide-react-native';
 import { SignatureModal } from '@/components/SignatureModal';
@@ -129,34 +129,30 @@ Arbetstagaren förbinder sig att inte röja konfidentiell information.`;
   const handleSign = () => {
     console.log('✍️ CONTRACT_SIGNING_STEP handleSign:', { hasRead: hasReadContract, hasSignature: !!signature });
     
-    if (!hasReadContract || !signature) {
-      console.warn('⚠️ CONTRACT_SIGNING_STEP cannot sign - missing requirements');
-      return;
+    if (!hasReadContract) {
+      console.warn('⚠️ CONTRACT_SIGNING_STEP cannot sign - contract not read');
+      Alert.alert('Läs avtalet först', 'Du måste läsa igenom avtalet innan du kan fortsätta.');
+      return false;
+    }
+
+    if (!signature) {
+      console.warn('⚠️ CONTRACT_SIGNING_STEP cannot sign - no signature');
+      Alert.alert('Signatur saknas', 'Du måste signera avtalet för att fortsätta.');
+      return false;
     }
 
     console.log('✅ CONTRACT_SIGNING_STEP signing contract');
     onComplete({
-      contract_signed: true,
-      signed_at: new Date().toISOString(),
-      signature_data: signature,
       has_read: true,
+      signature: signature,
+      signed_at: new Date().toISOString(),
+      contract_title: contractTitle,
     });
+    return true;
   };
 
   const handleSubmit = async () => {
-    if (!hasReadContract || !signature) return;
-    
-    setIsSubmitting(true);
-    try {
-      await onComplete({
-        has_read: true,
-        signature: signature,
-        signed_at: new Date().toISOString(),
-        contract_title: contractTitle,
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+    handleSign();
   };
 
   return (

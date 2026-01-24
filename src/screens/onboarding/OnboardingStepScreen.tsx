@@ -15,6 +15,7 @@ import {
   BankDetailsStep,
   ContractSigningStep,
   HandbookStep,
+  CustomStep,
 } from './steps';
 import type { RootStackParamList } from '@/types';
 
@@ -54,7 +55,9 @@ export const OnboardingStepScreen = () => {
 
   const { onboarding, steps, progress } = onboardingData;
   const currentStep = steps[stepIndex];
-  const currentProgress = progress[stepIndex];
+  
+  // Hitta progress för just detta steg via dess ID
+  const currentProgress = progress.find(p => p.step_id === currentStep?.id);
 
   if (!currentStep || !currentProgress) {
     return (
@@ -83,13 +86,10 @@ export const OnboardingStepScreen = () => {
       isPreview: !!previewData
     });
 
-    // Handle Preview Mode
     if (previewData) {
       if (stepIndex === steps.length - 1) {
-        console.log('🏁 PREVIEW: Last step - returning to preview list');
         navigation.goBack();
       } else {
-        console.log('➡️ PREVIEW: Moving to next step:', stepIndex + 1);
         navigation.replace('OnboardingStep', { 
           stepIndex: stepIndex + 1,
           previewData 
@@ -98,26 +98,26 @@ export const OnboardingStepScreen = () => {
       return;
     }
 
+    // Mark step as completed and navigate to next step
     try {
       await updateProgress.mutateAsync({
         progressId: currentProgress.id,
         status: 'completed',
         stepData,
       });
-
+      
+      // Check if this was the last step
       if (stepIndex === steps.length - 1) {
-        console.log('🏁 Last step - completing onboarding');
         await updateStatus.mutateAsync({
           onboardingId: onboarding.id,
           status: 'completed',
         });
         navigation.navigate('Onboarding');
       } else {
-        console.log('➡️ Moving to next step:', stepIndex + 1);
         navigation.replace('OnboardingStep', { stepIndex: stepIndex + 1 });
       }
     } catch (err) {
-      console.error('❌ Failed to complete step:', err);
+      console.error('❌ Failed to update step progress:', err);
     }
   };
 
@@ -155,24 +155,17 @@ export const OnboardingStepScreen = () => {
   };
 
   const handleNext = async () => {
-    // Trigger step validation/submission if available
+    // If the step has a submit handler (like PersonalInfo or ContractSigning)
     if (stepSubmitRef.current) {
       stepSubmitRef.current();
-    } else if (hasNext) {
-      // No validation needed, just navigate
-      navigation.replace('OnboardingStep', { 
-        stepIndex: stepIndex + 1,
-        previewData
-      });
     } else {
-      // Last step - complete onboarding
-      if (!previewData) {
-        await updateStatus.mutateAsync({
-          onboardingId: onboarding.id,
-          status: 'completed',
-        });
+      // For steps without submit handlers (like welcome), navigate directly
+      // Do NOT mark as completed - let the step component handle that
+      if (hasNext) {
+        navigation.replace('OnboardingStep', { stepIndex: stepIndex + 1 });
+      } else {
+        navigation.navigate('Onboarding');
       }
-      navigation.navigate('Onboarding');
     }
   };
 
@@ -180,10 +173,9 @@ export const OnboardingStepScreen = () => {
     // If in preview mode, always go back to preview screen
     if (previewData) {
       navigation.goBack();
-    } else if (hasPrevious) {
-      handlePrevious();
     } else {
-      navigation.goBack();
+      // Always go back to OnboardingScreen, not to previous step
+      navigation.navigate('Onboarding');
     }
   };
 
@@ -205,7 +197,7 @@ export const OnboardingStepScreen = () => {
           />
         );
       case 'personal_info':
-        return <PersonalInfoStep {...commonProps} />;
+        return <PersonalInfoStep {...commonProps} employee={employee} />;
       case 'emergency_contact':
         return <EmergencyContactStep {...commonProps} />;
       case 'bank_details':
@@ -214,6 +206,8 @@ export const OnboardingStepScreen = () => {
         return <ContractSigningStep {...commonProps} />;
       case 'handbook':
         return <HandbookStep {...commonProps} />;
+      case 'custom':
+        return <CustomStep {...commonProps} />;
       default:
         return (
           <View style={styles.defaultStep}>

@@ -14,26 +14,44 @@ export const OnboardingScreen = () => {
   const { isDark } = useTheme();
   const { t } = useLanguage();
   const { data: employee } = useMyEmployee();
-  const { data: onboardingData, isLoading, error } = useMyOnboarding(employee?.id);
-  const updateProgress = useUpdateOnboardingProgress();
+  const { data: onboardingData, isLoading } = useMyOnboarding(employee?.id);
   const updateStatus = useUpdateOnboardingStatus();
 
-  const [currentStepIndex, setCurrentStepIndex] = useState(0);
-  
   const textColor = isDark ? '#FAFAFA' : '#171717';
   const mutedColor = isDark ? '#A3A3A3' : '#737373';
   const accentColor = isDark ? '#6BBD68' : '#489A45';
 
-  useEffect(() => {
-    if (onboardingData?.progress) {
-      const firstIncomplete = onboardingData.progress.findIndex(
-        p => p.status !== 'completed'
-      );
-      if (firstIncomplete !== -1) {
-        setCurrentStepIndex(firstIncomplete);
+  const handleStartOnboarding = async () => {
+    if (!onboardingData) return;
+    const { onboarding, progress } = onboardingData;
+
+    if (onboarding.status === 'pending' || onboarding.status === 'invited') {
+      try {
+        await updateStatus.mutateAsync({
+          onboardingId: onboarding.id,
+          status: 'in_progress',
+        });
+        navigation.navigate('OnboardingStep', { stepIndex: 0 });
+      } catch (error) {
+        console.error('Failed to start onboarding:', error);
       }
+    } else if (onboarding.status === 'in_progress') {
+      const firstIncompleteIndex = progress.findIndex(p => p.status !== 'completed');
+      const targetIndex = firstIncompleteIndex !== -1 ? firstIncompleteIndex : 0;
+      navigation.navigate('OnboardingStep', { stepIndex: targetIndex });
     }
-  }, [onboardingData]);
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return <CheckCircle size={20} color="#10b981" />;
+      case 'in_progress':
+        return <Clock size={20} color="#f59e0b" />;
+      default:
+        return <AlertCircle size={20} color="#6b7280" />;
+    }
+  };
 
   if (isLoading) {
     return (
@@ -63,184 +81,109 @@ export const OnboardingScreen = () => {
   }
 
   const { onboarding, steps, progress } = onboardingData;
-  const currentStep = steps[currentStepIndex];
-  const currentProgress = progress[currentStepIndex];
-
-  const completedSteps = progress.filter(p => p.status === 'completed').length;
+  const progressMap = new Map(progress.map(p => [p.step_id, p]));
+  const completedSteps = steps.filter(step => progressMap.get(step.id)?.status === 'completed').length;
   const totalSteps = steps.length;
   const progressPercentage = totalSteps > 0 ? completedSteps / totalSteps : 0;
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return <CheckCircle size={20} color="#10b981" />;
-      case 'in_progress':
-        return <Clock size={20} color="#f59e0b" />;
-      default:
-        return <AlertCircle size={20} color="#6b7280" />;
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return '#10b981';
-      case 'in_progress':
-        return '#f59e0b';
-      default:
-        return '#6b7280';
-    }
-  };
-
-  const handleCompleteStep = async () => {
-    if (!currentProgress) return;
-
-    try {
-      await updateProgress.mutateAsync({
-        progressId: currentProgress.id,
-        status: 'completed',
-        stepData: currentProgress.step_data,
-      });
-
-      // Om detta var sista steget, markera onboarding som completed
-      if (currentStepIndex === steps.length - 1) {
-        await updateStatus.mutateAsync({
-          onboardingId: onboarding.id,
-          status: 'completed',
-        });
-      } else {
-        // Gå till nästa steg
-        setCurrentStepIndex(currentStepIndex + 1);
-      }
-    } catch (error) {
-      console.error('Failed to complete step:', error);
-    }
-  };
-
-  const handlePreviousStep = () => {
-    if (currentStepIndex > 0) {
-      setCurrentStepIndex(currentStepIndex - 1);
-    }
-  };
-
-  const handleStepComplete = async (stepData: Record<string, any>) => {
-    console.log('✅ ONBOARDING_SCREEN handleStepComplete:', {
-      stepIndex: currentStepIndex,
-      stepType: currentStep?.step_type,
-      stepData,
-    });
-    
-    if (!currentProgress) {
-      console.warn('⚠️ No currentProgress available');
-      return;
-    }
-
-    try {
-      console.log('📤 Updating progress to completed...');
-      await updateProgress.mutateAsync({
-        progressId: currentProgress.id,
-        status: 'completed',
-        stepData,
-      });
-
-      if (currentStepIndex === steps.length - 1) {
-        console.log('🏁 Last step - completing onboarding');
-        await updateStatus.mutateAsync({
-          onboardingId: onboarding.id,
-          status: 'completed',
-        });
-        navigation.goBack();
-      } else {
-        console.log('➡️ Moving to next step:', currentStepIndex + 1);
-        setCurrentStepIndex(currentStepIndex + 1);
-      }
-    } catch (err) {
-      console.error('❌ Failed to complete step:', err);
-    }
-  };
-
-  const handleStepSave = async (stepData: Record<string, any>) => {
-    console.log('💾 ONBOARDING_SCREEN handleStepSave:', {
-      stepIndex: currentStepIndex,
-      stepType: currentStep?.step_type,
-      stepData,
-    });
-    
-    if (!currentProgress) {
-      console.warn('⚠️ No currentProgress available');
-      return;
-    }
-
-    try {
-      await updateProgress.mutateAsync({
-        progressId: currentProgress.id,
-        status: 'in_progress',
-        stepData,
-      });
-      console.log('✅ Step data saved');
-    } catch (err) {
-      console.error('❌ Failed to save step:', err);
-    }
-  };
-
 
   return (
-    <ScreenLayout>
-      {/* Header */}
-      <Surface elevation={1} style={styles.header}>
-        <View style={styles.headerContent}>
-          <Text variant="h2" style={{ color: textColor }}>{t('onboarding.title')}</Text>
-          <Badge variant={onboarding.status === 'completed' ? 'success' : 'default'}>
-            {onboarding.status === 'completed' ? t('onboarding.completed') : 
-             onboarding.status === 'in_progress' ? t('onboarding.inProgress') : t('onboarding.pending')}
-          </Badge>
-        </View>
-        <Text variant="body" style={[styles.headerSubtext, { color: mutedColor }]}>
-          {t('onboarding.stepsCompleted').replace('{{completed}}', String(completedSteps)).replace('{{total}}', String(totalSteps))}
-        </Text>
-        <ProgressBar progress={progressPercentage} style={styles.progressBar} />
-      </Surface>
+    <ScreenLayout title={t('onboarding.title')} isRoot={true}>
+      {/* Header Card */}
+      <Card variant="elevated" style={styles.headerCard}>
+        <CardContent>
+          <View style={styles.headerContent}>
+            <View style={styles.headerLeft}>
+              <Text variant="h2" style={{ color: textColor }}>
+                {t('onboarding.title')}
+              </Text>
+              <Text variant="body" style={{ color: mutedColor, marginTop: 4 }}>
+                {employee?.first_name ? `Välkommen ${employee.first_name}!` : 'Välkommen!'}
+              </Text>
+            </View>
+            <Badge variant={onboarding.status === 'completed' ? 'success' : onboarding.status === 'in_progress' ? 'warning' : 'default'}>
+              {onboarding.status === 'completed' ? t('onboarding.completed') : 
+               onboarding.status === 'in_progress' ? t('onboarding.inProgress') : t('onboarding.pending')}
+            </Badge>
+          </View>
+
+          {/* Progress Section */}
+          <View style={styles.progressSection}>
+            <View style={styles.progressHeader}>
+              <Text variant="body-sm" style={{ color: mutedColor }}>
+                Framsteg
+              </Text>
+              <Text variant="body-sm" style={{ color: textColor, fontWeight: '600' }}>
+                {completedSteps} av {totalSteps} slutförda
+              </Text>
+            </View>
+            <ProgressBar progress={progressPercentage} style={styles.progressBar} />
+          </View>
+
+          {/* Start Button - ALLTID visa om inte completed */}
+          {onboarding.status !== 'completed' && (
+            <View style={[styles.startButtonContainer, { borderTopColor: isDark ? '#2E2E2E' : '#E5E5E5' }]}>
+              <Button 
+                variant="primary" 
+                onPress={handleStartOnboarding}
+                disabled={updateStatus.isPending}
+                style={{ backgroundColor: accentColor }}
+              >
+                {updateStatus.isPending ? 'Startar...' : 
+                 onboarding.status === 'in_progress' ? 'Fortsätt Onboarding' : 'Starta Onboarding'}
+              </Button>
+            </View>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Steps List */}
       <Card variant="elevated" style={styles.stepsCard}>
         <CardContent>
           <Text variant="h3" style={[styles.sectionTitle, { color: textColor }]}>
-            {t('onboarding.allSteps')}
+            Alla steg
           </Text>
           {steps.map((step, index) => {
-            const stepProgress = progress[index];
-            const isActive = index === currentStepIndex;
+            const stepProgress = progressMap.get(step.id);
+            const isCompleted = stepProgress?.status === 'completed';
+            const canAccess = onboarding.status === 'in_progress' || onboarding.status === 'completed';
 
             return (
               <TouchableOpacity
                 key={step.id}
-                onPress={() => navigation.navigate('OnboardingStep', { stepIndex: index })}
-                activeOpacity={0.7}
+                onPress={() => canAccess && navigation.navigate('OnboardingStep', { stepIndex: index })}
+                activeOpacity={canAccess ? 0.7 : 1}
+                disabled={!canAccess}
               >
                 <Surface
-                  elevation={isActive ? 2 : 0}
+                  elevation={0}
                   style={[
                     styles.stepItem,
-                    isActive && styles.stepItemActive,
+                    { backgroundColor: isDark ? '#262626' : '#f9fafb' },
+                    isCompleted && { backgroundColor: isDark ? 'rgba(107,189,104,0.1)' : '#EDF5EC' },
+                    !canAccess && { opacity: 0.5 },
                   ]}
                 >
                   <View style={styles.stepHeader}>
                     {getStatusIcon(stepProgress?.status || 'pending')}
-                    <Text
-                      variant="body-lg"
-                      style={[
-                        styles.stepTitle,
-                        { color: isActive ? accentColor : textColor },
-                      ]}
-                    >
-                      {step.title}
-                    </Text>
+                    <View style={styles.stepInfo}>
+                      <Text
+                        variant="body-lg"
+                        style={[
+                          styles.stepTitle,
+                          { color: textColor },
+                          isCompleted && { fontWeight: '600' },
+                        ]}
+                      >
+                        {step.title || `Steg ${index + 1}`}
+                      </Text>
+                      {step.description && (
+                        <Text variant="body-sm" style={{ color: mutedColor, marginTop: 2 }}>
+                          {step.description}
+                        </Text>
+                      )}
+                    </View>
                   </View>
-                  {step.description && (
-                    <Text variant="body-sm" style={[styles.stepDescription, { color: mutedColor }]}>
-                      {step.description}
-                    </Text>
-                  )}
                 </Surface>
               </TouchableOpacity>
             );
@@ -253,119 +196,62 @@ export const OnboardingScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  contentContainer: {
-    padding: 16,
-    gap: 16,
-  },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 24,
-    gap: 16,
-  },
-  emptyTitle: {
-    textAlign: 'center',
-    marginTop: 16,
-  },
-  emptyText: {
-    textAlign: 'center',
-    color: '#6b7280',
-  },
-  backButton: {
-    marginTop: 16,
-  },
-  header: {
-    padding: 16,
-    borderRadius: 8,
+  headerCard: {
+    marginBottom: 16,
   },
   headerContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 16,
+  },
+  headerLeft: {
+    flex: 1,
+  },
+  progressSection: {
+    marginTop: 8,
+  },
+  progressHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
-  },
-  statusBadge: {
-    paddingHorizontal: 8,
-  },
-  headerSubtext: {
-    color: '#6b7280',
     marginBottom: 8,
   },
   progressBar: {
     height: 8,
     borderRadius: 4,
   },
+  startButtonContainer: {
+    marginTop: 20,
+    paddingTop: 20,
+    borderTopWidth: 1,
+    borderTopColor: '#E5E5E5',
+  },
   stepsCard: {
-    marginTop: 8,
+    marginBottom: 16,
   },
   sectionTitle: {
     marginBottom: 16,
   },
   stepItem: {
-    padding: 12,
+    padding: 16,
     marginBottom: 8,
-    borderRadius: 8,
-    backgroundColor: '#f9fafb',
-  },
-  stepItemActive: {
-    backgroundColor: '#eff6ff',
-    borderWidth: 1,
-    borderColor: '#0056b3',
+    borderRadius: 12,
   },
   stepHeader: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+    alignItems: 'flex-start',
+    gap: 12,
+  },
+  stepInfo: {
+    flex: 1,
   },
   stepTitle: {
-    flex: 1,
-  },
-  stepTitleActive: {
-    fontWeight: '600',
-    color: '#0056b3',
-  },
-  stepDescription: {
-    marginTop: 4,
-    marginLeft: 28,
-    color: '#6b7280',
-  },
-  currentStepCard: {
-    marginTop: 8,
-  },
-  currentStepTitle: {
-    marginBottom: 8,
-  },
-  currentStepDescription: {
-    color: '#6b7280',
-    marginBottom: 16,
-  },
-  stepContent: {
-    padding: 16,
-    backgroundColor: '#f9fafb',
-    borderRadius: 8,
-    marginBottom: 16,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    gap: 8,
-    justifyContent: 'flex-end',
-  },
-  button: {
-    flex: 1,
-  },
-  primaryButton: {
-    flex: 2,
-  },
-  stepContentContainer: {
-    marginTop: 8,
+    fontSize: 16,
   },
 });

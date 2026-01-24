@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from './useAuth';
 import { supabase } from '@/config/supabase';
 import type { MyEmployee } from '@/types';
@@ -26,7 +26,7 @@ export const useMyEmployee = () => {
       // 2) Get employee via user_id (primary) or email (fallback)
       let { data, error } = await supabase
         .from('employees')
-        .select('id, company_id, first_name, last_name, full_name, email, phone, personal_identity_number, user_id, hr_status')
+        .select('*')
         .eq('user_id', user.id)
         .maybeSingle();
 
@@ -34,7 +34,7 @@ export const useMyEmployee = () => {
       if (!data && user.email) {
         const emailResult = await supabase
           .from('employees')
-          .select('id, company_id, first_name, last_name, full_name, email, phone, personal_identity_number, user_id, hr_status')
+          .select('*')
           .eq('company_id', companyId)
           .ilike('email', user.email)
           .maybeSingle();
@@ -56,10 +56,74 @@ export const useMyEmployee = () => {
         full_name: employee.full_name,
         email: employee.email,
         phone: employee.phone,
+        mobile_phone: employee.mobile_phone,
         personal_identity_number: employee.personal_identity_number,
+        personal_number: employee.personal_number,
+        address1: employee.address1,
+        post_code: employee.post_code,
+        city: employee.city,
         role: 'Sjuksköterska', // Default role
         hr_status: employee.hr_status,
       };
+    },
+  });
+};
+
+/**
+ * Hook för att uppdatera employee-data (används vid onboarding)
+ */
+export const useUpdateMyEmployee = () => {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+
+  return useMutation({
+    mutationFn: async (data: {
+      employeeId: string;
+      first_name?: string;
+      last_name?: string;
+      personal_identity_number?: string;
+      address1?: string;
+      post_code?: string;
+      city?: string;
+      phone?: string;
+      mobile_phone?: string;
+      email?: string;
+    }) => {
+      console.log('📝 Updating employee data:', data);
+
+      const { employeeId, ...updateData } = data;
+
+      // Update full_name if first_name or last_name changed
+      if (updateData.first_name || updateData.last_name) {
+        const { data: currentEmployee } = await supabase
+          .from('employees')
+          .select('first_name, last_name')
+          .eq('id', employeeId)
+          .single();
+
+        const firstName = updateData.first_name || (currentEmployee as any)?.first_name || '';
+        const lastName = updateData.last_name || (currentEmployee as any)?.last_name || '';
+        (updateData as any).full_name = `${firstName} ${lastName}`.trim();
+      }
+
+      const { data: updatedEmployee, error } = await (supabase as any)
+        .from('employees')
+        .update(updateData)
+        .eq('id', employeeId)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('❌ Failed to update employee:', error);
+        throw error;
+      }
+
+      console.log('✅ Employee updated successfully');
+      return updatedEmployee;
+    },
+    onSuccess: () => {
+      // Invalidate my-employee query to refetch updated data
+      queryClient.invalidateQueries({ queryKey: ['my-employee', user?.id] });
     },
   });
 };

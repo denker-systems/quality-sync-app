@@ -3,6 +3,7 @@ import { StyleSheet, View, Modal, SafeAreaView, TouchableOpacity } from 'react-n
 import { Text, Button } from 'react-native-paper';
 import { X } from 'lucide-react-native';
 import { SignatureCanvas } from './SignatureCanvas';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface SignatureModalProps {
   visible: boolean;
@@ -23,7 +24,14 @@ export const SignatureModal: React.FC<SignatureModalProps> = ({
   title = 'Signera Dokument',
   description = 'Rita din signatur nedan för att godkänna dokumentet',
 }) => {
+  const { isDark } = useTheme();
   const [isProcessing, setIsProcessing] = useState(false);
+
+  const bgColor = isDark ? '#1A1A1A' : '#ffffff';
+  const headerBg = isDark ? '#262626' : '#f9fafb';
+  const textColor = isDark ? '#FAFAFA' : '#171717';
+  const mutedColor = isDark ? '#A3A3A3' : '#6b7280';
+  const borderColor = isDark ? '#333' : '#e5e7eb';
 
   const handleSignatureComplete = async (signatureData: string) => {
     console.log('✅ SignatureModal: Signature captured');
@@ -51,21 +59,21 @@ export const SignatureModal: React.FC<SignatureModalProps> = ({
       presentationStyle="fullScreen"
       onRequestClose={handleCancel}
     >
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={[styles.container, { backgroundColor: bgColor }]}>
         {/* Header */}
-        <View style={styles.header}>
+        <View style={[styles.header, { backgroundColor: headerBg, borderBottomColor: borderColor }]}>
           <TouchableOpacity 
             onPress={handleCancel} 
             style={styles.closeButton}
             disabled={isProcessing}
           >
-            <X size={24} color="#171717" />
+            <X size={24} color={textColor} />
           </TouchableOpacity>
           <View style={styles.headerContent}>
-            <Text variant="headlineMedium" style={styles.title}>
+            <Text variant="headlineMedium" style={[styles.title, { color: textColor }]}>
               {title}
             </Text>
-            <Text variant="bodyMedium" style={styles.description}>
+            <Text variant="bodyMedium" style={[styles.description, { color: mutedColor }]}>
               {description}
             </Text>
           </View>
@@ -80,8 +88,8 @@ export const SignatureModal: React.FC<SignatureModalProps> = ({
         </View>
 
         {/* Footer Info */}
-        <View style={styles.footer}>
-          <Text variant="bodySmall" style={styles.footerText}>
+        <View style={[styles.footer, { backgroundColor: headerBg, borderTopColor: borderColor }]}>
+          <Text variant="bodySmall" style={[styles.footerText, { color: mutedColor }]}>
             Din signatur kommer att sparas säkert och användas för att bekräfta ditt godkännande.
           </Text>
         </View>
@@ -93,13 +101,10 @@ export const SignatureModal: React.FC<SignatureModalProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
   },
   header: {
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
-    backgroundColor: '#f9fafb',
   },
   closeButton: {
     alignSelf: 'flex-start',
@@ -110,11 +115,9 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   title: {
-    color: '#171717',
     fontWeight: '600',
   },
   description: {
-    color: '#6b7280',
   },
   canvasContainer: {
     flex: 1,
@@ -125,11 +128,8 @@ const styles = StyleSheet.create({
   footer: {
     padding: 16,
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
-    backgroundColor: '#f9fafb',
   },
   footerText: {
-    color: '#6b7280',
     textAlign: 'center',
   },
 });

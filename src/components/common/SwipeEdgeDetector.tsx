@@ -7,8 +7,15 @@ const EDGE_WIDTH = 30; // Width of the edge detection zone
 const SWIPE_THRESHOLD = 50; // Minimum swipe distance to trigger
 
 export function SwipeEdgeDetector({ children }: { children: React.ReactNode }) {
-  const { openMenu, menuVisible } = useMenu();
+  const menuContext = useMenu();
   const startX = useRef(0);
+
+  // If menu context is not available, just render children
+  if (!menuContext) {
+    return <>{children}</>;
+  }
+
+  const { openMenu, menuVisible } = menuContext;
 
   const panResponder = useRef(
     PanResponder.create({

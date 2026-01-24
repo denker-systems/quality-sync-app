@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   rightSection: {
-    width: 48,
+    width: 60,
     alignItems: 'flex-end',
   },
   backButton: {

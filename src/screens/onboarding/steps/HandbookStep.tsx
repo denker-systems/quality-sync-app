@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, ScrollView } from 'react-native';
+import { StyleSheet, View, ScrollView, Alert } from 'react-native';
 import { Text, Button, Surface, Checkbox, List } from 'react-native-paper';
 import { BookOpen, ChevronDown, ChevronUp } from 'lucide-react-native';
 
@@ -95,7 +95,29 @@ export const HandbookStep: React.FC<HandbookStepProps> = ({
   };
 
   const handleComplete = () => {
-    console.log('✅ HANDBOOK_STEP handleComplete:', { readSections, allRead: hasReadAll });
+    console.log('📚 HANDBOOK_STEP handleComplete:', { 
+      readSections: readSections.length, 
+      totalSections: sections.length,
+      allRead: hasReadAll 
+    });
+    
+    if (readSections.length < sections.length) {
+      Alert.alert(
+        'Läs alla avsnitt först',
+        `Du måste läsa alla ${sections.length} avsnitt innan du kan fortsätta. Du har läst ${readSections.length} av ${sections.length}.`
+      );
+      return;
+    }
+
+    if (!hasReadAll) {
+      Alert.alert(
+        'Bekräfta att du har läst',
+        'Du måste bocka i att du har läst och förstått personalhandboken.'
+      );
+      return;
+    }
+
+    console.log('✅ HANDBOOK_STEP validation passed, completing');
     onComplete({
       has_read_all: true,
       read_sections: readSections,

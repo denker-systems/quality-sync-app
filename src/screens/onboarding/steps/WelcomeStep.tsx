@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Image } from 'react-native';
 import { Text, Button, Surface } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
-import { PartyPopper, ArrowRight } from 'lucide-react-native';
+import { PartyPopper } from 'lucide-react-native';
 
 interface WelcomeStepProps {
   content: Record<string, any>;
@@ -29,6 +29,14 @@ export const WelcomeStep: React.FC<WelcomeStepProps> = ({
     onComplete({ started: true, started_at: new Date().toISOString() });
   };
 
+  const title = content?.welcome_message || content?.message || 
+    'Välkommen till vårt team! Vi är glada att ha dig ombord.';
+    
+  const description = content?.company_intro || content?.description || 
+    'Vi är glada att ha dig ombord och ser fram emot att arbeta med dig.';
+
+  const imageUrl = content?.welcome_image_url;
+
   useEffect(() => {
     if (submitRef) {
       submitRef.current = handleStart;
@@ -39,53 +47,33 @@ export const WelcomeStep: React.FC<WelcomeStepProps> = ({
       }
     };
   }, [submitRef]);
+
   return (
     <>
       <Surface style={styles.card} elevation={2}>
-        <View style={styles.iconContainer}>
-          <PartyPopper size={64} color={accentColor} />
-        </View>
-        
-        <Text variant="h2" style={[styles.title, { color: textColor }]}>
-          Välkommen{employeeName ? `, ${employeeName}` : ''}!
-        </Text>
-        
-        <Text variant="body-lg" style={[styles.description, { color: mutedColor }]}>
-          {content?.welcome_message || 
-            'Vi är glada att ha dig med i teamet! Denna onboarding kommer hjälpa dig att komma igång.'}
-        </Text>
-
-        {content?.company_info && (
-          <View style={[styles.infoSection, { backgroundColor: isDark ? '#1A1A1A' : '#f3f4f6' }]}>
-            <Text variant="h4" style={[styles.infoTitle, { color: textColor }]}>
-              Om företaget
-            </Text>
-            <Text variant="body" style={{ color: mutedColor }}>
-              {content.company_info}
-            </Text>
+        {imageUrl ? (
+          <View style={styles.imageContainer}>
+            <Image 
+              source={{ uri: imageUrl }} 
+              style={styles.welcomeImage}
+              resizeMode="contain"
+            />
+          </View>
+        ) : (
+          <View style={styles.iconContainer}>
+            <PartyPopper size={64} color={accentColor} />
           </View>
         )}
-
-        <View style={[styles.checklistContainer, { backgroundColor: isDark ? 'rgba(107,189,104,0.1)' : '#EDF5EC' }]}>
-          <Text variant="h4" style={[styles.checklistTitle, { color: accentColor }]}>
-            Vad du kommer att göra:
+        
+        <Text variant="h2" style={[styles.title, { color: textColor }]}>
+          {title}
+        </Text>
+        
+        {content?.show_company_info !== false && (
+          <Text variant="body-lg" style={[styles.description, { color: mutedColor }]}>
+            {description}
           </Text>
-          <View style={styles.checklistItem}>
-            <Text variant="body" style={{ color: textColor }}>✓ Fylla i dina personuppgifter</Text>
-          </View>
-          <View style={styles.checklistItem}>
-            <Text variant="body" style={{ color: textColor }}>✓ Lägga till nödkontakt</Text>
-          </View>
-          <View style={styles.checklistItem}>
-            <Text variant="body" style={{ color: textColor }}>✓ Ange bankuppgifter för lön</Text>
-          </View>
-          <View style={styles.checklistItem}>
-            <Text variant="body" style={{ color: textColor }}>✓ Signera anställningsavtal</Text>
-          </View>
-          <View style={styles.checklistItem}>
-            <Text variant="body" style={{ color: textColor }}>✓ Läsa igenom personalhandboken</Text>
-          </View>
-        </View>
+        )}
       </Surface>
     </>
   );
@@ -99,51 +87,26 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   iconContainer: {
-    marginBottom: 16,
+    marginBottom: 24,
+  },
+  imageContainer: {
+    marginBottom: 24,
+    width: '100%',
+    alignItems: 'center',
+  },
+  welcomeImage: {
+    width: 200,
+    height: 200,
+    borderRadius: 12,
   },
   title: {
     textAlign: 'center',
     fontWeight: 'bold',
-    marginBottom: 8,
+    marginBottom: 16,
   },
   description: {
     textAlign: 'center',
     color: '#6b7280',
-    marginBottom: 24,
-  },
-  infoSection: {
-    width: '100%',
-    backgroundColor: '#f3f4f6',
-    padding: 16,
-    borderRadius: 8,
-    marginBottom: 16,
-  },
-  infoTitle: {
-    fontWeight: '600',
-    marginBottom: 8,
-  },
-  infoText: {
-    color: '#4b5563',
-  },
-  checklistContainer: {
-    width: '100%',
-    backgroundColor: '#eff6ff',
-    padding: 16,
-    borderRadius: 8,
-  },
-  checklistTitle: {
-    fontWeight: '600',
-    marginBottom: 12,
-    color: '#0056b3',
-  },
-  checklistItem: {
-    paddingVertical: 4,
-  },
-  button: {
-    marginTop: 8,
-  },
-  buttonContent: {
-    flexDirection: 'row-reverse',
-    paddingVertical: 8,
+    lineHeight: 24,
   },
 });

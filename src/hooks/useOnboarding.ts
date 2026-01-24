@@ -58,6 +58,8 @@ export function useMyOnboarding(employeeId?: string) {
         .from('employee_onboarding')
         .select('*')
         .eq('employee_id', employeeId)
+        .order('created_at', { ascending: false })
+        .limit(1)
         .maybeSingle();
 
       if (onboardingError) {
@@ -115,10 +117,19 @@ export function useMyOnboarding(employeeId?: string) {
       const progressData = (progress || []) as unknown as OnboardingProgress[];
 
       console.log('✅ Onboarding loaded:', {
+        onboardingId: onboardingData.id,
         status: onboardingData.status,
         stepsCount: stepsData.length,
         progressCount: progressData.length,
+        progressStatuses: progressData.map(p => ({ step_id: p.step_id, status: p.status })),
+        activeStepsIds: stepsData.map(s => s.id),
       });
+
+      console.log('🔍 Detailed logging:');
+      console.log('Onboarding data:', onboardingData);
+      console.log('Employee data:', employeeData);
+      console.log('Steps data:', stepsData);
+      console.log('Progress data:', progressData);
 
       return {
         onboarding: onboardingData,
@@ -127,7 +138,8 @@ export function useMyOnboarding(employeeId?: string) {
       };
     },
     enabled: !!employeeId,
-    staleTime: 30000, // 30 seconds
+    staleTime: 1000, // 1 second - ensure fresh data
+    refetchOnMount: true,
   });
 }
 
