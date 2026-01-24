@@ -27,6 +27,9 @@ export function PageHeader({
   const textColor = isDark ? '#FAFAFA' : '#171717';
   const bgColor = isDark ? '#1A1A1A' : '#F5F5F5';
 
+  // Always call hooks at top level
+  const pressAnimation = usePressAnimation({ scaleDown: 0.92 });
+
   const handleBack = () => {
     if (onBackPress) {
       onBackPress();
@@ -50,7 +53,7 @@ export function PageHeader({
             <MotiPressable
               onPress={handleBack}
               style={[styles.backButton, { backgroundColor: bgColor }]}
-              animate={usePressAnimation({ scaleDown: 0.92 })}
+              animate={pressAnimation}
               transition={SPRING_CONFIGS.snappy}
             >
               <ArrowLeft size={20} color={textColor} />
