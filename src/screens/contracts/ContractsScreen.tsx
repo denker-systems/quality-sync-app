@@ -52,10 +52,32 @@ export const ContractsScreen = () => {
 
   return (
     <ScreenLayout title={t('contracts.title')} isRoot={true}>
-
       {contracts && contracts.length > 0 ? (
-        <View style={styles.contractsList}>
-          {contracts.map((contract, index) => (
+        <>
+          {/* Progress Header */}
+          <MotiView
+            from={{ opacity: 0, translateY: -20 }}
+            animate={{ opacity: 1, translateY: 0 }}
+            transition={SPRING_CONFIGS.bouncy}
+          >
+            <Card variant="elevated" style={styles.progressCard}>
+              <CardContent>
+                <View style={styles.progressHeader}>
+                  <View style={styles.progressInfo}>
+                    <Text variant="h2" style={{ color: accentColor }}>{contracts.length}</Text>
+                    <Text variant="body-sm" style={{ color: mutedColor }}>{t('contracts.totalSigned')}</Text>
+                  </View>
+                  <View style={[styles.completionBadge, { backgroundColor: isDark ? 'rgba(107,189,104,0.15)' : '#EDF5EC' }]}>
+                    <CheckCircle size={24} color={accentColor} />
+                    <Text variant="body" style={{ color: accentColor, fontWeight: '600', marginLeft: 8 }}>100%</Text>
+                  </View>
+                </View>
+              </CardContent>
+            </Card>
+          </MotiView>
+
+          <View style={styles.contractsList}>
+            {contracts.map((contract, index) => (
             <MotiView
               key={contract.id}
               from={{ opacity: 0, translateX: -40, scale: 0.85, rotate: '-3deg' }}
@@ -105,7 +127,8 @@ export const ContractsScreen = () => {
               </Animated.View>
             </MotiView>
           ))}
-        </View>
+          </View>
+        </>
       ) : (
         <EmptyState
           icon={FileText}
@@ -137,6 +160,24 @@ const styles = StyleSheet.create({
   headerSubtext: {
     color: '#6b7280',
     marginTop: 4,
+  },
+  progressCard: {
+    marginBottom: 24,
+  },
+  progressHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  progressInfo: {
+    alignItems: 'flex-start',
+  },
+  completionBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
   },
   contractsList: {
     gap: 12,
