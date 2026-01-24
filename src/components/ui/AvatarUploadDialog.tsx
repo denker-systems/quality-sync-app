@@ -48,7 +48,7 @@ export function AvatarUploadDialog({
       }
 
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ['images'],
         allowsEditing: true,
         aspect: [1, 1],
         quality: 0.8,
@@ -93,6 +93,7 @@ export function AvatarUploadDialog({
       setUploading(true);
 
       // Read file as base64
+      console.log('📷 Reading image file:', selectedImage);
       const base64 = await FileSystem.readAsStringAsync(selectedImage, {
         encoding: 'base64',
       });
@@ -132,7 +133,11 @@ export function AvatarUploadDialog({
         .eq('id', employeeId);
 
       if (updateError) {
-        console.error('Error updating employee:', updateError);
+        console.error('❌ Error updating employee:', updateError);
+        Alert.alert('Varning', 'Bilden laddades upp men kunde inte sparas i profilen.');
+      } else {
+        console.log('✅ Employee updated with avatar URL');
+        Alert.alert('Klart!', 'Profilbild uppladdad');
       }
 
       onUploadComplete(urlData.publicUrl);
