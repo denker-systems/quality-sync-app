@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo, useMemo } from 'react';
 import { Modal, Pressable, StyleSheet, View } from 'react-native';
 import { MotiView } from 'moti';
 import { Text } from '@/components/ui/Text';
@@ -14,7 +14,7 @@ interface OnboardingStepDialogProps {
   onClose: () => void;
 }
 
-export function OnboardingStepDialog({
+export const OnboardingStepDialog = memo(function OnboardingStepDialog({
   visible,
   title,
   description,
@@ -23,10 +23,14 @@ export function OnboardingStepDialog({
   onClose,
 }: OnboardingStepDialogProps) {
   const { isDark } = useTheme();
-  const textColor = isDark ? '#FAFAFA' : '#171717';
-  const mutedColor = isDark ? '#A3A3A3' : '#737373';
-  const surface = isDark ? '#1A1A1A' : '#FFFFFF';
-  const accentColor = isDark ? '#6BBD68' : '#489A45';
+  
+  const theme = useMemo(() => ({
+    textColor: isDark ? '#FAFAFA' : '#171717',
+    mutedColor: isDark ? '#A3A3A3' : '#737373',
+    surface: isDark ? '#1A1A1A' : '#FFFFFF',
+    accentColor: isDark ? '#6BBD68' : '#489A45',
+    titleColor: isDark ? '#0F0F0F' : '#FFFFFF',
+  }), [isDark]);
 
   return (
     <Modal transparent visible={visible} animationType="none" onRequestClose={onClose}>
@@ -35,25 +39,25 @@ export function OnboardingStepDialog({
         from={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        transition={{ type: 'timing', duration: 200 }}
+        transition={{ type: 'timing', duration: 150 }}
       >
         <Pressable style={styles.backdrop} onPress={onClose} />
         <MotiView
-          style={[styles.dialog, { backgroundColor: surface }]}
+          style={[styles.dialog, { backgroundColor: theme.surface }]}
           from={{ opacity: 0, scale: 0.9, translateY: 20 }}
           animate={{ opacity: 1, scale: 1, translateY: 0 }}
           exit={{ opacity: 0, scale: 0.95, translateY: 10 }}
-          transition={{ type: 'spring', damping: 18, stiffness: 200 }}
+          transition={{ type: 'spring', damping: 20, stiffness: 300 }}
           pointerEvents="auto"
         >
-          <View style={[styles.dialogHeader, { backgroundColor: accentColor }]}>
-            <Text variant="h2" style={[styles.title, { color: isDark ? '#0F0F0F' : '#FFFFFF' }]}>
+          <View style={[styles.dialogHeader, { backgroundColor: theme.accentColor }]}>
+            <Text variant="h2" style={[styles.title, { color: theme.titleColor }]}>
               {title}
             </Text>
           </View>
           <View style={styles.dialogContent}>
             {description ? (
-              <Text variant="body" style={[styles.description, { color: mutedColor }]}>
+              <Text variant="body" style={[styles.description, { color: theme.mutedColor }]}>
                 {description}
               </Text>
             ) : null}
@@ -63,7 +67,7 @@ export function OnboardingStepDialog({
                 onAction?.();
                 onClose();
               }}
-              style={[styles.actionButton, { backgroundColor: accentColor }]}
+              style={[styles.actionButton, { backgroundColor: theme.accentColor }]}
             >
               {actionLabel}
             </Button>
