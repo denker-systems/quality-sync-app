@@ -88,6 +88,14 @@ export function useMyContracts(employeeId?: string) {
           // Fyll i employee-uppgifter i avtalet om de finns
           if (employeeData && contractContent) {
             const emp = employeeData as any;
+            console.log('🔍 Employee data for contract:', {
+              name: `${emp.first_name} ${emp.last_name}`,
+              personnummer: emp.personal_identity_number,
+              email: emp.email,
+              phone: emp.phone,
+            });
+            console.log('📝 Contract content before replace (first 200 chars):', contractContent.substring(0, 200));
+            
             contractContent = contractContent
               .replace(/\[Namn\]|\[Medarbetarens namn\]/g, `${emp.first_name || ''} ${emp.last_name || ''}`.trim())
               .replace(/\[Personnummer\]|\[XXXXXX-XXXX\]/g, emp.personal_identity_number || 'Ej angivet')
@@ -99,6 +107,10 @@ export function useMyContracts(employeeId?: string) {
               .replace(/\[Anställningsdatum\]/g, emp.employment_date ? new Date(emp.employment_date).toLocaleDateString('sv-SE') : 'Ej angivet')
               .replace(/\[Månadslön\]/g, emp.monthly_salary ? `${emp.monthly_salary} SEK` : 'Enligt överenskommelse')
               .replace(/\[Timlön\]/g, emp.hourly_wage ? `${emp.hourly_wage} SEK` : 'Enligt överenskommelse');
+            
+            console.log('📝 Contract content after replace (first 200 chars):', contractContent.substring(0, 200));
+          } else {
+            console.warn('⚠️ No employee data or contract content:', { hasEmployeeData: !!employeeData, hasContent: !!contractContent });
           }
           
           return {
