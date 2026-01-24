@@ -14,7 +14,7 @@ import { useCompanyData } from '@/hooks/useCompanyData';
 import { useMyOnboarding } from '@/hooks/useOnboarding';
 import { useMyContracts } from '@/hooks/useContracts';
 import { useMyShifts } from '@/hooks/useMyShifts';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/config/supabase';
 import { useNavigation } from '@react-navigation/native';
 import { 
@@ -63,6 +63,7 @@ function MenuItem({ icon: Icon, title, subtitle, onPress, rightContent }: MenuIt
 
 export const ProfileScreen = () => {
   const navigation = useNavigation<any>();
+  const queryClient = useQueryClient();
   const { isDark } = useTheme();
   const { t } = useLanguage();
   const { user, signOut } = useAuth();
@@ -251,6 +252,8 @@ export const ProfileScreen = () => {
         onClose={() => setUploadDialogVisible(false)}
         onUploadComplete={(url) => {
           setAvatarUrl(url);
+          // Invalidate employee query to refetch with new avatar
+          queryClient.invalidateQueries({ queryKey: ['my-employee'] });
           setUploadDialogVisible(false);
         }}
         employeeId={employee?.id}
