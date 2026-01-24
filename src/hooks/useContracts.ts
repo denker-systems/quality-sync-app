@@ -21,6 +21,7 @@ export interface SignedContract {
 
 /**
  * Hook för att hämta signerade avtal för inloggad användare
+ * Hämtar från employee_onboarding_progress där step_type === 'contract_signing'
  */
 export function useMyContracts(employeeId?: string) {
   return useQuery({
@@ -30,39 +31,63 @@ export function useMyContracts(employeeId?: string) {
 
       console.log('📄 Fetching contracts for employee:', employeeId);
 
-      const { data, error } = await supabase
-        .from('employee_contract_signatures')
+      // Hämta alla onboarding-poster för employee
+      const { data: onboardings, error: onboardingError } = await supabase
+        .from('employee_onboarding')
+        .select('id')
+        .eq('employee_id', employeeId);
+
+      if (onboardingError || !onboardings || onboardings.length === 0) {
+        console.log('ℹ️ No onboarding found for employee');
+        return [];
+      }
+
+      const onboardingIds = onboardings.map((o: any) => o.id);
+
+      // Hämta alla completed progress records med contract_signing steg
+      const { data: progress, error: progressError } = await supabase
+        .from('employee_onboarding_progress')
         .select(`
           id,
-          contract_id,
-          employee_id,
-          signed_at,
-          signature_data,
-          created_at,
-          contract:employee_contracts(
+          status,
+          step_data,
+          completed_at,
+          step:onboarding_steps(
+            id,
+            step_type,
             title,
-            contract_type,
             content
           )
         `)
-        .eq('employee_id', employeeId)
-        .order('signed_at', { ascending: false });
+        .in('onboarding_id', onboardingIds)
+        .eq('status', 'completed');
 
-      if (error) {
-        console.error('❌ Failed to fetch contracts:', error);
-        throw error;
+      if (progressError) {
+        console.error('❌ Failed to fetch progress:', progressError);
+        throw progressError;
       }
 
-      // Flatten contract data for backwards compatibility
-      const contracts = (data || []).map((item: any) => ({
-        ...item,
-        contract_title: item.contract?.title,
-        contract_type: item.contract?.contract_type as 'employment' | 'nda' | 'custom',
-        contract_content: item.contract?.content,
-      })) as SignedContract[];
+      // Filtrera endast contract_signing steg med signatur
+      const signedContracts = (progress || [])
+        .filter((p: any) => p.step?.step_type === 'contract_signing' && p.step_data?.signature)
+        .map((p: any) => {
+          const cleanTitle = (p.step?.title || 'Avtal').replace(/^Signera\s+/i, '');
+          
+          return {
+            id: p.id,
+            employee_id: employeeId,
+            contract_id: p.step?.id || p.id,
+            signed_at: p.completed_at,
+            signature_data: { signature: p.step_data.signature },
+            created_at: p.completed_at,
+            contract_title: cleanTitle,
+            contract_type: (p.step?.content?.contract_type || 'custom') as 'employment' | 'nda' | 'custom',
+            contract_content: p.step?.content?.contract_text || '',
+          };
+        });
 
-      console.log('✅ Contracts loaded:', contracts.length);
-      return contracts;
+      console.log('✅ Contracts loaded:', signedContracts.length);
+      return signedContracts;
     },
     enabled: !!employeeId,
     staleTime: 60000, // 1 minute
