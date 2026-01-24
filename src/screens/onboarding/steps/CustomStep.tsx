@@ -78,7 +78,7 @@ export const CustomStep: React.FC<CustomStepProps> = ({
 
       case 'video':
         return (
-          <Surface style={[styles.mediaCard, { backgroundColor: isDark ? '#1A1A1A' : '#f3f4f6' }]}>
+          <Surface style={styles.mediaCard} elevation={0}>
             <VideoIcon size={48} color={accentColor} />
             <Text variant="body" style={{ color: textColor, marginTop: 8 }}>
               {content.title || 'Video'}
@@ -95,7 +95,7 @@ export const CustomStep: React.FC<CustomStepProps> = ({
 
       case 'document':
         return (
-          <Surface style={[styles.mediaCard, { backgroundColor: isDark ? '#1A1A1A' : '#f3f4f6' }]}>
+          <Surface style={styles.mediaCard} elevation={0}>
             <FileText size={48} color="#3b82f6" />
             <Text variant="body" style={{ color: textColor, marginTop: 8 }}>
               {content.title || 'Dokument'}
@@ -113,7 +113,7 @@ export const CustomStep: React.FC<CustomStepProps> = ({
 
       case 'link':
         return (
-          <Surface style={[styles.mediaCard, { backgroundColor: isDark ? '#1A1A1A' : '#f3f4f6' }]}>
+          <Surface style={styles.mediaCard} elevation={0}>
             <ExternalLink size={48} color="#3b82f6" />
             <Text variant="body" style={{ color: textColor, marginTop: 8 }}>
               {content.title || 'Extern länk'}
@@ -140,7 +140,7 @@ export const CustomStep: React.FC<CustomStepProps> = ({
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      <Surface style={styles.card} elevation={1}>
+      <Surface style={styles.card} elevation={0}>
         {/* Rubrik */}
         {content.title && (
           <View style={styles.titleContainer}>
@@ -203,6 +203,7 @@ const styles = StyleSheet.create({
   card: {
     padding: 16,
     borderRadius: 12,
+    backgroundColor: 'transparent',
   },
   titleContainer: {
     marginBottom: 24,
@@ -236,6 +237,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     marginBottom: 24,
+    backgroundColor: 'transparent',
   },
   mediaButton: {
     marginTop: 16,

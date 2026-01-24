@@ -22,3 +22,8 @@ export { ProgressBar } from './ProgressBar';
 // Navigation
 export { FloatingTabBar } from './FloatingTabBar';
 export { FullscreenMenu } from './FullscreenMenu';
+
+// Onboarding
+export { OnboardingPathNode } from './OnboardingPathNode';
+export { OnboardingSpeechBubble } from './OnboardingSpeechBubble';
+export { OnboardingStepDialog } from './OnboardingStepDialog';

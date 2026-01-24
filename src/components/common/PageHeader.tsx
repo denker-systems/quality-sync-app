@@ -1,7 +1,9 @@
 import React from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { ArrowLeft } from 'lucide-react-native';
+import { MotiView } from 'moti';
+import { MotiPressable } from 'moti/interactions';
 import { Text } from '@/components/ui/Text';
 import { useTheme } from '@/contexts/ThemeContext';
 
@@ -39,13 +41,20 @@ export function PageHeader({
       {/* Left - Back button */}
       <View style={styles.leftSection}>
         {showBack ? (
-          <TouchableOpacity 
+          <MotiPressable
             onPress={handleBack}
             style={[styles.backButton, { backgroundColor: bgColor }]}
-            activeOpacity={0.7}
+            animate={({ pressed }) => {
+              'worklet';
+              return {
+                scale: pressed ? 0.94 : 1,
+                opacity: pressed ? 0.85 : 1,
+              };
+            }}
+            transition={{ type: 'spring', damping: 16, stiffness: 220 }}
           >
             <ArrowLeft size={20} color={textColor} />
-          </TouchableOpacity>
+          </MotiPressable>
         ) : (
           <View style={styles.placeholder} />
         )}
@@ -53,14 +62,26 @@ export function PageHeader({
 
       {/* Center - Title */}
       <View style={styles.centerSection}>
-        <Text variant="h3" style={[styles.title, { color: textColor }]}>
-          {title}
-        </Text>
+        <MotiView
+          from={{ opacity: 0, translateY: 6 }}
+          animate={{ opacity: 1, translateY: 0 }}
+          transition={{ type: 'timing', duration: 260 }}
+        >
+          <Text variant="h3" style={[styles.title, { color: textColor }]}>
+            {title}
+          </Text>
+        </MotiView>
       </View>
 
       {/* Right - Optional content */}
       <View style={styles.rightSection}>
-        {rightContent || <View style={styles.placeholder} />}
+        <MotiView
+          from={{ opacity: 0, translateY: 6 }}
+          animate={{ opacity: 1, translateY: 0 }}
+          transition={{ type: 'timing', duration: 260, delay: 40 }}
+        >
+          {rightContent || <View style={styles.placeholder} />}
+        </MotiView>
       </View>
     </View>
   );

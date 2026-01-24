@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { MotiView } from 'moti';
 import { ScreenLayout } from '@/components/common';
 import { Text, Card, CardContent, Avatar, Badge, Button } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -172,45 +173,63 @@ export const ProfileScreen = () => {
         
         <Card variant="elevated">
           <CardContent style={styles.menuContainer}>
-            <MenuItem
-              icon={Calendar}
-              title={t('profile.mySchedule')}
-              subtitle={shifts?.length ? `${shifts.length} ${t('profile.upcomingShifts')}` : t('profile.viewShifts')}
-              onPress={() => navigation.navigate('Schedule')}
-              rightContent={shifts?.length ? (
-                <Badge variant="success">{shifts.length}</Badge>
-              ) : undefined}
-            />
+            <MotiView
+              from={{ opacity: 0, translateY: 10 }}
+              animate={{ opacity: 1, translateY: 0 }}
+              transition={{ type: 'timing', duration: 320, delay: 60 }}
+            >
+              <MenuItem
+                icon={Calendar}
+                title={t('profile.mySchedule')}
+                subtitle={shifts?.length ? `${shifts.length} ${t('profile.upcomingShifts')}` : t('profile.viewShifts')}
+                onPress={() => navigation.navigate('Schedule')}
+                rightContent={shifts?.length ? (
+                  <Badge variant="success">{shifts.length}</Badge>
+                ) : undefined}
+              />
+            </MotiView>
             <View style={[styles.divider, { backgroundColor: isDark ? '#2E2E2E' : '#E5E5E5' }]} />
             
-            <MenuItem
-              icon={Star}
-              title={t('profile.onboarding')}
-              subtitle={
-                onboardingData?.onboarding?.status === 'completed' 
-                  ? t('profile.completed') 
-                  : t('profile.inProgress')
-              }
-              onPress={() => navigation.navigate('Onboarding')}
-              rightContent={
-                onboardingData?.onboarding?.status === 'completed' 
-                  ? <Badge variant="success">✓</Badge>
-                  : <Badge variant="warning">
-                      {`${onboardingData?.progress?.filter(p => p.status === 'completed').length || 0}/${onboardingData?.steps?.length || 0}`}
-                    </Badge>
-              }
-            />
+            <MotiView
+              from={{ opacity: 0, translateY: 10 }}
+              animate={{ opacity: 1, translateY: 0 }}
+              transition={{ type: 'timing', duration: 320, delay: 120 }}
+            >
+              <MenuItem
+                icon={Star}
+                title={t('profile.onboarding')}
+                subtitle={
+                  onboardingData?.onboarding?.status === 'completed' 
+                    ? t('profile.completed') 
+                    : t('profile.inProgress')
+                }
+                onPress={() => navigation.navigate('Onboarding')}
+                rightContent={
+                  onboardingData?.onboarding?.status === 'completed' 
+                    ? <Badge variant="success">✓</Badge>
+                    : <Badge variant="warning">
+                        {`${onboardingData?.progress?.filter(p => p.status === 'completed').length || 0}/${onboardingData?.steps?.length || 0}`}
+                      </Badge>
+                }
+              />
+            </MotiView>
             <View style={[styles.divider, { backgroundColor: isDark ? '#2E2E2E' : '#E5E5E5' }]} />
             
-            <MenuItem
-              icon={FileText}
-              title={t('profile.contracts')}
-              subtitle={`${contracts?.length || 0} ${t('profile.signedContracts')}`}
-              onPress={() => navigation.navigate('Contracts')}
-              rightContent={contracts?.length ? (
-                <Badge variant="default">{contracts.length}</Badge>
-              ) : undefined}
-            />
+            <MotiView
+              from={{ opacity: 0, translateY: 10 }}
+              animate={{ opacity: 1, translateY: 0 }}
+              transition={{ type: 'timing', duration: 320, delay: 180 }}
+            >
+              <MenuItem
+                icon={FileText}
+                title={t('profile.contracts')}
+                subtitle={`${contracts?.length || 0} ${t('profile.signedContracts')}`}
+                onPress={() => navigation.navigate('Contracts')}
+                rightContent={contracts?.length ? (
+                  <Badge variant="default">{contracts.length}</Badge>
+                ) : undefined}
+              />
+            </MotiView>
           </CardContent>
         </Card>
       </View>

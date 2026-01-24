@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { StyleSheet, View, ScrollView, Dimensions } from 'react-native';
+import { StyleSheet, View, ScrollView } from 'react-native';
 import { ScreenLayout } from '@/components/common';
 import { Text, Button, Surface, ProgressBar } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -237,7 +237,7 @@ export const OnboardingStepScreen = () => {
     >
       <View style={styles.layoutContainer}>
         {/* Header with Progress */}
-        <Surface elevation={1} style={styles.header}>
+        <Surface elevation={0} style={styles.header}>
           <View style={styles.headerContent}>
             <Text variant="body-sm" style={{ color: mutedColor }}>
               Step {stepIndex + 1} of {totalSteps}
@@ -262,7 +262,7 @@ export const OnboardingStepScreen = () => {
         </ScrollView>
 
         {/* Navigation Footer */}
-        <Surface elevation={2} style={styles.footer}>
+        <Surface elevation={0} style={styles.footer}>
           <Button
             variant="outline"
             onPress={handlePrevious}
@@ -310,6 +310,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(0,0,0,0.1)',
+    backgroundColor: 'transparent',
   },
   headerContent: {
     gap: 4,
@@ -321,7 +322,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#E5E5E5',
   },
   content: {
-    height: Dimensions.get('window').height * 0.70,
+    flex: 1,
   },
   contentContainer: {
     padding: 16,
@@ -334,6 +335,7 @@ const styles = StyleSheet.create({
     gap: 12,
     borderTopWidth: 1,
     borderTopColor: 'rgba(0,0,0,0.1)',
+    backgroundColor: 'transparent',
   },
   navButton: {
     flex: 1,

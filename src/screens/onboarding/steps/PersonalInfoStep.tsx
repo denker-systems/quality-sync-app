@@ -275,7 +275,7 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
 
   return (
     <>
-      <Surface style={styles.card} elevation={1}>
+      <Surface style={styles.card} elevation={0}>
         <View style={styles.header}>
           <User size={24} color={accentColor} />
           <Text variant="h3" style={{ color: textColor }}>
@@ -459,6 +459,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     marginBottom: 16,
+    backgroundColor: 'transparent',
   },
   header: {
     flexDirection: 'row',

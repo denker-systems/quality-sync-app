@@ -127,7 +127,7 @@ export const HandbookStep: React.FC<HandbookStepProps> = ({
 
   return (
     <>
-      <Surface style={styles.card} elevation={1}>
+      <Surface style={styles.card} elevation={0}>
         <View style={styles.header}>
           <BookOpen size={24} color="#0056b3" />
           <Text variant="titleLarge" style={styles.title}>
@@ -155,7 +155,7 @@ export const HandbookStep: React.FC<HandbookStepProps> = ({
       </Surface>
 
       {/* Handbook Sections */}
-      <Surface style={styles.sectionsCard} elevation={1}>
+      <Surface style={styles.sectionsCard} elevation={0}>
         {sections.map((section: Section, index: number) => {
           const isExpanded = expandedSections.includes(section.id);
           const isRead = readSections.includes(section.id);
@@ -218,7 +218,7 @@ export const HandbookStep: React.FC<HandbookStepProps> = ({
       </Surface>
 
       {/* Confirmation */}
-      <Surface style={styles.confirmationCard} elevation={1}>
+      <Surface style={styles.confirmationCard} elevation={0}>
         <View style={styles.checkboxContainer}>
           <Checkbox
             status={hasReadAll ? 'checked' : 'unchecked'}
@@ -254,6 +254,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     marginBottom: 16,
+    backgroundColor: 'transparent',
   },
   header: {
     flexDirection: 'row',
@@ -289,6 +290,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: 'hidden',
     marginBottom: 16,
+    backgroundColor: 'transparent',
   },
   sectionTitle: {
     fontWeight: '500',

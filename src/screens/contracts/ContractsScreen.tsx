@@ -1,5 +1,8 @@
 import React from 'react';
-import { StyleSheet, View, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, ActivityIndicator } from 'react-native';
+import { MotiView } from 'moti';
+import { MotiPressable } from 'moti/interactions';
+import Animated from 'react-native-reanimated';
 import { ScreenLayout, EmptyState } from '@/components/common';
 import { Text, Card, CardContent, Badge } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -51,45 +54,61 @@ export const ContractsScreen = () => {
 
       {contracts && contracts.length > 0 ? (
         <View style={styles.contractsList}>
-          {contracts.map((contract) => (
-            <TouchableOpacity
+          {contracts.map((contract, index) => (
+            <MotiView
               key={contract.id}
-              onPress={() => handleViewContract(contract)}
-              activeOpacity={0.7}
+              from={{ opacity: 0, translateY: 12 }}
+              animate={{ opacity: 1, translateY: 0 }}
+              transition={{ type: 'timing', duration: 320, delay: index * 60 }}
             >
-              <Card variant="elevated" style={styles.contractCard}>
-                <CardContent>
-                  <View style={styles.contractHeader}>
-                    <View style={styles.contractTitleRow}>
-                      <FileText size={20} color={accentColor} />
-                      <Text variant="body-lg" style={{ color: textColor, flex: 1 }}>
-                        {contract.contract_title}
-                      </Text>
-                    </View>
-                    <Eye size={16} color={mutedColor} />
-                  </View>
+              {/* @ts-expect-error sharedTransitionTag is supported at runtime */}
+              <Animated.View sharedTransitionTag={`contract-${contract.id}`}>
+                <MotiPressable
+                  onPress={() => handleViewContract(contract)}
+                  animate={({ pressed }: { pressed: boolean }) => {
+                    'worklet';
+                    return {
+                      scale: pressed ? 0.98 : 1,
+                      opacity: pressed ? 0.92 : 1,
+                    };
+                  }}
+                  transition={{ type: 'spring', damping: 18, stiffness: 220 }}
+                >
+                  <Card variant="elevated" style={styles.contractCard}>
+                    <CardContent>
+                      <View style={styles.contractHeader}>
+                        <View style={styles.contractTitleRow}>
+                          <FileText size={20} color={accentColor} />
+                          <Text variant="body-lg" style={{ color: textColor, flex: 1 }}>
+                            {contract.contract_title}
+                          </Text>
+                        </View>
+                        <Eye size={16} color={mutedColor} />
+                      </View>
 
-                  <View style={styles.contractMeta}>
-                    <Badge variant="default">{getTypeText(contract.contract_type)}</Badge>
-                    <View style={styles.dateRow}>
-                      <Calendar size={14} color={mutedColor} />
-                      <Text variant="body-sm" style={{ color: mutedColor }}>
-                        {t('contracts.signed')} {new Date(contract.signed_at).toLocaleDateString('sv-SE')}
-                      </Text>
-                    </View>
-                  </View>
+                      <View style={styles.contractMeta}>
+                        <Badge variant="default">{getTypeText(contract.contract_type)}</Badge>
+                        <View style={styles.dateRow}>
+                          <Calendar size={14} color={mutedColor} />
+                          <Text variant="body-sm" style={{ color: mutedColor }}>
+                            {t('contracts.signed')} {new Date(contract.signed_at).toLocaleDateString('sv-SE')}
+                          </Text>
+                        </View>
+                      </View>
 
-                  {contract.pdf_url && (
-                    <View style={styles.pdfIndicator}>
-                      <CheckCircle size={14} color="#10b981" />
-                      <Text variant="body-sm" style={{ color: '#10b981' }}>
-                        {t('contracts.pdfAvailable')}
-                      </Text>
-                    </View>
-                  )}
-                </CardContent>
-              </Card>
-            </TouchableOpacity>
+                      {contract.pdf_url && (
+                        <View style={styles.pdfIndicator}>
+                          <CheckCircle size={14} color="#10b981" />
+                          <Text variant="body-sm" style={{ color: '#10b981' }}>
+                            {t('contracts.pdfAvailable')}
+                          </Text>
+                        </View>
+                      )}
+                    </CardContent>
+                  </Card>
+                </MotiPressable>
+              </Animated.View>
+            </MotiView>
           ))}
         </View>
       ) : (

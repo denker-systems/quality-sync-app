@@ -157,7 +157,7 @@ Arbetstagaren förbinder sig att inte röja konfidentiell information.`;
 
   return (
     <>
-      <Surface style={styles.card} elevation={1}>
+      <Surface style={styles.card} elevation={0}>
         <View style={styles.header}>
           <FileText size={24} color="#0056b3" />
           <Text variant="titleLarge" style={styles.title}>
@@ -198,7 +198,7 @@ Arbetstagaren förbinder sig att inte röja konfidentiell information.`;
       </Surface>
 
       {/* Signature Section */}
-      <Surface style={styles.signatureSection} elevation={1}>
+      <Surface style={styles.signatureSection} elevation={0}>
         <View style={styles.header}>
           <PenTool size={24} color="#0056b3" />
           <Text variant="titleMedium" style={styles.title}>
@@ -265,6 +265,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     marginBottom: 16,
+    backgroundColor: 'transparent',
   },
   header: {
     flexDirection: 'row',
@@ -280,10 +281,9 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   contractContainer: {
-    backgroundColor: '#f9fafb',
+    backgroundColor: 'transparent',
     borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderWidth: 0,
     marginBottom: 16,
   },
   contractScroll: {
@@ -304,6 +304,7 @@ const styles = StyleSheet.create({
   signatureSection: {
     padding: 16,
     borderRadius: 12,
+    backgroundColor: 'transparent',
   },
   signaturePreview: {
     alignItems: 'center',

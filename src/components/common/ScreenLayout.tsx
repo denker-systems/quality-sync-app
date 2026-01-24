@@ -1,6 +1,7 @@
 import React, { ReactNode } from 'react';
 import { View, ScrollView, StyleSheet, ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { MotiView } from 'moti';
 import { useTheme } from '@/contexts/ThemeContext';
 import { PageHeader } from './PageHeader';
 import { MenuButton } from './MenuButton';
@@ -45,6 +46,13 @@ export function ScreenLayout({
     style,
   ];
   
+  const scrollContentStyle = [
+    styles.scrollContent,
+    !noPadding && styles.padding,
+    { paddingBottom: insets.bottom + 100 },
+    contentStyle,
+  ];
+
   const innerContentStyle = [
     styles.content,
     !noPadding && styles.padding,
@@ -65,10 +73,16 @@ export function ScreenLayout({
         )}
         <ScrollView 
           style={styles.scrollView}
-          contentContainerStyle={innerContentStyle}
+          contentContainerStyle={scrollContentStyle}
           showsVerticalScrollIndicator={false}
         >
-          {children}
+          <MotiView
+            from={{ opacity: 0, translateY: 8 }}
+            animate={{ opacity: 1, translateY: 0 }}
+            transition={{ type: 'timing', duration: 320 }}
+          >
+            {children}
+          </MotiView>
         </ScrollView>
       </View>
     );
@@ -84,9 +98,14 @@ export function ScreenLayout({
           rightContent={rightContent}
         />
       )}
-      <View style={innerContentStyle}>
+      <MotiView
+        from={{ opacity: 0, translateY: 8 }}
+        animate={{ opacity: 1, translateY: 0 }}
+        transition={{ type: 'timing', duration: 320 }}
+        style={innerContentStyle}
+      >
         {children}
-      </View>
+      </MotiView>
     </View>
   );
 }
@@ -99,6 +118,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
+    flex: 1,
+  },
+  scrollContent: {
     flexGrow: 1,
   },
   padding: {

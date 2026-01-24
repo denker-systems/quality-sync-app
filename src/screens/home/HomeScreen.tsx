@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
+import { MotiView } from 'moti';
 import { useNavigation } from '@react-navigation/native';
 import { ScreenLayout } from '@/components/common';
-import { MenuButton } from '@/components/common/MenuButton';
 import { Text, Card, CardContent, ImageButton } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -30,35 +30,55 @@ export function HomeScreen() {
 
         <View style={styles.gridContainer}>
           <View style={styles.gridRow}>
-            <View style={styles.gridButton}>
+            <MotiView
+              style={styles.gridButton}
+              from={{ opacity: 0, translateY: 10 }}
+              animate={{ opacity: 1, translateY: 0 }}
+              transition={{ type: 'timing', duration: 320, delay: 80 }}
+            >
               <ImageButton
                 title={t('home.mySchedule')}
                 image={require('../../../assets/images/schedule.png')}
                 onPress={() => navigation.navigate('Schedule')}
               />
-            </View>
-            <View style={styles.gridButton}>
+            </MotiView>
+            <MotiView
+              style={styles.gridButton}
+              from={{ opacity: 0, translateY: 10 }}
+              animate={{ opacity: 1, translateY: 0 }}
+              transition={{ type: 'timing', duration: 320, delay: 140 }}
+            >
               <ImageButton
                 title={t('home.onboarding')}
                 image={require('../../../assets/images/onboarding.png')}
                 onPress={() => navigation.navigate('Onboarding')}
               />
-            </View>
+            </MotiView>
           </View>
           <View style={styles.gridRow}>
-            <View style={styles.gridButton}>
+            <MotiView
+              style={styles.gridButton}
+              from={{ opacity: 0, translateY: 10 }}
+              animate={{ opacity: 1, translateY: 0 }}
+              transition={{ type: 'timing', duration: 320, delay: 200 }}
+            >
               <ImageButton
                 title={t('home.myContracts')}
                 image={require('../../../assets/images/contract.png')}
                 onPress={() => navigation.navigate('Contracts')}
               />
-            </View>
-            <View style={styles.gridButton}>
+            </MotiView>
+            <MotiView
+              style={styles.gridButton}
+              from={{ opacity: 0, translateY: 10 }}
+              animate={{ opacity: 1, translateY: 0 }}
+              transition={{ type: 'timing', duration: 320, delay: 260 }}
+            >
               <ImageButton
                 title={t('home.myProfile')}
                 onPress={() => navigation.navigate('Profile')}
               />
-            </View>
+            </MotiView>
           </View>
         </View>
       </View>
@@ -69,26 +89,32 @@ export function HomeScreen() {
           {t('home.thisWeek')}
         </Text>
 
-        <Card variant="elevated">
-          <CardContent>
-            <View style={styles.statsRow}>
-              <View style={styles.statItem}>
-                <Text variant="display" style={{ color: accentColor }}>3</Text>
-                <Text variant="body-sm" style={{ color: mutedColor }}>{t('home.shifts')}</Text>
+        <MotiView
+          from={{ opacity: 0, translateY: 10 }}
+          animate={{ opacity: 1, translateY: 0 }}
+          transition={{ type: 'timing', duration: 320, delay: 320 }}
+        >
+          <Card variant="elevated">
+            <CardContent>
+              <View style={styles.statsRow}>
+                <View style={styles.statItem}>
+                  <Text variant="display" style={{ color: accentColor }}>3</Text>
+                  <Text variant="body-sm" style={{ color: mutedColor }}>{t('home.shifts')}</Text>
+                </View>
+                <View style={[styles.statDivider, { backgroundColor: isDark ? '#333' : '#E5E5E5' }]} />
+                <View style={styles.statItem}>
+                  <Text variant="display" style={{ color: accentColor }}>24</Text>
+                  <Text variant="body-sm" style={{ color: mutedColor }}>{t('home.hours')}</Text>
+                </View>
+                <View style={[styles.statDivider, { backgroundColor: isDark ? '#333' : '#E5E5E5' }]} />
+                <View style={styles.statItem}>
+                  <Text variant="display" style={{ color: accentColor }}>2</Text>
+                  <Text variant="body-sm" style={{ color: mutedColor }}>{t('home.daysLeft')}</Text>
+                </View>
               </View>
-              <View style={[styles.statDivider, { backgroundColor: isDark ? '#333' : '#E5E5E5' }]} />
-              <View style={styles.statItem}>
-                <Text variant="display" style={{ color: accentColor }}>24</Text>
-                <Text variant="body-sm" style={{ color: mutedColor }}>{t('home.hours')}</Text>
-              </View>
-              <View style={[styles.statDivider, { backgroundColor: isDark ? '#333' : '#E5E5E5' }]} />
-              <View style={styles.statItem}>
-                <Text variant="display" style={{ color: accentColor }}>2</Text>
-                <Text variant="body-sm" style={{ color: mutedColor }}>{t('home.daysLeft')}</Text>
-              </View>
-            </View>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </MotiView>
       </View>
     </ScreenLayout>
   );

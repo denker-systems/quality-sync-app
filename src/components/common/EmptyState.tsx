@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { MotiView } from 'moti';
 import { Text } from '@/components/ui/Text';
 import { Button } from '@/components/ui/Button';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -26,10 +27,19 @@ export function EmptyState({
   const iconColor = isDark ? '#525252' : '#D4D4D4';
 
   return (
-    <View style={styles.container}>
-      <View style={styles.iconContainer}>
+    <MotiView
+      style={styles.container}
+      from={{ opacity: 0, translateY: 12 }}
+      animate={{ opacity: 1, translateY: 0 }}
+      transition={{ type: 'timing', duration: 360 }}
+    >
+      <MotiView
+        style={styles.iconContainer}
+        animate={{ scale: [1, 1.05, 1] }}
+        transition={{ type: 'timing', duration: 1600, loop: true }}
+      >
         <Icon size={64} color={iconColor} />
-      </View>
+      </MotiView>
       <Text variant="h3" style={[styles.title, { color: textColor }]}>
         {title}
       </Text>
@@ -47,7 +57,7 @@ export function EmptyState({
           {actionLabel}
         </Button>
       )}
-    </View>
+    </MotiView>
   );
 }
 

@@ -1,10 +1,9 @@
 import React from 'react';
-import { View, Pressable, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
 import { Home, User, Calendar, Settings } from 'lucide-react-native';
+import { MotiPressable } from 'moti/interactions';
 import { useTheme } from '@/contexts/ThemeContext';
-import { useLanguage } from '@/contexts/LanguageContext';
 
 interface TabItem {
   key: string;
@@ -27,8 +26,6 @@ interface FloatingTabBarProps {
 export function FloatingTabBar({ activeTab, onTabPress }: FloatingTabBarProps) {
   const insets = useSafeAreaInsets();
   const { isDark } = useTheme();
-  const { t } = useLanguage();
-
   const handlePress = (key: string) => {
     onTabPress(key);
   };
@@ -46,16 +43,22 @@ export function FloatingTabBar({ activeTab, onTabPress }: FloatingTabBarProps) {
           const Icon = tab.icon;
           
           return (
-            <Pressable
+            <MotiPressable
               key={tab.key}
               onPress={() => handlePress(tab.key)}
-              style={({ pressed }) => [
+              style={[
                 styles.tabButton,
                 isActive && (isDark ? styles.activeButtonDark : styles.activeButtonLight),
                 !isActive && (isDark ? styles.inactiveButtonDark : styles.inactiveButtonLight),
-                pressed && styles.pressed,
-                isActive && styles.activeScale,
               ]}
+              animate={({ pressed }) => {
+                'worklet';
+                return {
+                  scale: pressed ? 0.94 : isActive ? 1.06 : 1,
+                  opacity: pressed ? 0.85 : 1,
+                };
+              }}
+              transition={{ type: 'spring', damping: 16, stiffness: 220 }}
             >
               <Icon 
                 size={28} 
@@ -64,7 +67,7 @@ export function FloatingTabBar({ activeTab, onTabPress }: FloatingTabBarProps) {
                   : (isDark ? '#A3A3A3' : '#737373')
                 } 
               />
-            </Pressable>
+            </MotiPressable>
           );
         })}
       </View>
@@ -117,12 +120,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#2A2A2A',
     borderWidth: 1,
     borderColor: '#3D3D3D',
-  },
-  activeScale: {
-    transform: [{ scale: 1.05 }],
-  },
-  pressed: {
-    transform: [{ scale: 0.95 }],
   },
 });
 

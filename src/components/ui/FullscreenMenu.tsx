@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { 
   View, 
   ScrollView, 
@@ -84,6 +84,7 @@ export function FullscreenMenu({
   onNavigate,
   onLogout,
 }: FullscreenMenuProps) {
+  const [isMounted, setIsMounted] = useState(visible);
   const insets = useSafeAreaInsets();
   const { isDark } = useTheme();
   const { t } = useLanguage();
@@ -91,6 +92,7 @@ export function FullscreenMenu({
   const menuSections = getMenuSections(t, canManageOnboarding);
   const slideAnim = useRef(new Animated.Value(SCREEN_WIDTH)).current;
   const dragX = useRef(new Animated.Value(0)).current;
+  const backdropAnim = useRef(new Animated.Value(0)).current;
 
   // Pan responder for swipe-to-close
   const panResponder = useRef(
@@ -117,8 +119,8 @@ export function FullscreenMenu({
             duration: 200,
             useNativeDriver: true,
           }).start(() => {
-            onClose();
             dragX.setValue(0);
+            requestClose();
           });
         } else {
           // Snap back
@@ -133,42 +135,55 @@ export function FullscreenMenu({
     })
   ).current;
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (visible) {
+      setIsMounted(true);
       dragX.setValue(0);
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
-    } else {
+      Animated.parallel([
+        Animated.timing(slideAnim, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(backdropAnim, {
+          toValue: 1,
+          duration: 250,
+          useNativeDriver: true,
+        }),
+      ]).start();
+      return;
+    }
+
+    if (!isMounted) return;
+
+    Animated.parallel([
       Animated.timing(slideAnim, {
         toValue: SCREEN_WIDTH,
         duration: 250,
         useNativeDriver: true,
-      }).start();
-    }
-  }, [visible, slideAnim, dragX]);
-
-  const handleClose = () => {
-    // Kör slide-out animation först
-    Animated.timing(slideAnim, {
-      toValue: SCREEN_WIDTH,
-      duration: 250,
-      useNativeDriver: true,
-    }).start(() => {
-      // Stäng Modal efter animation är klar
-      onClose();
+      }),
+      Animated.timing(backdropAnim, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      dragX.setValue(0);
+      setIsMounted(false);
     });
+  }, [visible, isMounted, slideAnim, dragX, backdropAnim]);
+
+  const requestClose = () => {
+    onClose();
   };
 
   const handleItemPress = (key: string) => {
     if (key === 'logout') {
       onLogout?.();
-      handleClose();
+      requestClose();
     } else {
       onNavigate?.(key);
-      handleClose();
+      requestClose();
     }
   };
 
@@ -176,13 +191,20 @@ export function FullscreenMenu({
 
   return (
     <Modal
-      visible={visible}
+      visible={isMounted}
       transparent
       animationType="none"
-      onRequestClose={onClose}
+      onRequestClose={requestClose}
     >
       <View style={styles.overlay}>
-        <Pressable style={styles.backdrop} onPress={handleClose} />
+        <Animated.View
+          style={[
+            styles.backdrop,
+            { opacity: backdropAnim },
+          ]}
+        >
+          <Pressable style={StyleSheet.absoluteFillObject} onPress={requestClose} />
+        </Animated.View>
         <Animated.View 
           {...panResponder.panHandlers}
           style={[
@@ -199,7 +221,7 @@ export function FullscreenMenu({
         >
           <MenuHeader
             title={t('menu.title')}
-            onClose={handleClose}
+            onClose={requestClose}
           />
 
           <ScrollView 

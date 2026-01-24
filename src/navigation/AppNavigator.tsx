@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { ActivityIndicator, View, StyleSheet } from 'react-native';
+import { ActivityIndicator, View, StyleSheet, Platform } from 'react-native';
 import { useTheme as usePaperTheme } from 'react-native-paper';
 import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -113,7 +113,13 @@ function AppNavigatorContent() {
     >
       <SwipeEdgeDetector>
         <View style={styles.container}>
-          <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Navigator
+            screenOptions={{
+              headerShown: false,
+              animation: Platform.OS === 'android' ? 'slide_from_right' : 'default',
+              gestureEnabled: true,
+            }}
+          >
           {!user ? (
             <Stack.Screen name="Login" component={LoginScreen} />
           ) : (
@@ -128,7 +134,11 @@ function AppNavigatorContent() {
               <Stack.Screen name="OnboardingAdmin" component={OnboardingAdminScreen} />
               <Stack.Screen name="OnboardingPreview" component={OnboardingPreviewScreen} />
               <Stack.Screen name="Contracts" component={ContractsScreen} />
-              <Stack.Screen name="ContractViewer" component={ContractViewerScreen} />
+              <Stack.Screen
+                name="ContractViewer"
+                component={ContractViewerScreen}
+                options={{ presentation: 'modal' }}
+              />
               <Stack.Screen name="Settings" component={SettingsScreen} />
               <Stack.Screen name="Company" component={CompanyScreen} />
               <Stack.Screen name="Security" component={SecurityScreen} />

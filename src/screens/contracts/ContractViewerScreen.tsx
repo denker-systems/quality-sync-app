@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, ActivityIndicator, TouchableOpacity } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { ScreenLayout, EmptyState } from '@/components/common';
 import { Text, Card, CardContent, Button } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -55,19 +56,22 @@ export const ContractViewerScreen = () => {
   return (
     <ScreenLayout title="Avtal" scrollable={false} noPadding>
       {/* Contract Info */}
-      <Card variant="elevated" style={styles.infoCard}>
-        <CardContent style={styles.headerContent}>
-          <FileText size={24} color={accentColor} />
-          <View style={styles.headerText}>
-            <Text variant="body-lg" style={{ color: textColor }}>
-              {contract.contract_title}
-            </Text>
-            <Text variant="body-sm" style={{ color: mutedColor }}>
-              Signerat {new Date(contract.signed_at).toLocaleDateString('sv-SE')}
-            </Text>
-          </View>
-        </CardContent>
-      </Card>
+      {/* @ts-expect-error sharedTransitionTag is supported at runtime */}
+      <Animated.View sharedTransitionTag={`contract-${contractId}`}>
+        <Card variant="elevated" style={styles.infoCard}>
+          <CardContent style={styles.headerContent}>
+            <FileText size={24} color={accentColor} />
+            <View style={styles.headerText}>
+              <Text variant="body-lg" style={{ color: textColor }}>
+                {contract.contract_title}
+              </Text>
+              <Text variant="body-sm" style={{ color: mutedColor }}>
+                Signerat {new Date(contract.signed_at).toLocaleDateString('sv-SE')}
+              </Text>
+            </View>
+          </CardContent>
+        </Card>
+      </Animated.View>
 
       {/* PDF Viewer or Content */}
       <View style={styles.contentContainer}>

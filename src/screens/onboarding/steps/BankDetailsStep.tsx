@@ -91,7 +91,7 @@ export const BankDetailsStep: React.FC<BankDetailsStepProps> = ({
 
   return (
     <>
-      <Surface style={styles.card} elevation={1}>
+      <Surface style={styles.card} elevation={0}>
         <View style={styles.header}>
           <Building2 size={24} color="#0056b3" />
           <Text variant="titleLarge" style={styles.title}>
@@ -171,6 +171,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     marginBottom: 16,
+    backgroundColor: 'transparent',
   },
   header: {
     flexDirection: 'row',

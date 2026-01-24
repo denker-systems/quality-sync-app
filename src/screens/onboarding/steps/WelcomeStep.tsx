@@ -50,7 +50,7 @@ export const WelcomeStep: React.FC<WelcomeStepProps> = ({
 
   return (
     <>
-      <Surface style={styles.card} elevation={2}>
+      <Surface style={styles.card} elevation={0}>
         {imageUrl ? (
           <View style={styles.imageContainer}>
             <Image 
@@ -85,6 +85,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     marginBottom: 16,
+    backgroundColor: 'transparent',
   },
   iconContainer: {
     marginBottom: 24,
