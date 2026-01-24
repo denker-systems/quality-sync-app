@@ -54,7 +54,7 @@ function AppNavigatorContent() {
   };
 
   // Screens where tab bar should be hidden
-  const hideTabBarScreens = ['Onboarding', 'OnboardingAdmin', 'OnboardingPreview', 'OnboardingStep'];
+  const hideTabBarScreens = ['OnboardingAdmin', 'OnboardingPreview', 'OnboardingStep'];
   const shouldShowTabBar = user && !hideTabBarScreens.includes(currentRoute);
 
   const handleTabPress = (key: string) => {
@@ -62,8 +62,10 @@ function AppNavigatorContent() {
     if (navigationRef) {
       switch (key) {
         case 'home': navigationRef.navigate('Home'); break;
-        case 'profile': navigationRef.navigate('Profile'); break;
+        case 'onboarding': navigationRef.navigate('Onboarding'); break;
         case 'schedule': navigationRef.navigate('Schedule'); break;
+        case 'contracts': navigationRef.navigate('Contracts'); break;
+        case 'profile': navigationRef.navigate('Profile'); break;
         case 'settings': navigationRef.navigate('Settings'); break;
       }
     }

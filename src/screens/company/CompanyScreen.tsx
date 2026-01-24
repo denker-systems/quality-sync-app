@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, Image } from 'react-native';
 import { ScreenLayout } from '@/components/common';
 import { MenuButton } from '@/components/common/MenuButton';
-import { Text, Card, CardContent } from '@/components/ui';
+import { Text, Card, CardContent, Badge } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useCompanyData } from '@/hooks/useCompanyData';
@@ -14,7 +14,11 @@ import {
   CreditCard,
   Users,
   Calendar,
+  TrendingUp,
+  Award,
+  CheckCircle,
 } from 'lucide-react-native';
+import { AnimatedEntrance, AnimatedListItem, SPRING_CONFIGS, STAGGER_DELAYS } from '@/lib/animations';
 
 interface InfoRowProps {
   icon: React.ComponentType<{ size: number; color: string }>;
@@ -96,54 +100,86 @@ export function CompanyScreen() {
 
   return (
     <ScreenLayout title={t('company.title')} isRoot={true}>
-      {/* Company Header */}
-      <Card variant="elevated" style={styles.headerCard}>
-        <CardContent style={styles.headerContent}>
-          <View style={[styles.companyIcon, { backgroundColor: iconBgColor }]}>
-            <Building2 size={32} color={accentColor} />
-          </View>
-          <View style={styles.headerText}>
-            <Text variant="h2" style={{ color: textColor }}>{company.name}</Text>
-            {company.organization_number && (
-              <Text variant="body-sm" style={{ color: mutedColor }}>
-                {t('company.orgNumber')}: {company.organization_number}
-              </Text>
-            )}
-          </View>
-        </CardContent>
-      </Card>
-
-      {/* Contact Information */}
-      <View style={styles.section}>
-        <Text variant="h3" style={[styles.sectionTitle, { color: textColor }]}>
-          {t('company.contactInfo')}
-        </Text>
-        <Card variant="elevated">
+      {/* Company Header with Stats */}
+      <AnimatedEntrance preset="scaleIn">
+        <Card variant="elevated" style={styles.headerCard}>
           <CardContent>
-            <InfoRow 
-              icon={Mail} 
-              label={t('company.email')} 
-              value={company.contact_email} 
-            />
-            {company.contact_email && company.address && (
-              <View style={[styles.divider, { backgroundColor: isDark ? '#2E2E2E' : '#E5E5E5' }]} />
-            )}
-            <InfoRow 
-              icon={MapPin} 
-              label={t('company.address')} 
-              value={company.address} 
-            />
+            <View style={styles.headerContent}>
+              <View style={[styles.companyIcon, { backgroundColor: iconBgColor }]}>
+                <Building2 size={32} color={accentColor} />
+              </View>
+              <View style={styles.headerText}>
+                <Text variant="h2" style={{ color: textColor }}>{company.name}</Text>
+                {company.organization_number && (
+                  <Text variant="body-sm" style={{ color: mutedColor }}>
+                    {t('company.orgNumber')}: {company.organization_number}
+                  </Text>
+                )}
+                {company.is_active && (
+                  <View style={{ marginTop: 8 }}>
+                    <Badge variant="success">
+                      {t('common.active')}
+                    </Badge>
+                  </View>
+                )}
+              </View>
+            </View>
+            
+            {/* Company Stats */}
+            <View style={styles.statsRow}>
+              <View style={styles.statItem}>
+                <View style={[styles.statIcon, { backgroundColor: isDark ? 'rgba(107,189,104,0.15)' : '#EDF5EC' }]}>
+                  <Users size={20} color={accentColor} />
+                </View>
+                <Text variant="display" style={{ color: accentColor }}>{company.employee_limit || 0}</Text>
+                <Text variant="body-sm" style={{ color: mutedColor }}>{t('company.employees')}</Text>
+              </View>
+              <View style={styles.statItem}>
+                <View style={[styles.statIcon, { backgroundColor: isDark ? 'rgba(251,191,36,0.15)' : '#FEF3C7' }]}>
+                  <TrendingUp size={20} color="#F59E0B" />
+                </View>
+                <Text variant="display" style={{ color: '#F59E0B' }}>{company.subscription_plan || 'Starter'}</Text>
+                <Text variant="body-sm" style={{ color: mutedColor }}>Plan</Text>
+              </View>
+            </View>
           </CardContent>
         </Card>
-      </View>
+      </AnimatedEntrance>
+
+      {/* Contact Information */}
+      <AnimatedListItem index={0} staggerDelay={STAGGER_DELAYS.medium}>
+        <View style={styles.section}>
+          <Text variant="h3" style={[styles.sectionTitle, { color: textColor }]}>
+            {t('company.contactInfo')}
+          </Text>
+          <Card variant="elevated">
+            <CardContent>
+              <InfoRow 
+                icon={Mail} 
+                label={t('company.email')} 
+                value={company.contact_email} 
+              />
+              {company.contact_email && company.address && (
+                <View style={[styles.divider, { backgroundColor: isDark ? '#2E2E2E' : '#E5E5E5' }]} />
+              )}
+              <InfoRow 
+                icon={MapPin} 
+                label={t('company.address')} 
+                value={company.address} 
+              />
+            </CardContent>
+          </Card>
+        </View>
+      </AnimatedListItem>
 
       {/* Subscription Information */}
-      <View style={styles.section}>
-        <Text variant="h3" style={[styles.sectionTitle, { color: textColor }]}>
-          {t('company.subscription')}
-        </Text>
-        <Card variant="elevated">
-          <CardContent>
+      <AnimatedListItem index={1} staggerDelay={STAGGER_DELAYS.medium}>
+        <View style={styles.section}>
+          <Text variant="h3" style={[styles.sectionTitle, { color: textColor }]}>
+            {t('company.subscription')}
+          </Text>
+          <Card variant="elevated">
+            <CardContent>
             <InfoRow 
               icon={CreditCard} 
               label={t('company.plan')} 
@@ -173,10 +209,12 @@ export function CompanyScreen() {
             />
           </CardContent>
         </Card>
-      </View>
+        </View>
+      </AnimatedListItem>
 
       {/* Company Details */}
-      <View style={styles.section}>
+      <AnimatedListItem index={2} staggerDelay={STAGGER_DELAYS.medium}>
+        <View style={styles.section}>
         <Text variant="h3" style={[styles.sectionTitle, { color: textColor }]}>
           {t('company.other')}
         </Text>
@@ -195,7 +233,8 @@ export function CompanyScreen() {
             />
           </CardContent>
         </Card>
-      </View>
+        </View>
+      </AnimatedListItem>
     </ScreenLayout>
   );
 }
@@ -230,6 +269,25 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     marginBottom: 12,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 20,
+    paddingTop: 20,
+    borderTopWidth: 1,
+    borderTopColor: '#E5E5E5',
+  },
+  statItem: {
+    alignItems: 'center',
+    gap: 8,
+  },
+  statIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   infoRow: {
     flexDirection: 'row',

@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAuth } from '@/hooks/useAuth';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { AnimatedEntrance, STAGGER_DELAYS } from '@/lib/animations';
 
 const createLoginSchema = (t: (key: string) => string) => z.object({
   email: z.string().email(t('auth.invalidEmail')),
@@ -66,39 +67,44 @@ export const LoginScreen = () => {
         keyboardShouldPersistTaps="handled"
       >
         {/* Language Toggle */}
-        <View style={styles.languageToggleContainer}>
-          <TouchableOpacity 
-            style={[
-              styles.flagButton,
-              language === 'sv' && styles.flagButtonActive,
-              { backgroundColor: language === 'sv' ? (isDark ? '#2A2A2A' : '#E8E8E8') : 'transparent' }
-            ]}
-            onPress={() => setLanguage('sv')}
-          >
-            <Text style={styles.flagEmoji}>🇸🇪</Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={[
-              styles.flagButton,
-              language === 'en' && styles.flagButtonActive,
-              { backgroundColor: language === 'en' ? (isDark ? '#2A2A2A' : '#E8E8E8') : 'transparent' }
-            ]}
-            onPress={() => setLanguage('en')}
-          >
-            <Text style={styles.flagEmoji}>🇺🇸</Text>
-          </TouchableOpacity>
-        </View>
+        <AnimatedEntrance preset="fadeInUp" delay={0}>
+          <View style={styles.languageToggleContainer}>
+            <TouchableOpacity 
+              style={[
+                styles.flagButton,
+                language === 'sv' && styles.flagButtonActive,
+                { backgroundColor: language === 'sv' ? (isDark ? '#2A2A2A' : '#E8E8E8') : 'transparent' }
+              ]}
+              onPress={() => setLanguage('sv')}
+            >
+              <Text style={styles.flagEmoji}>🇸🇪</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={[
+                styles.flagButton,
+                language === 'en' && styles.flagButtonActive,
+                { backgroundColor: language === 'en' ? (isDark ? '#2A2A2A' : '#E8E8E8') : 'transparent' }
+              ]}
+              onPress={() => setLanguage('en')}
+            >
+              <Text style={styles.flagEmoji}>🇺🇸</Text>
+            </TouchableOpacity>
+          </View>
+        </AnimatedEntrance>
 
-        <View style={styles.logoContainer}>
-          <Text variant="display" style={{ color: accentColor }}>
-            Quality Sync
-          </Text>
-          <Text variant="body-lg" style={{ color: mutedColor, marginTop: 8 }}>
-            {t('auth.subtitle')}
-          </Text>
-        </View>
+        <AnimatedEntrance preset="scaleIn" delay={STAGGER_DELAYS.medium}>
+          <View style={styles.logoContainer}>
+            <Text variant="display" style={{ color: accentColor }}>
+              Quality Sync
+            </Text>
+            <Text variant="body-lg" style={{ color: mutedColor, marginTop: 8 }}>
+              {t('auth.subtitle')}
+            </Text>
+          </View>
+        </AnimatedEntrance>
 
-        <Card variant="elevated" style={styles.card}>
+        <AnimatedEntrance preset="fadeInUp" delay={STAGGER_DELAYS.medium * 2}>
+          <Card variant="elevated" style={styles.card}>
           <CardContent>
             <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>{t('auth.email')}</Text>
             <Controller
@@ -166,7 +172,8 @@ export const LoginScreen = () => {
               {isSubmitting ? t('auth.loggingIn') : t('auth.loginButton')}
             </Button>
           </CardContent>
-        </Card>
+          </Card>
+        </AnimatedEntrance>
       </ScrollView>
     </KeyboardAvoidingView>
   );

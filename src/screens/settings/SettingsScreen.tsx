@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, Switch } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { MotiView } from 'moti';
+import { MotiPressable } from 'moti/interactions';
 import { ScreenLayout } from '@/components/common';
 import { Text, Card, CardContent } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { AnimatedListItem, SPRING_CONFIGS, usePressAnimation, STAGGER_DELAYS } from '@/lib/animations';
 import { 
   Palette, 
   Bell, 
@@ -75,9 +78,10 @@ export function SettingsScreen() {
   return (
     <ScreenLayout title={t('settings.title')} isRoot={true}>
       {/* Appearance - Theme Toggle */}
-      <View style={styles.section}>
-        <Card variant="elevated">
-          <CardContent style={styles.cardContent}>
+      <AnimatedListItem index={0} staggerDelay={STAGGER_DELAYS.medium}>
+        <View style={styles.section}>
+          <Card variant="elevated">
+            <CardContent style={styles.cardContent}>
             <View style={styles.settingsItem}>
               <View style={[styles.settingsIcon, { backgroundColor: isDark ? 'rgba(107,189,104,0.15)' : '#EDF5EC' }]}>
                 <Palette size={20} color={accentColor} />
@@ -111,10 +115,12 @@ export function SettingsScreen() {
             </View>
           </CardContent>
         </Card>
-      </View>
+        </View>
+      </AnimatedListItem>
 
       {/* Notifications - Toggle */}
-      <View style={styles.section}>
+      <AnimatedListItem index={1} staggerDelay={STAGGER_DELAYS.medium}>
+        <View style={styles.section}>
         <Card variant="elevated">
           <CardContent style={styles.cardContent}>
             <View style={styles.settingsItem}>
@@ -134,10 +140,12 @@ export function SettingsScreen() {
             </View>
           </CardContent>
         </Card>
-      </View>
+        </View>
+      </AnimatedListItem>
 
       {/* Language Toggle */}
-      <View style={styles.section}>
+      <AnimatedListItem index={2} staggerDelay={STAGGER_DELAYS.medium}>
+        <View style={styles.section}>
         <Card variant="elevated">
           <CardContent style={styles.cardContent}>
             <View style={styles.settingsItem}>
@@ -175,10 +183,12 @@ export function SettingsScreen() {
             </View>
           </CardContent>
         </Card>
-      </View>
+        </View>
+      </AnimatedListItem>
 
       {/* Security - Navigate to screen */}
-      <View style={styles.section}>
+      <AnimatedListItem index={3} staggerDelay={STAGGER_DELAYS.medium}>
+        <View style={styles.section}>
         <Card variant="elevated">
           <CardContent style={styles.cardContent}>
             <SettingsItem
@@ -189,10 +199,12 @@ export function SettingsScreen() {
             />
           </CardContent>
         </Card>
-      </View>
+        </View>
+      </AnimatedListItem>
 
       {/* Change Password - Navigate to screen */}
-      <View style={styles.section}>
+      <AnimatedListItem index={4} staggerDelay={STAGGER_DELAYS.medium}>
+        <View style={styles.section}>
         <Card variant="elevated">
           <CardContent style={styles.cardContent}>
             <SettingsItem
@@ -203,10 +215,12 @@ export function SettingsScreen() {
             />
           </CardContent>
         </Card>
-      </View>
+        </View>
+      </AnimatedListItem>
 
       {/* About - Navigate to screen */}
-      <View style={styles.section}>
+      <AnimatedListItem index={5} staggerDelay={STAGGER_DELAYS.medium}>
+        <View style={styles.section}>
         <Card variant="elevated">
           <CardContent style={styles.cardContent}>
             <SettingsItem
@@ -217,7 +231,8 @@ export function SettingsScreen() {
             />
           </CardContent>
         </Card>
-      </View>
+        </View>
+      </AnimatedListItem>
 
       {/* Version info */}
       <View style={styles.versionContainer}>

@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { MotiView } from 'moti';
 import { ScreenLayout } from '@/components/common';
 import { Text, Card, CardContent, Avatar, Badge, Button } from '@/components/ui';
+import { AvatarUploadDialog } from '@/components/ui/AvatarUploadDialog';
 import { useTheme } from '@/contexts/ThemeContext';
 import { AnimatedEntrance, SPRING_CONFIGS, STAGGER_DELAYS } from '@/lib/animations';
-import { Award, Zap, TrendingUp } from 'lucide-react-native';
+import { Award, Zap, TrendingUp, Camera } from 'lucide-react-native';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
 import { useMyEmployee } from '@/hooks/useMyEmployee';
@@ -65,6 +66,8 @@ export const ProfileScreen = () => {
   const { isDark } = useTheme();
   const { t } = useLanguage();
   const { user, signOut } = useAuth();
+  const [uploadDialogVisible, setUploadDialogVisible] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   
   const textColor = isDark ? '#FAFAFA' : '#171717';
   const mutedColor = isDark ? '#A3A3A3' : '#737373';
@@ -144,14 +147,21 @@ export const ProfileScreen = () => {
       <AnimatedEntrance preset="scaleIn">
         <View style={styles.profileHeaderContainer}>
           {/* Avatar with Level Badge */}
-          <View style={styles.avatarWrapper}>
+          <TouchableOpacity 
+            style={styles.avatarWrapper}
+            onPress={() => setUploadDialogVisible(true)}
+            activeOpacity={0.8}
+          >
             <View style={[styles.avatarBorder, { borderColor: isDark ? '#2A2A2A' : '#FFFFFF' }]}>
-              <Avatar name={getDisplayName()} size="xl" />
+              <Avatar name={getDisplayName()} size="2xl" source={avatarUrl || (employee as any)?.avatar_url} />
             </View>
             <View style={[styles.levelBadge, { backgroundColor: accentColor }]}>
               <Text variant="tiny" style={{ color: '#FFFFFF', fontWeight: '700' }}>LVL {level}</Text>
             </View>
-          </View>
+            <View style={[styles.cameraButton, { backgroundColor: accentColor }]}>
+              <Camera size={16} color="#FFFFFF" />
+            </View>
+          </TouchableOpacity>
           
           {/* Card with curved top */}
           <View style={[styles.profileCard, { backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF' }]}>
@@ -200,7 +210,7 @@ export const ProfileScreen = () => {
       <AnimatedEntrance preset="fadeInUp" delay={STAGGER_DELAYS.medium}>
         <View style={styles.section}>
           <Text variant="h3" style={[styles.sectionTitle, { color: textColor }]}>
-            🏆 {t('profile.achievements')}
+            🏆 Achievements
           </Text>
           <Card variant="elevated">
             <CardContent>
@@ -234,6 +244,17 @@ export const ProfileScreen = () => {
           </Card>
         </View>
       </AnimatedEntrance>
+
+      {/* Avatar Upload Dialog */}
+      <AvatarUploadDialog
+        visible={uploadDialogVisible}
+        onClose={() => setUploadDialogVisible(false)}
+        onUploadComplete={(url) => {
+          setAvatarUrl(url);
+          setUploadDialogVisible(false);
+        }}
+        employeeId={employee?.id}
+      />
 
       {/* Account Section */}
       <View style={styles.section}>
@@ -378,36 +399,48 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   profileHeaderContainer: {
-    marginTop: 60,
+    marginTop: 70,
     marginBottom: 24,
     alignItems: 'center',
   },
   avatarWrapper: {
     position: 'absolute',
-    top: -50,
+    top: -60,
     left: '50%',
-    marginLeft: -50,
+    marginLeft: -64,
     zIndex: 2,
   },
   avatarBorder: {
     padding: 4,
-    borderRadius: 60,
+    borderRadius: 70,
     borderWidth: 4,
     backgroundColor: '#FFFFFF',
   },
   levelBadge: {
     position: 'absolute',
-    bottom: 0,
-    right: 0,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 12,
-    borderWidth: 2,
+    bottom: 4,
+    right: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    borderRadius: 14,
+    borderWidth: 3,
+    borderColor: '#FFFFFF',
+  },
+  cameraButton: {
+    position: 'absolute',
+    bottom: 4,
+    left: 4,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 3,
     borderColor: '#FFFFFF',
   },
   profileCard: {
     width: '100%',
-    paddingTop: 60,
+    paddingTop: 70,
     paddingHorizontal: 16,
     paddingBottom: 16,
     borderRadius: 16,

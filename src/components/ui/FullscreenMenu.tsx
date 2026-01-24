@@ -1,14 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import { 
   View, 
   ScrollView, 
   Pressable, 
   Modal, 
   StyleSheet,
-  Animated,
-  Dimensions,
-  PanResponder,
 } from 'react-native';
+import { MotiView } from 'moti';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { 
   LayoutDashboard, 
@@ -25,6 +23,7 @@ import type { MenuItemData } from './menu';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useRole } from '@/hooks/useRole';
+import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/lib/animations';
 
 interface MenuSectionData {
   title: string;
@@ -75,115 +74,25 @@ const getMenuSections = (t: (key: string) => string, canManageOnboarding: boolea
   },
 ];
 
-const SCREEN_WIDTH = Dimensions.get('window').width;
-const SWIPE_THRESHOLD = 100; // Minimum distance to trigger close
-
 export function FullscreenMenu({ 
   visible, 
   onClose, 
   onNavigate,
   onLogout,
 }: FullscreenMenuProps) {
-  const [isMounted, setIsMounted] = useState(visible);
   const insets = useSafeAreaInsets();
   const { isDark } = useTheme();
   const { t } = useLanguage();
   const { canManageOnboarding } = useRole();
   const menuSections = getMenuSections(t, canManageOnboarding);
-  const slideAnim = useRef(new Animated.Value(SCREEN_WIDTH)).current;
-  const dragX = useRef(new Animated.Value(0)).current;
-  const backdropAnim = useRef(new Animated.Value(0)).current;
-
-  // Pan responder for swipe-to-close
-  const panResponder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => false,
-      onMoveShouldSetPanResponder: (_, gestureState) => {
-        // Only respond to horizontal swipes (right direction)
-        return Math.abs(gestureState.dx) > 10 && gestureState.dx > 0 && Math.abs(gestureState.dy) < 30;
-      },
-      onPanResponderGrant: () => {
-        dragX.setValue(0);
-      },
-      onPanResponderMove: (_, gestureState) => {
-        // Only allow dragging to the right (positive dx)
-        if (gestureState.dx > 0) {
-          dragX.setValue(gestureState.dx);
-        }
-      },
-      onPanResponderRelease: (_, gestureState) => {
-        if (gestureState.dx > SWIPE_THRESHOLD || gestureState.vx > 0.5) {
-          // Swipe was fast enough or far enough - close menu
-          Animated.timing(dragX, {
-            toValue: SCREEN_WIDTH,
-            duration: 200,
-            useNativeDriver: true,
-          }).start(() => {
-            dragX.setValue(0);
-            requestClose();
-          });
-        } else {
-          // Snap back
-          Animated.spring(dragX, {
-            toValue: 0,
-            useNativeDriver: true,
-            tension: 100,
-            friction: 10,
-          }).start();
-        }
-      },
-    })
-  ).current;
-
-  useEffect(() => {
-    if (visible) {
-      setIsMounted(true);
-      dragX.setValue(0);
-      Animated.parallel([
-        Animated.timing(slideAnim, {
-          toValue: 0,
-          duration: 300,
-          useNativeDriver: true,
-        }),
-        Animated.timing(backdropAnim, {
-          toValue: 1,
-          duration: 250,
-          useNativeDriver: true,
-        }),
-      ]).start();
-      return;
-    }
-
-    if (!isMounted) return;
-
-    Animated.parallel([
-      Animated.timing(slideAnim, {
-        toValue: SCREEN_WIDTH,
-        duration: 250,
-        useNativeDriver: true,
-      }),
-      Animated.timing(backdropAnim, {
-        toValue: 0,
-        duration: 200,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      dragX.setValue(0);
-      setIsMounted(false);
-    });
-  }, [visible, isMounted, slideAnim, dragX, backdropAnim]);
-
-  const requestClose = () => {
-    onClose();
-  };
 
   const handleItemPress = (key: string) => {
     if (key === 'logout') {
       onLogout?.();
-      requestClose();
+      onClose();
     } else {
       onNavigate?.(key);
-      requestClose();
+      onClose();
     }
   };
 
@@ -191,22 +100,20 @@ export function FullscreenMenu({
 
   return (
     <Modal
-      visible={isMounted}
+      visible={visible}
       transparent
       animationType="none"
-      onRequestClose={requestClose}
+      onRequestClose={onClose}
     >
-      <View style={styles.overlay}>
-        <Animated.View
-          style={[
-            styles.backdrop,
-            { opacity: backdropAnim },
-          ]}
-        >
-          <Pressable style={StyleSheet.absoluteFillObject} onPress={requestClose} />
-        </Animated.View>
-        <Animated.View 
-          {...panResponder.panHandlers}
+      <MotiView
+        style={styles.overlay}
+        from={{ opacity: 0 }}
+        animate={{ opacity: visible ? 1 : 0 }}
+        exit={{ opacity: 0 }}
+        transition={TIMING_CONFIGS.fast}
+      >
+        <Pressable style={styles.backdrop} onPress={onClose} />
+        <MotiView 
           style={[
             styles.menuContainer,
             { 
@@ -215,13 +122,16 @@ export function FullscreenMenu({
               paddingBottom: Math.max(insets.bottom, 20),
               paddingLeft: insets.left,
               paddingRight: insets.right,
-              transform: [{ translateX: Animated.add(slideAnim, dragX) }],
             },
           ]}
+          from={{ translateX: 400 }}
+          animate={{ translateX: visible ? 0 : 400 }}
+          exit={{ translateX: 400 }}
+          transition={SPRING_CONFIGS.smooth}
         >
           <MenuHeader
             title={t('menu.title')}
-            onClose={requestClose}
+            onClose={onClose}
           />
 
           <ScrollView 
@@ -238,8 +148,8 @@ export function FullscreenMenu({
               />
             ))}
           </ScrollView>
-        </Animated.View>
-      </View>
+        </MotiView>
+      </MotiView>
     </Modal>
   );
 }
