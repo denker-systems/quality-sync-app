@@ -19,6 +19,14 @@ export const ContractsScreen = () => {
   const { data: employee } = useMyEmployee();
   const { data: contracts, isLoading, error } = useMyContracts(employee?.id);
   
+  // Debug logging
+  React.useEffect(() => {
+    console.log('🔍 ContractsScreen - Employee ID:', employee?.id);
+    console.log('🔍 ContractsScreen - Contracts:', contracts);
+    console.log('🔍 ContractsScreen - Loading:', isLoading);
+    console.log('🔍 ContractsScreen - Error:', error);
+  }, [employee?.id, contracts, isLoading, error]);
+  
   // Always call hooks at top level
   const liftPressAnimation = useLiftPress();
   
