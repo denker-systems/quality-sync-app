@@ -83,7 +83,7 @@ export const ContractsScreen = () => {
                 <View style={styles.progressHeader}>
                   <View style={styles.progressInfo}>
                     <Text variant="h2" style={{ color: accentColor }}>{contracts.length}</Text>
-                    <Text variant="body-sm" style={{ color: mutedColor }}>{t('contracts.totalSigned')}</Text>
+                    <Text variant="body-sm" style={{ color: mutedColor }}>Signerade avtal</Text>
                   </View>
                   <View style={[styles.completionBadge, { backgroundColor: isDark ? 'rgba(107,189,104,0.15)' : '#EDF5EC' }]}>
                     <CheckCircle size={24} color={accentColor} />
@@ -204,16 +204,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   contractImageContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 12,
+    width: 100,
+    height: 100,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 8,
+    padding: 12,
   },
   contractImage: {
-    width: 64,
-    height: 64,
+    width: 76,
+    height: 76,
   },
   contractInfo: {
     flex: 1,

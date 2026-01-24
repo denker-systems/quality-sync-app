@@ -59,14 +59,23 @@ export const ContractViewerScreen = () => {
       <Animated.View sharedTransitionTag={`contract-${contractId}`}>
         <Card variant="elevated" style={styles.infoCard}>
           <CardContent style={styles.headerContent}>
-            <FileText size={24} color={accentColor} />
+            <View style={[styles.headerImageContainer, { backgroundColor: isDark ? '#2A2A2A' : '#F5F5F5' }]}>
+              <Image 
+                source={require('../../../assets/images/contract.png')} 
+                style={styles.headerImage}
+                resizeMode="contain"
+              />
+            </View>
             <View style={styles.headerText}>
-              <Text variant="body-lg" style={{ color: textColor }}>
+              <Text variant="h3" style={{ color: textColor }}>
                 {contract.contract_title}
               </Text>
-              <Text variant="body-sm" style={{ color: mutedColor }}>
-                Signerat {new Date(contract.signed_at).toLocaleDateString('sv-SE')}
-              </Text>
+              <View style={styles.headerMeta}>
+                <Calendar size={14} color={mutedColor} />
+                <Text variant="body-sm" style={{ color: mutedColor }}>
+                  Signerat {new Date(contract.signed_at).toLocaleDateString('sv-SE')}
+                </Text>
+              </View>
             </View>
           </CardContent>
         </Card>
@@ -179,10 +188,28 @@ const styles = StyleSheet.create({
   headerContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: 16,
+  },
+  headerImageContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 12,
+  },
+  headerImage: {
+    width: 56,
+    height: 56,
   },
   headerText: {
     flex: 1,
+  },
+  headerMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: 6,
   },
   signedDate: {
     color: '#6b7280',
