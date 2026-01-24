@@ -1,13 +1,14 @@
 import React from 'react';
-import { StyleSheet, View, ActivityIndicator, ScrollView } from 'react-native';
+import { StyleSheet, View, ActivityIndicator, ScrollView, Image } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { ScreenLayout, EmptyState } from '@/components/common';
-import { Text, Card, CardContent } from '@/components/ui';
+import { Text, Card, CardContent, Badge } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useContract } from '@/hooks/useContracts';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
-import { FileText } from 'lucide-react-native';
+import { FileText, PenTool, CheckCircle, Calendar } from 'lucide-react-native';
 import type { RootStackParamList } from '@/types';
+import { AnimatedEntrance } from '@/lib/animations';
 
 type ContractViewerRouteProp = RouteProp<RootStackParamList, 'ContractViewer'>;
 
@@ -71,13 +72,59 @@ export const ContractViewerScreen = () => {
       </Animated.View>
 
       {/* Contract Content */}
-      <View style={styles.contentContainer}>
-        <ScrollView style={styles.contentScroll} contentContainerStyle={styles.contentScrollInner}>
-          <Text variant="body" style={{ color: textColor, lineHeight: 24 }}>
-            {contract.contract_content}
-          </Text>
-        </ScrollView>
-      </View>
+      <ScrollView style={styles.contentScroll} contentContainerStyle={styles.contentScrollInner}>
+        {/* Contract Type Badge */}
+        <AnimatedEntrance preset="fadeInUp" delay={100}>
+          <View style={styles.badgeContainer}>
+            <Badge variant="default">
+              {contract.contract_type === 'employment' ? 'Anställningsavtal' : 
+               contract.contract_type === 'nda' ? 'Sekretessavtal' : 'Avtal'}
+            </Badge>
+            <View style={styles.dateRow}>
+              <Calendar size={14} color={mutedColor} />
+              <Text variant="body-sm" style={{ color: mutedColor }}>
+                Signerat {new Date(contract.signed_at).toLocaleDateString('sv-SE')}
+              </Text>
+            </View>
+          </View>
+        </AnimatedEntrance>
+
+        {/* Contract Content */}
+        <AnimatedEntrance preset="fadeInUp" delay={200}>
+          <Card variant="elevated" style={styles.contentCard}>
+            <CardContent>
+              <Text variant="body" style={{ color: textColor, lineHeight: 24 }}>
+                {contract.contract_content}
+              </Text>
+            </CardContent>
+          </Card>
+        </AnimatedEntrance>
+
+        {/* Signature Section */}
+        {contract.signature_data?.signature && (
+          <AnimatedEntrance preset="scaleIn" delay={300}>
+            <Card variant="elevated" style={styles.signatureCard}>
+              <CardContent>
+                <View style={styles.signatureHeader}>
+                  <PenTool size={20} color={accentColor} />
+                  <Text variant="h3" style={{ color: textColor }}>Signatur</Text>
+                </View>
+                <View style={[styles.signatureBox, { backgroundColor: isDark ? '#2A2A2A' : '#F5F5F5' }]}>
+                  <View style={styles.signatureContent}>
+                    <CheckCircle size={48} color={accentColor} />
+                    <Text variant="body" style={{ color: accentColor, fontWeight: '600', marginTop: 12 }}>
+                      Digitalt signerat
+                    </Text>
+                    <Text variant="body-sm" style={{ color: mutedColor, marginTop: 4 }}>
+                      {new Date(contract.signed_at).toLocaleString('sv-SE')}
+                    </Text>
+                  </View>
+                </View>
+              </CardContent>
+            </Card>
+          </AnimatedEntrance>
+        )}
+      </ScrollView>
     </ScreenLayout>
   );
 };
@@ -136,5 +183,37 @@ const styles = StyleSheet.create({
   },
   contentScrollInner: {
     padding: 16,
+    paddingBottom: 32,
+  },
+  badgeContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  dateRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  contentCard: {
+    marginBottom: 16,
+  },
+  signatureCard: {
+    marginTop: 8,
+  },
+  signatureHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 16,
+  },
+  signatureBox: {
+    borderRadius: 12,
+    padding: 24,
+    alignItems: 'center',
+  },
+  signatureContent: {
+    alignItems: 'center',
   },
 });

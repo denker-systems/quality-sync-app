@@ -96,6 +96,7 @@ export function useMyContracts(employeeId?: string) {
 
 /**
  * Hook för att hämta ett specifikt avtal
+ * Hämtar från employee_onboarding_progress
  */
 export function useContract(contractId?: string) {
   return useQuery({
@@ -103,20 +104,19 @@ export function useContract(contractId?: string) {
     queryFn: async (): Promise<SignedContract | null> => {
       if (!contractId) return null;
 
-      console.log('📄 Fetching contract signature:', contractId);
+      console.log('📄 Fetching contract:', contractId);
 
       const { data, error } = await supabase
-        .from('employee_contract_signatures')
+        .from('employee_onboarding_progress')
         .select(`
           id,
-          contract_id,
-          employee_id,
-          signed_at,
-          signature_data,
-          created_at,
-          contract:employee_contracts(
+          status,
+          step_data,
+          completed_at,
+          step:onboarding_steps(
+            id,
+            step_type,
             title,
-            contract_type,
             content
           )
         `)
@@ -128,13 +128,25 @@ export function useContract(contractId?: string) {
         throw error;
       }
 
-      // Flatten contract data
-      const contract = data ? {
-        ...(data as any),
-        contract_title: (data as any).contract?.title,
-        contract_type: (data as any).contract?.contract_type as 'employment' | 'nda' | 'custom',
-        contract_content: (data as any).contract?.content,
-      } as SignedContract : null;
+      if (!data || (data as any).step?.step_type !== 'contract_signing') {
+        console.error('❌ Not a contract signing step');
+        return null;
+      }
+
+      const p = data as any;
+      const cleanTitle = (p.step?.title || 'Avtal').replace(/^Signera\s+/i, '');
+
+      const contract: SignedContract = {
+        id: p.id,
+        employee_id: '', // Not available from this query
+        contract_id: p.step?.id || p.id,
+        signed_at: p.completed_at,
+        signature_data: { signature: p.step_data?.signature },
+        created_at: p.completed_at,
+        contract_title: cleanTitle,
+        contract_type: (p.step?.content?.contract_type || 'custom') as 'employment' | 'nda' | 'custom',
+        contract_content: p.step?.content?.contract_text || '',
+      };
 
       console.log('✅ Contract loaded');
       return contract;
