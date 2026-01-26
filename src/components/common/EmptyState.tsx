@@ -13,15 +13,15 @@ interface EmptyStateProps {
   onAction?: () => void;
 }
 
-export function EmptyState({ 
-  icon: Icon, 
-  title, 
-  description, 
-  actionLabel, 
-  onAction 
+export function EmptyState({
+  icon: Icon,
+  title,
+  description,
+  actionLabel,
+  onAction,
 }: EmptyStateProps) {
   const { isDark } = useTheme();
-  
+
   const textColor = isDark ? '#FAFAFA' : '#171717';
   const mutedColor = isDark ? '#737373' : '#A3A3A3';
   const iconColor = isDark ? '#525252' : '#D4D4D4';
@@ -49,11 +49,7 @@ export function EmptyState({
         </Text>
       )}
       {actionLabel && onAction && (
-        <Button 
-          variant="outline" 
-          onPress={onAction}
-          style={styles.button}
-        >
+        <Button variant="outline" onPress={onAction} style={styles.button}>
           {actionLabel}
         </Button>
       )}

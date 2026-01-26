@@ -7,17 +7,17 @@ import { useMenu } from '@/contexts/MenuContext';
 export function MenuButton() {
   const { isDark } = useTheme();
   const menuContext = useMenu();
-  
+
   // Don't render if menu context is not available
   if (!menuContext) {
     return null;
   }
-  
+
   const bgColor = isDark ? '#1A1A1A' : '#F5F5F5';
   const iconColor = isDark ? '#FAFAFA' : '#171717';
 
   return (
-    <TouchableOpacity 
+    <TouchableOpacity
       style={[styles.button, { backgroundColor: bgColor }]}
       onPress={menuContext.openMenu}
       activeOpacity={0.7}

@@ -1,6 +1,6 @@
 /**
  * Animation Utilities
- * 
+ *
  * Helper functions for performance optimization
  * Based on Reanimated and Moti best practices
  */
@@ -9,18 +9,15 @@
  * Creates a worklet-compatible press animation function
  * Optimized for maximum FPS with minimal overhead
  */
-export const createPressAnimation = (options: {
-  scaleDown?: number;
-  opacityPressed?: number;
-  isActive?: boolean;
-  scaleActive?: number;
-} = {}) => {
-  const {
-    scaleDown = 0.96,
-    opacityPressed = 0.85,
-    isActive = false,
-    scaleActive = 1,
-  } = options;
+export const createPressAnimation = (
+  options: {
+    scaleDown?: number;
+    opacityPressed?: number;
+    isActive?: boolean;
+    scaleActive?: number;
+  } = {},
+) => {
+  const { scaleDown = 0.96, opacityPressed = 0.85, isActive = false, scaleActive = 1 } = options;
 
   return ({ pressed }: { pressed: boolean }) => {
     'worklet';
@@ -35,25 +32,26 @@ export const createPressAnimation = (options: {
  * Calculates stagger delay for index
  * Prevents cumulative delays from becoming too large
  */
-export const getStaggerDelay = (index: number, baseDelay: number = 60, maxDelay: number = 500): number => {
+export const getStaggerDelay = (
+  index: number,
+  baseDelay: number = 60,
+  maxDelay: number = 500,
+): number => {
   return Math.min(index * baseDelay, maxDelay);
 };
 
 /**
  * Creates optimized spring config with custom parameters
  */
-export const createSpringConfig = (options: {
-  damping?: number;
-  stiffness?: number;
-  mass?: number;
-  delay?: number;
-} = {}) => {
-  const {
-    damping = 18,
-    stiffness = 300,
-    mass = 0.8,
-    delay = 0,
-  } = options;
+export const createSpringConfig = (
+  options: {
+    damping?: number;
+    stiffness?: number;
+    mass?: number;
+    delay?: number;
+  } = {},
+) => {
+  const { damping = 18, stiffness = 300, mass = 0.8, delay = 0 } = options;
 
   return {
     type: 'spring' as const,

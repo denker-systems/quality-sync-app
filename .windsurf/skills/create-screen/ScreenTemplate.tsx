@@ -13,12 +13,8 @@ export const ScreenName = ({ navigation, route }: Props) => {
       <View style={styles.container}>
         <Text variant="headlineMedium">Screen Title</Text>
         <Text variant="bodyMedium">Screen content goes here.</Text>
-        
-        <Button 
-          mode="contained" 
-          onPress={() => navigation.goBack()}
-          style={styles.button}
-        >
+
+        <Button mode="contained" onPress={() => navigation.goBack()} style={styles.button}>
           Go Back
         </Button>
       </View>

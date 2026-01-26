@@ -1,17 +1,11 @@
 import React from 'react';
-import { 
-  View, 
-  ScrollView, 
-  Pressable, 
-  Modal, 
-  StyleSheet,
-} from 'react-native';
+import { ScrollView, Pressable, Modal, StyleSheet } from 'react-native';
 import { MotiView } from 'moti';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { 
-  LayoutDashboard, 
-  Calendar, 
-  ClipboardList, 
+import {
+  LayoutDashboard,
+  Calendar,
+  ClipboardList,
   FileText,
   User,
   Building2,
@@ -37,49 +31,89 @@ interface FullscreenMenuProps {
   onLogout?: () => void;
 }
 
-const getMenuSections = (t: (key: string) => string, canManageOnboarding: boolean): MenuSectionData[] => [
+const getMenuSections = (
+  t: (key: string) => string,
+  canManageOnboarding: boolean,
+): MenuSectionData[] => [
   {
     title: t('menu.mainMenu'),
     items: [
-      { key: 'dashboard', icon: LayoutDashboard, title: t('menu.dashboard'), subtitle: t('menu.dashboardSubtitle') },
-      { key: 'schedule', icon: Calendar, title: t('menu.mySchedule'), subtitle: t('menu.scheduleSubtitle') },
-      { key: 'onboarding', icon: ClipboardList, title: t('menu.onboarding'), subtitle: t('menu.onboardingSubtitle') },
-      { key: 'contracts', icon: FileText, title: t('menu.myContracts'), subtitle: t('menu.contractsSubtitle') },
+      {
+        key: 'dashboard',
+        icon: LayoutDashboard,
+        title: t('menu.dashboard'),
+        subtitle: t('menu.dashboardSubtitle'),
+      },
+      {
+        key: 'schedule',
+        icon: Calendar,
+        title: t('menu.mySchedule'),
+        subtitle: t('menu.scheduleSubtitle'),
+      },
+      {
+        key: 'onboarding',
+        icon: ClipboardList,
+        title: t('menu.onboarding'),
+        subtitle: t('menu.onboardingSubtitle'),
+      },
+      {
+        key: 'contracts',
+        icon: FileText,
+        title: t('menu.myContracts'),
+        subtitle: t('menu.contractsSubtitle'),
+      },
     ],
   },
-  ...(canManageOnboarding ? [{
-    title: t('menu.admin') || 'Administration',
-    items: [
-      { key: 'onboarding-admin', icon: Settings, title: t('menu.onboardingAdmin') || 'Onboarding Settings', subtitle: t('menu.onboardingAdminSubtitle') || 'Configure onboarding steps' },
-    ],
-  }] : []),
+  ...(canManageOnboarding
+    ? [
+        {
+          title: t('menu.admin') || 'Administration',
+          items: [
+            {
+              key: 'onboarding-admin',
+              icon: Settings,
+              title: t('menu.onboardingAdmin') || 'Onboarding Settings',
+              subtitle: t('menu.onboardingAdminSubtitle') || 'Configure onboarding steps',
+            },
+          ],
+        },
+      ]
+    : []),
   {
     title: t('menu.hrPersonal'),
     items: [
-      { key: 'profile', icon: User, title: t('menu.myProfile'), subtitle: t('menu.profileSubtitle') },
-      { key: 'company', icon: Building2, title: t('menu.company'), subtitle: t('menu.companySubtitle') },
+      {
+        key: 'profile',
+        icon: User,
+        title: t('menu.myProfile'),
+        subtitle: t('menu.profileSubtitle'),
+      },
+      {
+        key: 'company',
+        icon: Building2,
+        title: t('menu.company'),
+        subtitle: t('menu.companySubtitle'),
+      },
     ],
   },
   {
     title: t('menu.settings'),
     items: [
-      { key: 'settings', icon: Settings, title: t('menu.settings'), subtitle: t('menu.settingsSubtitle') },
+      {
+        key: 'settings',
+        icon: Settings,
+        title: t('menu.settings'),
+        subtitle: t('menu.settingsSubtitle'),
+      },
     ],
   },
   {
     title: '',
-    items: [
-      { key: 'logout', icon: LogOut, title: t('menu.logout'), subtitle: '' },
-    ],
+    items: [{ key: 'logout', icon: LogOut, title: t('menu.logout'), subtitle: '' }],
   },
 ];
 
-export function FullscreenMenu({ 
-  visible, 
-  onClose, 
-  onNavigate,
-  onLogout,
-}: FullscreenMenuProps) {
+export function FullscreenMenu({ visible, onClose, onNavigate, onLogout }: FullscreenMenuProps) {
   const insets = useSafeAreaInsets();
   const { isDark } = useTheme();
   const { t } = useLanguage();
@@ -99,12 +133,7 @@ export function FullscreenMenu({
   const backgroundColor = isDark ? '#0F0F0F' : '#FFFFFF';
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="none"
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} transparent animationType="none" onRequestClose={onClose}>
       <MotiView
         style={styles.overlay}
         from={{ opacity: 0 }}
@@ -113,10 +142,10 @@ export function FullscreenMenu({
         transition={TIMING_CONFIGS.fast}
       >
         <Pressable style={styles.backdrop} onPress={onClose} />
-        <MotiView 
+        <MotiView
           style={[
             styles.menuContainer,
-            { 
+            {
               backgroundColor,
               paddingTop: insets.top,
               paddingBottom: Math.max(insets.bottom, 20),
@@ -129,12 +158,9 @@ export function FullscreenMenu({
           exit={{ translateX: 400 }}
           transition={SPRING_CONFIGS.smooth}
         >
-          <MenuHeader
-            title={t('menu.title')}
-            onClose={onClose}
-          />
+          <MenuHeader title={t('menu.title')} onClose={onClose} />
 
-          <ScrollView 
+          <ScrollView
             style={styles.scrollView}
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}

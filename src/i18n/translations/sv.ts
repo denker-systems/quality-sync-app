@@ -84,7 +84,8 @@ export default {
     confirmPasswordPlaceholder: 'Skriv lösenordet igen',
     saveButton: 'Uppdatera lösenord',
     saving: 'Sparar...',
-    passwordHint: 'Välj ett starkt lösenord med minst 8 tecken, helst med en blandning av bokstäver, siffror och symboler.',
+    passwordHint:
+      'Välj ett starkt lösenord med minst 8 tecken, helst med en blandning av bokstäver, siffror och symboler.',
     errorRequired: 'Fyll i alla fält',
     errorMismatch: 'Lösenorden matchar inte',
     errorTooShort: 'Lösenordet måste vara minst 8 tecken',
@@ -155,7 +156,8 @@ export default {
     signed: 'Signerat',
     pdfAvailable: 'PDF tillgänglig',
     noContracts: 'Inga avtal hittades',
-    noContractsDesc: 'Dina anställningsavtal och dokument kommer att visas här när de blir tillgängliga.',
+    noContractsDesc:
+      'Dina anställningsavtal och dokument kommer att visas här när de blir tillgängliga.',
   },
 
   // Onboarding Screen
@@ -180,7 +182,7 @@ export default {
     journeyTitle: 'Din onboarding-resa',
     stepNumber: 'Steg {{number}}',
     openButton: 'Öppna',
-    
+
     // Personal Info Step
     personalInfo: {
       title: 'Personuppgifter',
@@ -197,14 +199,15 @@ export default {
       phone: 'Telefon',
       email: 'E-post',
       idDocument: 'ID-handling (valfritt)',
-      idDocumentDesc: 'Ladda upp kopia av körkort, pass eller nationellt ID-kort (JPG, PNG eller PDF, max 5MB)',
+      idDocumentDesc:
+        'Ladda upp kopia av körkort, pass eller nationellt ID-kort (JPG, PNG eller PDF, max 5MB)',
       chooseImage: 'Välj bild',
       chooseDocument: 'Välj dokument',
       uploading: 'Laddar upp...',
       uploaded: 'Uppladdad',
       idDocumentUploaded: 'ID-handling uppladdad',
       required: '*',
-      
+
       // Errors
       errorFirstName: 'Förnamn krävs',
       errorLastName: 'Efternamn krävs',
@@ -213,7 +216,7 @@ export default {
       errorAddress: 'Adress krävs',
       errorPostalCode: 'Postnummer krävs',
       errorCity: 'Ort krävs',
-      
+
       // Alerts
       errorTitle: 'Fel',
       errorSave: 'Kunde inte spara dina uppgifter. Försök igen.',
@@ -226,7 +229,7 @@ export default {
       uploadSuccess: 'Klart!',
       uploadSuccessMessage: 'ID-handling uppladdad',
     },
-    
+
     // Contract Signing Step
     contract: {
       title: 'Anställningsavtal',
@@ -240,14 +243,14 @@ export default {
       mustReadFirst: 'Du måste läsa avtalet först',
       signatureModalTitle: 'Signera Anställningsavtal',
       signatureModalDesc: 'Rita din signatur nedan för att godkänna avtalet',
-      
+
       // Alerts
       alertReadFirst: 'Läs avtalet först',
       alertReadMessage: 'Du måste läsa igenom avtalet innan du kan fortsätta.',
       alertSignatureMissing: 'Signatur saknas',
       alertSignatureMessage: 'Du måste signera avtalet för att fortsätta.',
     },
-    
+
     // Welcome Step
     welcome: {
       defaultTitle: 'Välkommen till vårt team! Vi är glada att ha dig ombord.',
@@ -255,7 +258,7 @@ export default {
       stepTitle: 'Välkommen!',
       stepDescription: 'Välkomstmeddelande och introduktion till företaget',
     },
-    
+
     // Handbook Step
     handbook: {
       title: 'Personalhandbok',
@@ -268,20 +271,23 @@ export default {
       markAsRead: 'Markera som läst',
       confirmation: 'Jag har läst och förstått personalhandboken',
       alertReadAll: 'Läs alla avsnitt först',
-      alertReadAllMessage: 'Du måste läsa alla {{total}} avsnitt innan du kan fortsätta. Du har läst {{read}} av {{total}}.',
+      alertReadAllMessage:
+        'Du måste läsa alla {{total}} avsnitt innan du kan fortsätta. Du har läst {{read}} av {{total}}.',
       alertConfirm: 'Bekräfta att du har läst',
       alertConfirmMessage: 'Du måste bocka i att du har läst och förstått personalhandboken.',
       defaultSectionWelcome: 'Välkommen',
-      defaultSectionWelcomeContent: 'Välkommen till företaget! Vi är glada att ha dig med i teamet.',
+      defaultSectionWelcomeContent:
+        'Välkommen till företaget! Vi är glada att ha dig med i teamet.',
     },
-    
+
     // Bank Details Step
     bankDetails: {
       title: 'Bankuppgifter',
       stepTitle: 'Bankuppgifter',
       stepDescription: 'Ange dina bankuppgifter för löneutbetalning',
       description: 'Ange dina bankuppgifter för löneutbetalning.',
-      securityInfo: '🔒 Dina bankuppgifter krypteras och lagras säkert. De används endast för löneutbetalning.',
+      securityInfo:
+        '🔒 Dina bankuppgifter krypteras och lagras säkert. De används endast för löneutbetalning.',
       accountType: 'Kontotyp',
       bankAccount: 'Bankkonto',
       bankgiro: 'Bankgiro',
@@ -299,14 +305,15 @@ export default {
       errorInvalidClearingNumber: 'Clearingnummer ska vara 4-5 siffror',
       errorAccountNumber: 'Kontonummer krävs',
     },
-    
+
     // Emergency Contact Step
     emergencyContact: {
       title: 'Nödkontakt',
       stepTitle: 'Nödkontakt',
       stepDescription: 'Ange en nödkontakt',
       description: 'Ange en person vi kan kontakta vid nödsituation.',
-      securityInfo: 'ℹ️ Denna information används endast i nödsituationer och behandlas konfidentiellt.',
+      securityInfo:
+        'ℹ️ Denna information används endast i nödsituationer och behandlas konfidentiellt.',
       contactName: 'Kontaktpersonens namn',
       relation: 'Relation',
       relationFamily: 'Familj',
@@ -318,7 +325,7 @@ export default {
       errorName: 'Namn krävs',
       errorPhone: 'Telefon krävs',
     },
-    
+
     // Custom Step
     custom: {
       stepTitle: 'Anpassat steg',
@@ -334,7 +341,7 @@ export default {
       emptyDescription: 'Innehåll har inte konfigurerats ännu',
     },
   },
-  
+
   // Signature
   signature: {
     modalTitle: 'Signera Dokument',

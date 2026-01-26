@@ -1,6 +1,7 @@
 # Session End: 2026-01-20 21:08
 
 **Achievements:**
+
 - [x] Created comprehensive documentation structure (16 files)
   - Getting Started section (4 files)
   - Architecture section (2 files)
@@ -18,6 +19,7 @@
 - [x] Created 6 git commits documenting all changes
 
 **Commits Made:**
+
 1. `chore: initial project setup with expo, supabase and mfa feature`
 2. `chore: track all files including .env and .expo, update session logs`
 3. `docs: create comprehensive documentation structure with all sections`
@@ -26,6 +28,7 @@
 6. `docs: add generate-pr workflow for detailed pull requests`
 
 **Next Steps:**
+
 - [ ] Test MFA enrollment flow on physical device
 - [ ] Implement company data fetching and display
 - [ ] Create employee profile screen with full functionality

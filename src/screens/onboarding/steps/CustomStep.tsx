@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { StyleSheet, View, ScrollView, Image, Linking } from 'react-native';
 import { Text, Button, Surface } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { FileText, Video as VideoIcon, Image as ImageIcon, ExternalLink } from 'lucide-react-native';
+import { FileText, Video as VideoIcon, ExternalLink } from 'lucide-react-native';
 
 interface CustomStepProps {
   content: {
@@ -25,20 +25,16 @@ interface CustomStepProps {
  * CustomStep - Anpassat steg med flexibelt innehåll
  * Stöder: text, bilder, video, dokument och externa länkar
  */
-export const CustomStep: React.FC<CustomStepProps> = ({
-  content,
-  onComplete,
-  submitRef,
-}) => {
+export const CustomStep: React.FC<CustomStepProps> = ({ content, onComplete, submitRef }) => {
   const { isDark } = useTheme();
   const { t } = useLanguage();
   const textColor = isDark ? '#FAFAFA' : '#171717';
   const mutedColor = isDark ? '#A3A3A3' : '#737373';
   const accentColor = isDark ? '#6BBD68' : '#489A45';
 
-  const handleContinue = () => {
+  const handleContinue = useCallback(() => {
     onComplete({ viewed: true, viewed_at: new Date().toISOString() });
-  };
+  }, [onComplete]);
 
   useEffect(() => {
     if (submitRef) {
@@ -49,7 +45,7 @@ export const CustomStep: React.FC<CustomStepProps> = ({
         submitRef.current = null;
       }
     };
-  }, [submitRef]);
+  }, [handleContinue, submitRef]);
 
   const handleOpenLink = async (url: string) => {
     const supported = await Linking.canOpenURL(url);
@@ -65,11 +61,7 @@ export const CustomStep: React.FC<CustomStepProps> = ({
       case 'image':
         return (
           <View style={styles.mediaContainer}>
-            <Image 
-              source={{ uri: content.media_url }}
-              style={styles.image}
-              resizeMode="contain"
-            />
+            <Image source={{ uri: content.media_url }} style={styles.image} resizeMode="contain" />
             {content.title && (
               <Text variant="body-sm" style={[styles.caption, { color: mutedColor }]}>
                 {content.title}
@@ -85,8 +77,8 @@ export const CustomStep: React.FC<CustomStepProps> = ({
             <Text variant="body" style={{ color: textColor, marginTop: 8 }}>
               {content.title || t('onboarding.custom.video')}
             </Text>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onPress={() => handleOpenLink(content.media_url!)}
               style={styles.mediaButton}
             >
@@ -102,8 +94,8 @@ export const CustomStep: React.FC<CustomStepProps> = ({
             <Text variant="body" style={{ color: textColor, marginTop: 8 }}>
               {content.title || t('onboarding.custom.document')}
             </Text>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onPress={() => handleOpenLink(content.media_url!)}
               style={styles.mediaButton}
             >
@@ -123,8 +115,8 @@ export const CustomStep: React.FC<CustomStepProps> = ({
             <Text variant="body-sm" style={{ color: mutedColor, marginTop: 4 }}>
               {content.media_url}
             </Text>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onPress={() => handleOpenLink(content.media_url!)}
               style={styles.mediaButton}
             >
@@ -172,10 +164,7 @@ export const CustomStep: React.FC<CustomStepProps> = ({
         {/* Call-to-action knapp */}
         {content.button_url && (
           <View style={styles.ctaContainer}>
-            <Button 
-              variant="primary"
-              onPress={() => handleOpenLink(content.button_url!)}
-            >
+            <Button variant="primary" onPress={() => handleOpenLink(content.button_url!)}>
               {content.button_text || t('onboarding.custom.readMore')}
             </Button>
           </View>
@@ -188,7 +177,10 @@ export const CustomStep: React.FC<CustomStepProps> = ({
             <Text variant="body-lg" style={[styles.emptyTitle, { color: textColor }]}>
               {t('onboarding.custom.emptyTitle')}
             </Text>
-            <Text variant="body-sm" style={{ color: mutedColor, textAlign: 'center', marginTop: 8 }}>
+            <Text
+              variant="body-sm"
+              style={{ color: mutedColor, textAlign: 'center', marginTop: 8 }}
+            >
               {t('onboarding.custom.emptyDescription')}
             </Text>
           </View>

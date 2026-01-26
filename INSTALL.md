@@ -34,6 +34,7 @@ EXPO_PUBLIC_SUPABASE_ANON_KEY=your_anon_key_here
 ## Verifiering
 
 Appen är korrekt installerad när:
+
 - ✅ `npm start` startar utan errors
 - ✅ Login-skärmen visas i simulator/emulator
 - ✅ Du kan logga in med samma credentials som webb-appen

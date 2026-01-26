@@ -1,24 +1,22 @@
 import React from 'react';
-import { View, StyleSheet, ActivityIndicator, Image } from 'react-native';
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { ScreenLayout } from '@/components/common';
 import { MenuButton } from '@/components/common/MenuButton';
 import { Text, Card, CardContent, Badge } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useCompanyData } from '@/hooks/useCompanyData';
-import { 
-  Building2, 
-  Mail, 
-  MapPin, 
+import {
+  Building2,
+  Mail,
+  MapPin,
   Hash,
   CreditCard,
   Users,
   Calendar,
   TrendingUp,
-  Award,
-  CheckCircle,
 } from 'lucide-react-native';
-import { AnimatedEntrance, AnimatedListItem, SPRING_CONFIGS, STAGGER_DELAYS } from '@/lib/animations';
+import { AnimatedEntrance, AnimatedListItem, STAGGER_DELAYS } from '@/lib/animations';
 
 interface InfoRowProps {
   icon: React.ComponentType<{ size: number; color: string }>;
@@ -38,8 +36,12 @@ function InfoRow({ icon: Icon, label, value }: InfoRowProps) {
     <View style={styles.infoRow}>
       <Icon size={18} color={iconColor} />
       <View style={styles.infoText}>
-        <Text variant="body-sm" style={{ color: mutedColor }}>{label}</Text>
-        <Text variant="body" style={{ color: textColor }}>{value}</Text>
+        <Text variant="body-sm" style={{ color: mutedColor }}>
+          {label}
+        </Text>
+        <Text variant="body" style={{ color: textColor }}>
+          {value}
+        </Text>
       </View>
     </View>
   );
@@ -91,10 +93,14 @@ export function CompanyScreen() {
 
   const getSubscriptionStatus = (status: string) => {
     switch (status) {
-      case 'active': return t('company.subscriptionActive');
-      case 'trial': return t('company.subscriptionTrial');
-      case 'canceled': return t('company.subscriptionCanceled');
-      default: return status;
+      case 'active':
+        return t('company.subscriptionActive');
+      case 'trial':
+        return t('company.subscriptionTrial');
+      case 'canceled':
+        return t('company.subscriptionCanceled');
+      default:
+        return status;
     }
   };
 
@@ -109,7 +115,9 @@ export function CompanyScreen() {
                 <Building2 size={32} color={accentColor} />
               </View>
               <View style={styles.headerText}>
-                <Text variant="h2" style={{ color: textColor }}>{company.name}</Text>
+                <Text variant="h2" style={{ color: textColor }}>
+                  {company.name}
+                </Text>
                 {company.organization_number && (
                   <Text variant="body-sm" style={{ color: mutedColor }}>
                     {t('company.orgNumber')}: {company.organization_number}
@@ -117,29 +125,45 @@ export function CompanyScreen() {
                 )}
                 {company.is_active && (
                   <View style={{ marginTop: 8 }}>
-                    <Badge variant="success">
-                      {t('common.active')}
-                    </Badge>
+                    <Badge variant="success">{t('common.active')}</Badge>
                   </View>
                 )}
               </View>
             </View>
-            
+
             {/* Company Stats */}
             <View style={styles.statsRow}>
               <View style={styles.statItem}>
-                <View style={[styles.statIcon, { backgroundColor: isDark ? 'rgba(107,189,104,0.15)' : '#EDF5EC' }]}>
+                <View
+                  style={[
+                    styles.statIcon,
+                    { backgroundColor: isDark ? 'rgba(107,189,104,0.15)' : '#EDF5EC' },
+                  ]}
+                >
                   <Users size={20} color={accentColor} />
                 </View>
-                <Text variant="display" style={{ color: accentColor }}>{company.employee_limit || 0}</Text>
-                <Text variant="body-sm" style={{ color: mutedColor }}>{t('company.employees')}</Text>
+                <Text variant="display" style={{ color: accentColor }}>
+                  {company.employee_limit || 0}
+                </Text>
+                <Text variant="body-sm" style={{ color: mutedColor }}>
+                  {t('company.employees')}
+                </Text>
               </View>
               <View style={styles.statItem}>
-                <View style={[styles.statIcon, { backgroundColor: isDark ? 'rgba(251,191,36,0.15)' : '#FEF3C7' }]}>
+                <View
+                  style={[
+                    styles.statIcon,
+                    { backgroundColor: isDark ? 'rgba(251,191,36,0.15)' : '#FEF3C7' },
+                  ]}
+                >
                   <TrendingUp size={20} color="#F59E0B" />
                 </View>
-                <Text variant="display" style={{ color: '#F59E0B' }}>{company.subscription_plan || 'Starter'}</Text>
-                <Text variant="body-sm" style={{ color: mutedColor }}>Plan</Text>
+                <Text variant="display" style={{ color: '#F59E0B' }}>
+                  {company.subscription_plan || 'Starter'}
+                </Text>
+                <Text variant="body-sm" style={{ color: mutedColor }}>
+                  Plan
+                </Text>
               </View>
             </View>
           </CardContent>
@@ -154,19 +178,13 @@ export function CompanyScreen() {
           </Text>
           <Card variant="elevated">
             <CardContent>
-              <InfoRow 
-                icon={Mail} 
-                label={t('company.email')} 
-                value={company.contact_email} 
-              />
+              <InfoRow icon={Mail} label={t('company.email')} value={company.contact_email} />
               {company.contact_email && company.address && (
-                <View style={[styles.divider, { backgroundColor: isDark ? '#2E2E2E' : '#E5E5E5' }]} />
+                <View
+                  style={[styles.divider, { backgroundColor: isDark ? '#2E2E2E' : '#E5E5E5' }]}
+                />
               )}
-              <InfoRow 
-                icon={MapPin} 
-                label={t('company.address')} 
-                value={company.address} 
-              />
+              <InfoRow icon={MapPin} label={t('company.address')} value={company.address} />
             </CardContent>
           </Card>
         </View>
@@ -180,59 +198,61 @@ export function CompanyScreen() {
           </Text>
           <Card variant="elevated">
             <CardContent>
-            <InfoRow 
-              icon={CreditCard} 
-              label={t('company.plan')} 
-              value={company.subscription_plan} 
-            />
-            <View style={[styles.divider, { backgroundColor: isDark ? '#2E2E2E' : '#E5E5E5' }]} />
-            <InfoRow 
-              icon={Hash} 
-              label={t('company.status')} 
-              value={getSubscriptionStatus(company.subscription_status)} 
-            />
-            {company.trial_ends_at && (
-              <>
-                <View style={[styles.divider, { backgroundColor: isDark ? '#2E2E2E' : '#E5E5E5' }]} />
-                <InfoRow 
-                  icon={Calendar} 
-                  label={t('company.trialEnds')} 
-                  value={formatDate(company.trial_ends_at)} 
-                />
-              </>
-            )}
-            <View style={[styles.divider, { backgroundColor: isDark ? '#2E2E2E' : '#E5E5E5' }]} />
-            <InfoRow 
-              icon={Users} 
-              label={t('company.employeeLimit')} 
-              value={`${company.employee_limit} ${t('company.employees')}`} 
-            />
-          </CardContent>
-        </Card>
+              <InfoRow
+                icon={CreditCard}
+                label={t('company.plan')}
+                value={company.subscription_plan}
+              />
+              <View style={[styles.divider, { backgroundColor: isDark ? '#2E2E2E' : '#E5E5E5' }]} />
+              <InfoRow
+                icon={Hash}
+                label={t('company.status')}
+                value={getSubscriptionStatus(company.subscription_status)}
+              />
+              {company.trial_ends_at && (
+                <>
+                  <View
+                    style={[styles.divider, { backgroundColor: isDark ? '#2E2E2E' : '#E5E5E5' }]}
+                  />
+                  <InfoRow
+                    icon={Calendar}
+                    label={t('company.trialEnds')}
+                    value={formatDate(company.trial_ends_at)}
+                  />
+                </>
+              )}
+              <View style={[styles.divider, { backgroundColor: isDark ? '#2E2E2E' : '#E5E5E5' }]} />
+              <InfoRow
+                icon={Users}
+                label={t('company.employeeLimit')}
+                value={`${company.employee_limit} ${t('company.employees')}`}
+              />
+            </CardContent>
+          </Card>
         </View>
       </AnimatedListItem>
 
       {/* Company Details */}
       <AnimatedListItem index={2} staggerDelay={STAGGER_DELAYS.medium}>
         <View style={styles.section}>
-        <Text variant="h3" style={[styles.sectionTitle, { color: textColor }]}>
-          {t('company.other')}
-        </Text>
-        <Card variant="elevated">
-          <CardContent>
-            <InfoRow 
-              icon={Calendar} 
-              label={t('company.registered')} 
-              value={formatDate(company.created_at)} 
-            />
-            <View style={[styles.divider, { backgroundColor: isDark ? '#2E2E2E' : '#E5E5E5' }]} />
-            <InfoRow 
-              icon={Hash} 
-              label={t('company.status')} 
-              value={company.is_active ? t('common.active') : t('common.inactive')} 
-            />
-          </CardContent>
-        </Card>
+          <Text variant="h3" style={[styles.sectionTitle, { color: textColor }]}>
+            {t('company.other')}
+          </Text>
+          <Card variant="elevated">
+            <CardContent>
+              <InfoRow
+                icon={Calendar}
+                label={t('company.registered')}
+                value={formatDate(company.created_at)}
+              />
+              <View style={[styles.divider, { backgroundColor: isDark ? '#2E2E2E' : '#E5E5E5' }]} />
+              <InfoRow
+                icon={Hash}
+                label={t('company.status')}
+                value={company.is_active ? t('common.active') : t('common.inactive')}
+              />
+            </CardContent>
+          </Card>
         </View>
       </AnimatedListItem>
     </ScreenLayout>

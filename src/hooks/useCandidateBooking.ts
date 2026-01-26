@@ -22,19 +22,21 @@ export const useCandidateBooking = () => {
     enabled: !!user?.email,
     queryFn: async (): Promise<CandidateBooking | null> => {
       console.log('📆 BOOKING: Fetching booking for:', user?.email);
-      
+
       if (!user?.email) return null;
 
       const { data, error } = await (supabase as any)
         .from('job_applications')
-        .select(`
+        .select(
+          `
           id,
           email,
           first_name,
           last_name,
           status,
           created_at
-        `)
+        `,
+        )
         .eq('email', user.email)
         .order('created_at', { ascending: false })
         .limit(1)
@@ -52,7 +54,7 @@ export const useCandidateBooking = () => {
 
       const app = data as any;
       console.log('✅ BOOKING: Found application:', app.status);
-      
+
       // job_applications doesn't have interview fields - this is for future use
       return {
         id: app.id,
@@ -70,16 +72,16 @@ export const useCandidateBooking = () => {
   const confirmInterview = useMutation({
     mutationFn: async ({ candidateId, confirmed }: { candidateId: string; confirmed: boolean }) => {
       console.log('📆 BOOKING: Confirming interview:', { candidateId, confirmed });
-      
-      const noteText = confirmed 
-        ? 'Intervjutid bekräftad av kandidat' 
+
+      const noteText = confirmed
+        ? 'Intervjutid bekräftad av kandidat'
         : 'Kandidat begär ny intervjutid';
 
       const { data, error } = await (supabase as any)
         .from('job_applications')
-        .update({ 
+        .update({
           notes: noteText,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
         .eq('id', candidateId)
         .select()

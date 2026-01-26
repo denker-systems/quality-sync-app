@@ -15,7 +15,7 @@ interface RoleGuardProps {
 
 /**
  * RoleGuard - Protects content based on user role
- * 
+ *
  * Usage:
  * - allow: Only these roles can see the content
  * - disallow: These roles cannot see the content

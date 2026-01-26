@@ -29,7 +29,7 @@ export function MFAChallengeScreen({ onVerified, onCancel }: MFAChallengeProps) 
 
   const handleVerify = async () => {
     if (code.length !== 6) return;
-    
+
     const success = await completeChallenge(code);
     if (success) {
       // Trust device for 6 hours after successful MFA
@@ -52,11 +52,11 @@ export function MFAChallengeScreen({ onVerified, onCancel }: MFAChallengeProps) 
           <View style={styles.iconContainer}>
             <Text style={styles.iconText}>🔐</Text>
           </View>
-          
+
           <Text variant="headlineMedium" style={[styles.title, { color: textColor }]}>
             {t('mfa.challengeTitle')}
           </Text>
-          
+
           <Text variant="bodyMedium" style={[styles.description, { color: mutedColor }]}>
             {t('mfa.challengeDescription')}
           </Text>
@@ -94,11 +94,7 @@ export function MFAChallengeScreen({ onVerified, onCancel }: MFAChallengeProps) 
             {isLoading ? <ActivityIndicator color="#fff" /> : t('mfa.verify')}
           </Button>
 
-          <Button
-            mode="text"
-            onPress={handleSignOut}
-            style={styles.signOutButton}
-          >
+          <Button mode="text" onPress={handleSignOut} style={styles.signOutButton}>
             {t('mfa.signOut')}
           </Button>
         </Card.Content>

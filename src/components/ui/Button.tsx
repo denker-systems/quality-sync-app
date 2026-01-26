@@ -69,7 +69,7 @@ export function Button({
 }: ButtonProps) {
   const variantStyle = variantClasses[variant];
   const sizeStyle = sizeClasses[size];
-  
+
   const containerClasses = `
     flex-row items-center justify-center rounded-full
     ${variantStyle.container}
@@ -88,22 +88,12 @@ export function Button({
     <Pressable
       className={containerClasses}
       disabled={disabled}
-      style={({ pressed }) => [
-        pressed && { transform: [{ scale: 0.97 }] },
-      ]}
+      style={({ pressed }) => [pressed && { transform: [{ scale: 0.97 }] }]}
       {...props}
     >
-      {icon && iconPosition === 'left' && (
-        <View className="mr-2">{icon}</View>
-      )}
-      {typeof children === 'string' ? (
-        <Text className={textClasses}>{children}</Text>
-      ) : (
-        children
-      )}
-      {icon && iconPosition === 'right' && (
-        <View className="ml-2">{icon}</View>
-      )}
+      {icon && iconPosition === 'left' && <View className="mr-2">{icon}</View>}
+      {typeof children === 'string' ? <Text className={textClasses}>{children}</Text> : children}
+      {icon && iconPosition === 'right' && <View className="ml-2">{icon}</View>}
     </Pressable>
   );
 }

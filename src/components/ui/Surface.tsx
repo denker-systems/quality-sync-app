@@ -9,9 +9,9 @@ interface SurfaceProps extends ViewProps {
 
 export function Surface({ elevation = 1, children, style, ...props }: SurfaceProps) {
   const { isDark } = useTheme();
-  
+
   const backgroundColor = isDark ? '#1A1A1A' : '#FFFFFF';
-  
+
   const shadowStyles = {
     0: {},
     1: {
@@ -38,15 +38,7 @@ export function Surface({ elevation = 1, children, style, ...props }: SurfacePro
   };
 
   return (
-    <View 
-      style={[
-        styles.surface, 
-        { backgroundColor },
-        shadowStyles[elevation],
-        style
-      ]} 
-      {...props}
-    >
+    <View style={[styles.surface, { backgroundColor }, shadowStyles[elevation], style]} {...props}>
       {children}
     </View>
   );

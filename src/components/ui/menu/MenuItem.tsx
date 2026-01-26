@@ -22,35 +22,25 @@ export function MenuItem({ icon: Icon, title, subtitle, onPress }: MenuItemProps
 
   return (
     <Pressable
-      style={({ pressed }) => [
-        pressed && { backgroundColor: isDark ? '#1A1A1A' : '#F5F5F5' },
-      ]}
+      style={({ pressed }) => [pressed && { backgroundColor: isDark ? '#1A1A1A' : '#F5F5F5' }]}
       onPress={onPress}
     >
       <View style={styles.container}>
         <View style={[styles.icon, { backgroundColor: iconBgColor }]}>
           <Icon size={20} color={iconColor} />
         </View>
-        
+
         <View style={styles.textArea}>
-          <Text 
-            variant="body-lg"
-            style={{ color: textColor }}
-            numberOfLines={1}
-          >
+          <Text variant="body-lg" style={{ color: textColor }} numberOfLines={1}>
             {title}
           </Text>
           {subtitle && (
-            <Text 
-              variant="body-sm"
-              style={{ color: mutedColor, marginTop: 2 }}
-              numberOfLines={1}
-            >
+            <Text variant="body-sm" style={{ color: mutedColor, marginTop: 2 }} numberOfLines={1}>
               {subtitle}
             </Text>
           )}
         </View>
-        
+
         <ChevronRight size={20} color={mutedColor} style={styles.chevron} />
       </View>
     </Pressable>

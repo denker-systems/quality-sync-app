@@ -22,6 +22,7 @@ npm install
 ```
 
 Detta installerar alla nödvändiga paket inklusive:
+
 - React Native & Expo
 - Supabase client
 - React Navigation
@@ -44,6 +45,7 @@ EXPO_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
 **Hitta credentials:**
+
 1. Öppna `fortnox-quinyx-sync/.env`
 2. Kopiera `VITE_SUPABASE_URL` → `EXPO_PUBLIC_SUPABASE_URL`
 3. Kopiera `VITE_SUPABASE_ANON_KEY` → `EXPO_PUBLIC_SUPABASE_ANON_KEY`
@@ -59,16 +61,19 @@ Detta öppnar Expo Developer Tools i din browser.
 ### 5. Kör appen
 
 **iOS (macOS endast):**
+
 ```bash
 npm run ios
 ```
 
 **Android:**
+
 ```bash
 npm run android
 ```
 
 **Web (för testing):**
+
 ```bash
 npm run web
 ```
@@ -76,11 +81,14 @@ npm run web
 ## 📱 Testa appen
 
 ### Login Credentials
+
 Använd samma credentials som för webb-appen:
+
 - Email: din email från fortnox-quinyx-sync
 - Password: ditt lösenord
 
 ### Förväntat beteende
+
 1. **Login Screen** visas först
 2. Fyll i email och password
 3. Klicka "Logga in"
@@ -94,16 +102,21 @@ Använd samma credentials som för webb-appen:
 ## 🔧 Troubleshooting
 
 ### Problem: "Cannot find module 'expo'"
+
 **Lösning:** Kör `npm install` igen
 
 ### Problem: "Metro bundler error"
-**Lösning:** 
+
+**Lösning:**
+
 ```bash
 npm start -- --clear
 ```
 
 ### Problem: iOS Simulator startar inte
+
 **Lösning:**
+
 ```bash
 # Öppna Simulator manuellt först
 open -a Simulator
@@ -113,13 +126,17 @@ npm run ios
 ```
 
 ### Problem: Android Emulator startar inte
+
 **Lösning:**
+
 1. Öppna Android Studio
 2. Starta en emulator från AVD Manager
 3. Kör `npm run android`
 
 ### Problem: "Unable to resolve module @/"
-**Lösning:** 
+
+**Lösning:**
+
 ```bash
 # Rensa cache
 npm start -- --clear
@@ -132,6 +149,7 @@ npm install
 ## 🎨 UI Komponenter
 
 Appen använder **React Native Paper** för UI:
+
 - Material Design 3
 - Färger matchade med webb-appen
 - Responsiv design
@@ -164,6 +182,7 @@ ProfileScreen
 ## 🧪 Testing
 
 ### Manuell testning
+
 1. ✅ Login med giltiga credentials
 2. ✅ Login med ogiltiga credentials (ska visa error)
 3. ✅ Visa profil-data
@@ -172,6 +191,7 @@ ProfileScreen
 6. ✅ Session persistence (stäng och öppna app)
 
 ### Platform testing
+
 - [ ] iOS Simulator
 - [ ] Android Emulator
 - [ ] Fysisk iPhone (optional)
@@ -180,6 +200,7 @@ ProfileScreen
 ## 📝 Nästa Steg
 
 Efter att grundfunktionaliteten fungerar:
+
 1. Lägg till avatar upload
 2. Lägg till edit profile
 3. Lägg till fler profil-sektioner (onboarding, contracts, etc.)
@@ -189,6 +210,7 @@ Efter att grundfunktionaliteten fungerar:
 ## 🆘 Support
 
 Om du stöter på problem:
+
 1. Kolla ROADMAP.md för implementation status
 2. Kolla denna guide för troubleshooting
 3. Kontakta utvecklingsteamet

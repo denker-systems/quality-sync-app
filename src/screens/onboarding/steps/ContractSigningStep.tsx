@@ -1,12 +1,11 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { StyleSheet, View, ScrollView, Dimensions, Alert } from 'react-native';
-import { Text, Button, Surface, Checkbox, ActivityIndicator } from 'react-native-paper';
+import React, { useState, useEffect, useCallback } from 'react';
+import { StyleSheet, View, ScrollView, Alert } from 'react-native';
+import { Text, Button, Surface, Checkbox } from 'react-native-paper';
 import { FileText, PenTool, Check } from 'lucide-react-native';
 import { SignatureModal } from '@/components/SignatureModal';
 import { useContractTemplate } from '@/hooks/useContracts';
 import { useCompanyData } from '@/hooks/useCompanyData';
 import { useMyEmployee } from '@/hooks/useMyEmployee';
-import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import type { OnboardingStep } from '@/hooks/useOnboarding';
 import { getOnboardingStepTitle, getOnboardingStepDescription } from '@/utils/onboardingLanguage';
@@ -28,45 +27,27 @@ export const ContractSigningStep: React.FC<ContractSigningStepProps> = ({
   onSave,
   submitRef,
 }) => {
-  const { isDark } = useTheme();
   const { t, language } = useLanguage();
   console.log('📝 CONTRACT_SIGNING_STEP render:', { stepData, hasRead: stepData?.has_read });
-  
+
   const { company } = useCompanyData();
   const { data: employee } = useMyEmployee();
   const contractType = content?.contract_type || 'employment';
-  const hasContentText = !!content?.contract_text;
-  
   // Hämta avtalsmall från Supabase om content inte redan har contract_text
-  const { data: contractTemplate, isLoading } = useContractTemplate(
-    company?.id,
-    contractType
-  );
+  const { data: contractTemplate } = useContractTemplate(company?.id, contractType);
 
   const [hasReadContract, setHasReadContract] = useState(stepData?.has_read || false);
   const [signature, setSignature] = useState<string | null>(stepData?.signature || null);
   const [signatureModalVisible, setSignatureModalVisible] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [filledContent, setFilledContent] = useState<string>('');
-
-  useEffect(() => {
-    if (submitRef) {
-      submitRef.current = handleSubmit;
-    }
-    return () => {
-      if (submitRef) {
-        submitRef.current = null;
-      }
-    };
-  }, [submitRef, hasReadContract, signature]);
 
   // Bestäm avtalstitel och innehåll
   const contractTitle = content?.contract_title || contractTemplate?.title || 'Anställningsavtal';
-  
+
   // Fyll i medarbetardata i avtalstext
   useEffect(() => {
     let rawContent = '';
-    
+
     // Prioritet 1: content.contract_text från onboarding_steps
     if (content?.contract_text) {
       rawContent = content.contract_text;
@@ -103,10 +84,9 @@ Arbetstagaren förbinder sig att inte röja konfidentiell information.`;
     // Ersätt placeholders med medarbetardata
     if (employee && rawContent) {
       const emp = employee as any; // Cast för att komma åt alla fält
-      const employeeName = emp.full_name || 
-        `${emp.first_name || ''} ${emp.last_name || ''}`.trim() || 
-        'Ej angivet';
-      
+      const employeeName =
+        emp.full_name || `${emp.first_name || ''} ${emp.last_name || ''}`.trim() || 'Ej angivet';
+
       rawContent = rawContent
         .replace(/\[Namn\]|\[Medarbetarens namn\]/g, employeeName)
         .replace(/\[Personnummer\]|\[XXXXXX-XXXX\]/g, emp.personal_identity_number || 'Ej angivet')
@@ -116,7 +96,10 @@ Arbetstagaren förbinder sig att inte röja konfidentiell information.`;
         .replace(/\[Postnummer\]/g, emp.post_code || emp.postal_code || 'Ej angivet')
         .replace(/\[Ort\]/g, emp.city || 'Ej angivet')
         .replace(/\[Anställningsdatum\]/g, emp.employment_date || 'Ej angivet')
-        .replace(/\[Månadslön\]/g, emp.monthly_salary ? `${emp.monthly_salary} SEK` : 'Enligt överenskommelse');
+        .replace(
+          /\[Månadslön\]/g,
+          emp.monthly_salary ? `${emp.monthly_salary} SEK` : 'Enligt överenskommelse',
+        );
     }
 
     setFilledContent(rawContent);
@@ -134,18 +117,27 @@ Arbetstagaren förbinder sig att inte röja konfidentiell information.`;
     setSignature(null);
   };
 
-  const handleSign = () => {
-    console.log('✍️ CONTRACT_SIGNING_STEP handleSign:', { hasRead: hasReadContract, hasSignature: !!signature });
-    
+  const handleSign = useCallback(() => {
+    console.log('✍️ CONTRACT_SIGNING_STEP handleSign:', {
+      hasRead: hasReadContract,
+      hasSignature: !!signature,
+    });
+
     if (!hasReadContract) {
       console.warn('⚠️ CONTRACT_SIGNING_STEP cannot sign - contract not read');
-      Alert.alert(t('onboarding.contract.alertReadFirst'), t('onboarding.contract.alertReadMessage'));
+      Alert.alert(
+        t('onboarding.contract.alertReadFirst'),
+        t('onboarding.contract.alertReadMessage'),
+      );
       return false;
     }
 
     if (!signature) {
       console.warn('⚠️ CONTRACT_SIGNING_STEP cannot sign - no signature');
-      Alert.alert(t('onboarding.contract.alertSignatureMissing'), t('onboarding.contract.alertSignatureMessage'));
+      Alert.alert(
+        t('onboarding.contract.alertSignatureMissing'),
+        t('onboarding.contract.alertSignatureMessage'),
+      );
       return false;
     }
 
@@ -157,11 +149,22 @@ Arbetstagaren förbinder sig att inte röja konfidentiell information.`;
       contract_title: contractTitle,
     });
     return true;
-  };
+  }, [contractTitle, hasReadContract, onComplete, signature, t]);
 
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(() => {
     handleSign();
-  };
+  }, [handleSign]);
+
+  useEffect(() => {
+    if (submitRef) {
+      submitRef.current = handleSubmit;
+    }
+    return () => {
+      if (submitRef) {
+        submitRef.current = null;
+      }
+    };
+  }, [handleSubmit, submitRef]);
 
   return (
     <>
@@ -172,17 +175,15 @@ Arbetstagaren förbinder sig att inte röja konfidentiell information.`;
             {getOnboardingStepTitle(step, language === 'sv' ? 'sv' : 'en') || contractTitle}
           </Text>
         </View>
-        
+
         <Text variant="bodyMedium" style={styles.description}>
-          {getOnboardingStepDescription(step, language === 'sv' ? 'sv' : 'en') || t('onboarding.contract.description')}
+          {getOnboardingStepDescription(step, language === 'sv' ? 'sv' : 'en') ||
+            t('onboarding.contract.description')}
         </Text>
 
         {/* Contract Content */}
         <Surface style={styles.contractContainer} elevation={0}>
-          <ScrollView 
-            style={styles.contractScroll}
-            nestedScrollEnabled={true}
-          >
+          <ScrollView style={styles.contractScroll} nestedScrollEnabled={true}>
             <Text variant="bodyMedium" style={styles.contractText}>
               {contractContent}
             </Text>
@@ -195,8 +196,8 @@ Arbetstagaren förbinder sig att inte röja konfidentiell information.`;
             status={hasReadContract ? 'checked' : 'unchecked'}
             onPress={() => setHasReadContract(!hasReadContract)}
           />
-          <Text 
-            variant="bodyMedium" 
+          <Text
+            variant="bodyMedium"
             style={styles.checkboxLabel}
             onPress={() => setHasReadContract(!hasReadContract)}
           >
@@ -228,11 +229,7 @@ Arbetstagaren förbinder sig att inte röja konfidentiell information.`;
                 </Text>
               </View>
             </View>
-            <Button 
-              mode="outlined" 
-              onPress={handleClearSignature}
-              style={styles.clearButton}
-            >
+            <Button mode="outlined" onPress={handleClearSignature} style={styles.clearButton}>
               {t('onboarding.contract.clearSignature')}
             </Button>
           </View>

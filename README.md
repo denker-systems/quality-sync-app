@@ -5,6 +5,7 @@ React Native-app för Quality Sync som delar samma Supabase-databas som webb-app
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Node.js 18+ installerat
 - Expo CLI (`npm install -g expo-cli`)
 - iOS Simulator (macOS) eller Android Emulator
@@ -66,6 +67,7 @@ quality-sync-app/
 ## 🔐 Authentication
 
 Appen använder Supabase Auth med samma credentials som webb-appen:
+
 - Email/password login
 - PKCE flow för säkerhet
 - Session persistence med AsyncStorage
@@ -75,6 +77,7 @@ Appen använder Supabase Auth med samma credentials som webb-appen:
 ## 📱 Features
 
 ### v1.0 (Current)
+
 - ✅ Login med email/password
 - ✅ Multi-Factor Authentication (MFA)
   - ✅ TOTP enrollment med QR-kod (Google Authenticator)
@@ -86,6 +89,7 @@ Appen använder Supabase Auth med samma credentials som webb-appen:
 - ✅ Session persistence
 
 ### Planned
+
 - [ ] Company data display i profil
 - [ ] Employee data display i profil
 - [ ] Avatar upload

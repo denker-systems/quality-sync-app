@@ -14,15 +14,9 @@ import type { MFAEnrollmentProps } from '../types/mfa.types';
 export function MFAEnrollment({ onEnrolled, onCancelled, required = false }: MFAEnrollmentProps) {
   const { isDark } = useTheme();
   const { t } = useLanguage();
-  const { 
-    isLoading, 
-    error, 
-    enrollmentData, 
-    startEnrollment, 
-    verifyEnrollment,
-    clearError 
-  } = useMFA();
-  
+  const { isLoading, error, enrollmentData, startEnrollment, verifyEnrollment, clearError } =
+    useMFA();
+
   const [verifyCode, setVerifyCode] = useState('');
 
   const bgColor = isDark ? '#171717' : '#F5F5F5';
@@ -36,11 +30,11 @@ export function MFAEnrollment({ onEnrolled, onCancelled, required = false }: MFA
 
   useEffect(() => {
     startEnrollment();
-  }, []);
+  }, [startEnrollment]);
 
   const handleVerify = async () => {
     if (verifyCode.length !== 6) return;
-    
+
     const success = await verifyEnrollment(verifyCode);
     if (success) {
       onEnrolled();
@@ -66,11 +60,11 @@ export function MFAEnrollment({ onEnrolled, onCancelled, required = false }: MFA
           <View style={styles.iconContainer}>
             <Text style={styles.iconText}>📱</Text>
           </View>
-          
+
           <Text variant="headlineMedium" style={[styles.title, { color: textColor }]}>
             {t('mfa.enrollmentTitle')}
           </Text>
-          
+
           <Text variant="bodyMedium" style={[styles.description, { color: mutedColor }]}>
             {t('mfa.enrollmentDescription')}
           </Text>
@@ -87,7 +81,8 @@ export function MFAEnrollment({ onEnrolled, onCancelled, required = false }: MFA
           {enrollmentData?.totp.qr_code && (
             <View style={styles.qrContainer}>
               <WebView
-                source={{ html: `
+                source={{
+                  html: `
                   <html>
                     <head>
                       <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -110,7 +105,8 @@ export function MFAEnrollment({ onEnrolled, onCancelled, required = false }: MFA
                       ${enrollmentData.totp.qr_code}
                     </body>
                   </html>
-                ` }}
+                `,
+                }}
                 style={[styles.qrCode, { backgroundColor: qrBg }]}
                 scrollEnabled={false}
               />

@@ -40,6 +40,7 @@ quality-sync-app/
 ## Source Code Structure (`src/`)
 
 ### `config/`
+
 Configuration files for external services and app settings.
 
 ```
@@ -51,6 +52,7 @@ src/config/
 **Purpose:** Centralize configuration to make it easy to update settings.
 
 ### `features/`
+
 Feature-based modules with co-located components, hooks, and services.
 
 ```
@@ -73,6 +75,7 @@ src/features/
 **Purpose:** Keep related code together for better maintainability and discoverability.
 
 ### `hooks/`
+
 Shared custom React hooks used across the application.
 
 ```
@@ -85,6 +88,7 @@ src/hooks/
 **Purpose:** Reusable logic that can be shared across multiple components.
 
 ### `navigation/`
+
 Navigation configuration and navigators.
 
 ```
@@ -95,6 +99,7 @@ src/navigation/
 **Purpose:** Centralize routing logic and navigation structure.
 
 ### `screens/`
+
 Screen components organized by feature area.
 
 ```
@@ -108,6 +113,7 @@ src/screens/
 **Purpose:** Top-level components that represent full screens in the app.
 
 ### `types/`
+
 TypeScript type definitions and interfaces.
 
 ```
@@ -121,6 +127,7 @@ src/types/
 ## Key Files
 
 ### `App.tsx`
+
 Root component that sets up providers and navigation.
 
 ```typescript
@@ -138,6 +145,7 @@ export default function App() {
 ```
 
 ### `app.config.js`
+
 Expo configuration including app metadata and environment variables.
 
 ```javascript
@@ -152,6 +160,7 @@ export default {
 ```
 
 ### `package.json`
+
 Project dependencies and npm scripts.
 
 ```json
@@ -167,6 +176,7 @@ Project dependencies and npm scripts.
 ## Documentation Structure (`docs/`)
 
 ### `devlogs/`
+
 Date-based development logs following the pattern:
 
 ```
@@ -185,6 +195,7 @@ docs/devlogs/
 ## Naming Conventions
 
 ### Files
+
 - **Components:** PascalCase (e.g., `LoginScreen.tsx`, `MFAGate.tsx`)
 - **Hooks:** camelCase with `use` prefix (e.g., `useAuth.ts`, `useMFA.ts`)
 - **Services:** camelCase with `.service` suffix (e.g., `mfa.service.ts`)
@@ -192,10 +203,12 @@ docs/devlogs/
 - **Config:** camelCase (e.g., `supabase.ts`, `theme.ts`)
 
 ### Directories
+
 - **Lowercase with hyphens** for multi-word names (e.g., `getting-started/`)
 - **camelCase** for code directories (e.g., `src/features/`)
 
 ### Variables and Functions
+
 - **camelCase** for variables and functions
 - **PascalCase** for React components and types
 - **SCREAMING_SNAKE_CASE** for constants
@@ -203,6 +216,7 @@ docs/devlogs/
 ## Import Patterns
 
 ### Path Aliases
+
 Use `@/` prefix for cleaner imports:
 
 ```typescript
@@ -215,6 +229,7 @@ import { useAuth } from '../../../hooks/useAuth';
 ```
 
 ### Feature Exports
+
 Features export their public API through `index.ts`:
 
 ```typescript
@@ -225,6 +240,7 @@ export type { MFAFactor } from './types/mfa.types';
 ```
 
 Usage:
+
 ```typescript
 import { MFAGate, useMFA } from '@/features/mfa';
 ```
@@ -232,18 +248,22 @@ import { MFAGate, useMFA } from '@/features/mfa';
 ## Code Organization Principles
 
 ### 1. Feature-Based Structure
+
 Related code lives together in feature modules.
 
 ### 2. Separation of Concerns
+
 - **Components:** UI and presentation
 - **Hooks:** State management and side effects
 - **Services:** Business logic and API calls
 - **Types:** Type definitions
 
 ### 3. Single Responsibility
+
 Each file has one clear purpose.
 
 ### 4. Dependency Direction
+
 - Features can use shared hooks and config
 - Shared code should not depend on features
 - Screens use features and hooks

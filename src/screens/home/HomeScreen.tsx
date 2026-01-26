@@ -5,16 +5,12 @@ import { ScreenLayout } from '@/components/common';
 import { Text, Card, CardContent, ImageButton } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useAuth } from '@/hooks/useAuth';
-import { useMyEmployee } from '@/hooks/useMyEmployee';
 import { AnimatedGridItem, AnimatedEntrance, STAGGER_DELAYS } from '@/lib/animations';
 
 export function HomeScreen() {
   const navigation = useNavigation<any>();
   const { isDark } = useTheme();
   const { t } = useLanguage();
-  const { user } = useAuth();
-  const { data: employee } = useMyEmployee();
 
   const textColor = isDark ? '#FAFAFA' : '#171717';
   const mutedColor = isDark ? '#A3A3A3' : '#737373';
@@ -30,14 +26,22 @@ export function HomeScreen() {
 
         <View style={styles.gridContainer}>
           <View style={styles.gridRow}>
-            <AnimatedGridItem index={0} staggerDelay={STAGGER_DELAYS.medium} style={styles.gridButton}>
+            <AnimatedGridItem
+              index={0}
+              staggerDelay={STAGGER_DELAYS.medium}
+              style={styles.gridButton}
+            >
               <ImageButton
                 title={t('home.mySchedule')}
                 image={require('../../../assets/images/schedule.png')}
                 onPress={() => navigation.navigate('Schedule')}
               />
             </AnimatedGridItem>
-            <AnimatedGridItem index={1} staggerDelay={STAGGER_DELAYS.medium} style={styles.gridButton}>
+            <AnimatedGridItem
+              index={1}
+              staggerDelay={STAGGER_DELAYS.medium}
+              style={styles.gridButton}
+            >
               <ImageButton
                 title={t('home.onboarding')}
                 image={require('../../../assets/images/onboarding.png')}
@@ -46,14 +50,22 @@ export function HomeScreen() {
             </AnimatedGridItem>
           </View>
           <View style={styles.gridRow}>
-            <AnimatedGridItem index={2} staggerDelay={STAGGER_DELAYS.medium} style={styles.gridButton}>
+            <AnimatedGridItem
+              index={2}
+              staggerDelay={STAGGER_DELAYS.medium}
+              style={styles.gridButton}
+            >
               <ImageButton
                 title={t('home.myContracts')}
                 image={require('../../../assets/images/contract.png')}
                 onPress={() => navigation.navigate('Contracts')}
               />
             </AnimatedGridItem>
-            <AnimatedGridItem index={3} staggerDelay={STAGGER_DELAYS.medium} style={styles.gridButton}>
+            <AnimatedGridItem
+              index={3}
+              staggerDelay={STAGGER_DELAYS.medium}
+              style={styles.gridButton}
+            >
               <ImageButton
                 title={t('home.myProfile')}
                 image={require('../../../assets/images/profile.png')}
@@ -75,18 +87,34 @@ export function HomeScreen() {
             <CardContent>
               <View style={styles.statsRow}>
                 <View style={styles.statItem}>
-                  <Text variant="display" style={{ color: accentColor }}>3</Text>
-                  <Text variant="body-sm" style={{ color: mutedColor }}>{t('home.shifts')}</Text>
+                  <Text variant="display" style={{ color: accentColor }}>
+                    3
+                  </Text>
+                  <Text variant="body-sm" style={{ color: mutedColor }}>
+                    {t('home.shifts')}
+                  </Text>
                 </View>
-                <View style={[styles.statDivider, { backgroundColor: isDark ? '#333' : '#E5E5E5' }]} />
+                <View
+                  style={[styles.statDivider, { backgroundColor: isDark ? '#333' : '#E5E5E5' }]}
+                />
                 <View style={styles.statItem}>
-                  <Text variant="display" style={{ color: accentColor }}>24</Text>
-                  <Text variant="body-sm" style={{ color: mutedColor }}>{t('home.hours')}</Text>
+                  <Text variant="display" style={{ color: accentColor }}>
+                    24
+                  </Text>
+                  <Text variant="body-sm" style={{ color: mutedColor }}>
+                    {t('home.hours')}
+                  </Text>
                 </View>
-                <View style={[styles.statDivider, { backgroundColor: isDark ? '#333' : '#E5E5E5' }]} />
+                <View
+                  style={[styles.statDivider, { backgroundColor: isDark ? '#333' : '#E5E5E5' }]}
+                />
                 <View style={styles.statItem}>
-                  <Text variant="display" style={{ color: accentColor }}>2</Text>
-                  <Text variant="body-sm" style={{ color: mutedColor }}>{t('home.daysLeft')}</Text>
+                  <Text variant="display" style={{ color: accentColor }}>
+                    2
+                  </Text>
+                  <Text variant="body-sm" style={{ color: mutedColor }}>
+                    {t('home.daysLeft')}
+                  </Text>
                 </View>
               </View>
             </CardContent>

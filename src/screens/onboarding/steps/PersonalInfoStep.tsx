@@ -1,5 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, ScrollView, TextInput, Image, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import {
+  StyleSheet,
+  View,
+  TextInput,
+  Image,
+  TouchableOpacity,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
 import { Text, Button, Surface } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -39,24 +47,17 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
   const accentColor = isDark ? '#6BBD68' : '#489A45';
   const inputBg = isDark ? '#1A1A1A' : '#FFFFFF';
   const borderColor = isDark ? '#333' : '#E5E5E5';
-  
-  const updateEmployee = useUpdateMyEmployee();
 
-  useEffect(() => {
-    if (submitRef) {
-      submitRef.current = handleSubmit;
-    }
-    return () => {
-      if (submitRef) {
-        submitRef.current = null;
-      }
-    };
-  }, [submitRef]);
+  const updateEmployee = useUpdateMyEmployee();
 
   const [formData, setFormData] = useState({
     first_name: stepData?.first_name || employee?.first_name || '',
     last_name: stepData?.last_name || employee?.last_name || '',
-    personal_number: stepData?.personal_number || employee?.personal_identity_number || employee?.personal_number || '',
+    personal_number:
+      stepData?.personal_number ||
+      employee?.personal_identity_number ||
+      employee?.personal_number ||
+      '',
     address: stepData?.address || employee?.address1 || '',
     postal_code: stepData?.postal_code || employee?.post_code || '',
     city: stepData?.city || employee?.city || '',
@@ -67,7 +68,11 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [uploading, setUploading] = useState(false);
-  const [uploadedFile, setUploadedFile] = useState<{ uri: string; name: string; type: string } | null>(null);
+  const [uploadedFile, setUploadedFile] = useState<{
+    uri: string;
+    name: string;
+    type: string;
+  } | null>(null);
 
   // Update formData when employee data loads
   useEffect(() => {
@@ -77,11 +82,15 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
         post_code: employee.post_code,
         city: employee.city,
       });
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         first_name: prev.first_name || employee.first_name || '',
         last_name: prev.last_name || employee.last_name || '',
-        personal_number: prev.personal_number || employee.personal_identity_number || employee.personal_number || '',
+        personal_number:
+          prev.personal_number ||
+          employee.personal_identity_number ||
+          employee.personal_number ||
+          '',
         address: prev.address || employee.address1 || '',
         postal_code: prev.postal_code || employee.post_code || '',
         city: prev.city || employee.city || '',
@@ -91,7 +100,7 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
     }
   }, [employee, stepData]);
 
-  const validate = () => {
+  const validate = useCallback(() => {
     console.log('🔍 PERSONAL_INFO_STEP validate:', formData);
     const newErrors: Record<string, string> = {};
     if (!formData.first_name.trim()) {
@@ -114,7 +123,7 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
     if (!formData.city.trim()) {
       newErrors.city = t('onboarding.personalInfo.errorCity');
     }
-    
+
     if (Object.keys(newErrors).length > 0) {
       console.warn('⚠️ PERSONAL_INFO_STEP validation failed:', newErrors);
     } else {
@@ -122,9 +131,9 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
+  }, [formData, t]);
 
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(async () => {
     if (!validate()) return;
 
     try {
@@ -151,7 +160,18 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
       console.error('❌ PERSONAL_INFO_STEP: Failed to update employee:', error);
       Alert.alert(t('onboarding.personalInfo.errorTitle'), t('onboarding.personalInfo.errorSave'));
     }
-  };
+  }, [employee?.id, formData, onComplete, t, updateEmployee, validate]);
+
+  useEffect(() => {
+    if (submitRef) {
+      submitRef.current = handleSubmit;
+    }
+    return () => {
+      if (submitRef) {
+        submitRef.current = null;
+      }
+    };
+  }, [handleSubmit, submitRef]);
 
   const pickDocument = async () => {
     try {
@@ -162,10 +182,13 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
 
       if (!result.canceled && result.assets && result.assets[0]) {
         const file = result.assets[0];
-        
+
         // Validate file size (max 5MB)
         if (file.size && file.size > 5 * 1024 * 1024) {
-          Alert.alert(t('onboarding.personalInfo.errorTitle'), t('onboarding.personalInfo.errorFileSize'));
+          Alert.alert(
+            t('onboarding.personalInfo.errorTitle'),
+            t('onboarding.personalInfo.errorFileSize'),
+          );
           return;
         }
 
@@ -173,7 +196,10 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
       }
     } catch (error) {
       console.error('Error picking document:', error);
-      Alert.alert(t('onboarding.personalInfo.errorTitle'), t('onboarding.personalInfo.errorPickDocument'));
+      Alert.alert(
+        t('onboarding.personalInfo.errorTitle'),
+        t('onboarding.personalInfo.errorPickDocument'),
+      );
     }
   };
 
@@ -181,7 +207,10 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
     try {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert(t('onboarding.personalInfo.permissionRequired'), t('onboarding.personalInfo.permissionMessage'));
+        Alert.alert(
+          t('onboarding.personalInfo.permissionRequired'),
+          t('onboarding.personalInfo.permissionMessage'),
+        );
         return;
       }
 
@@ -202,7 +231,10 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
       }
     } catch (error) {
       console.error('Error picking image:', error);
-      Alert.alert(t('onboarding.personalInfo.errorTitle'), t('onboarding.personalInfo.errorPickImage'));
+      Alert.alert(
+        t('onboarding.personalInfo.errorTitle'),
+        t('onboarding.personalInfo.errorPickImage'),
+      );
     }
   };
 
@@ -221,7 +253,7 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
       const filePath = `employee-documents/${fileName}`;
 
       // Upload to Supabase Storage
-      const { data, error } = await supabase.storage
+      const { error } = await supabase.storage
         .from('employee-documents')
         .upload(filePath, decode(base64), {
           contentType: file.mimeType || 'application/octet-stream',
@@ -230,14 +262,15 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
 
       if (error) {
         console.error('Upload error:', error);
-        Alert.alert(t('onboarding.personalInfo.errorTitle'), t('onboarding.personalInfo.errorUpload'));
+        Alert.alert(
+          t('onboarding.personalInfo.errorTitle'),
+          t('onboarding.personalInfo.errorUpload'),
+        );
         return;
       }
 
       // Get public URL
-      const { data: urlData } = supabase.storage
-        .from('employee-documents')
-        .getPublicUrl(filePath);
+      const { data: urlData } = supabase.storage.from('employee-documents').getPublicUrl(filePath);
 
       console.log('✅ File uploaded:', urlData.publicUrl);
 
@@ -247,8 +280,11 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
         type: file.mimeType || 'application/octet-stream',
       });
 
-      setFormData(prev => ({ ...prev, id_document_url: urlData.publicUrl }));
-      Alert.alert(t('onboarding.personalInfo.uploadSuccess'), t('onboarding.personalInfo.uploadSuccessMessage'));
+      setFormData((prev) => ({ ...prev, id_document_url: urlData.publicUrl }));
+      Alert.alert(
+        t('onboarding.personalInfo.uploadSuccess'),
+        t('onboarding.personalInfo.uploadSuccessMessage'),
+      );
     } catch (error) {
       console.error('Upload error:', error);
       Alert.alert('Fel', 'Kunde inte ladda upp filen');
@@ -259,25 +295,22 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
 
   const removeFile = () => {
     setUploadedFile(null);
-    setFormData(prev => ({ ...prev, id_document_url: null }));
+    setFormData((prev) => ({ ...prev, id_document_url: null }));
   };
 
   const updateField = (field: string, value: string) => {
     console.log('📝 PERSONAL_INFO_STEP updateField:', { field, value });
-    setFormData(prev => {
+    setFormData((prev) => {
       const updated = { ...prev, [field]: value };
       console.log('📝 Updated formData:', updated);
       return updated;
     });
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }));
+      setErrors((prev) => ({ ...prev, [field]: '' }));
     }
   };
 
-  const inputStyle = [
-    styles.input,
-    { backgroundColor: inputBg, borderColor, color: textColor }
-  ];
+  const inputStyle = [styles.input, { backgroundColor: inputBg, borderColor, color: textColor }];
 
   return (
     <>
@@ -285,17 +318,22 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
         <View style={styles.header}>
           <User size={24} color={accentColor} />
           <Text variant="h3" style={{ color: textColor }}>
-            {getOnboardingStepTitle(step, language === 'sv' ? 'sv' : 'en') || t('onboarding.personalInfo.title')}
+            {getOnboardingStepTitle(step, language === 'sv' ? 'sv' : 'en') ||
+              t('onboarding.personalInfo.title')}
           </Text>
         </View>
-        
+
         <Text variant="body" style={[styles.description, { color: mutedColor }]}>
-          {getOnboardingStepDescription(step, language === 'sv' ? 'sv' : 'en') || content?.description || t('onboarding.personalInfo.description')}
+          {getOnboardingStepDescription(step, language === 'sv' ? 'sv' : 'en') ||
+            content?.description ||
+            t('onboarding.personalInfo.description')}
         </Text>
 
         <View style={styles.row}>
           <View style={styles.halfField}>
-            <Text variant="body-sm" style={[styles.label, { color: textColor }]}>{t('onboarding.personalInfo.firstName')} {t('onboarding.personalInfo.required')}</Text>
+            <Text variant="body-sm" style={[styles.label, { color: textColor }]}>
+              {t('onboarding.personalInfo.firstName')} {t('onboarding.personalInfo.required')}
+            </Text>
             <TextInput
               value={formData.first_name}
               onChangeText={(text) => updateField('first_name', text)}
@@ -303,11 +341,15 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
               placeholderTextColor={mutedColor}
             />
             {errors.first_name && (
-              <Text variant="body-sm" style={styles.errorText}>{errors.first_name}</Text>
+              <Text variant="body-sm" style={styles.errorText}>
+                {errors.first_name}
+              </Text>
             )}
           </View>
           <View style={styles.halfField}>
-            <Text variant="body-sm" style={[styles.label, { color: textColor }]}>{t('onboarding.personalInfo.lastName')} {t('onboarding.personalInfo.required')}</Text>
+            <Text variant="body-sm" style={[styles.label, { color: textColor }]}>
+              {t('onboarding.personalInfo.lastName')} {t('onboarding.personalInfo.required')}
+            </Text>
             <TextInput
               value={formData.last_name}
               onChangeText={(text) => updateField('last_name', text)}
@@ -315,12 +357,16 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
               placeholderTextColor={mutedColor}
             />
             {errors.last_name && (
-              <Text variant="body-sm" style={styles.errorText}>{errors.last_name}</Text>
+              <Text variant="body-sm" style={styles.errorText}>
+                {errors.last_name}
+              </Text>
             )}
           </View>
         </View>
 
-        <Text variant="body-sm" style={[styles.label, { color: textColor }]}>{t('onboarding.personalInfo.personalNumber')} {t('onboarding.personalInfo.required')}</Text>
+        <Text variant="body-sm" style={[styles.label, { color: textColor }]}>
+          {t('onboarding.personalInfo.personalNumber')} {t('onboarding.personalInfo.required')}
+        </Text>
         <TextInput
           value={formData.personal_number}
           onChangeText={(text) => updateField('personal_number', text)}
@@ -329,10 +375,14 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
           placeholderTextColor={mutedColor}
         />
         {errors.personal_number && (
-          <Text variant="body-sm" style={styles.errorText}>{errors.personal_number}</Text>
+          <Text variant="body-sm" style={styles.errorText}>
+            {errors.personal_number}
+          </Text>
         )}
 
-        <Text variant="body-sm" style={[styles.label, { color: textColor }]}>{t('onboarding.personalInfo.address')} {t('onboarding.personalInfo.required')}</Text>
+        <Text variant="body-sm" style={[styles.label, { color: textColor }]}>
+          {t('onboarding.personalInfo.address')} {t('onboarding.personalInfo.required')}
+        </Text>
         <TextInput
           value={formData.address}
           onChangeText={(text) => updateField('address', text)}
@@ -340,12 +390,16 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
           placeholderTextColor={mutedColor}
         />
         {errors.address && (
-          <Text variant="body-sm" style={styles.errorText}>{errors.address}</Text>
+          <Text variant="body-sm" style={styles.errorText}>
+            {errors.address}
+          </Text>
         )}
 
         <View style={styles.row}>
           <View style={styles.halfField}>
-            <Text variant="body-sm" style={[styles.label, { color: textColor }]}>{t('onboarding.personalInfo.postalCode')} {t('onboarding.personalInfo.required')}</Text>
+            <Text variant="body-sm" style={[styles.label, { color: textColor }]}>
+              {t('onboarding.personalInfo.postalCode')} {t('onboarding.personalInfo.required')}
+            </Text>
             <TextInput
               value={formData.postal_code}
               onChangeText={(text) => updateField('postal_code', text)}
@@ -354,11 +408,15 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
               placeholderTextColor={mutedColor}
             />
             {errors.postal_code && (
-              <Text variant="body-sm" style={styles.errorText}>{errors.postal_code}</Text>
+              <Text variant="body-sm" style={styles.errorText}>
+                {errors.postal_code}
+              </Text>
             )}
           </View>
           <View style={styles.halfField}>
-            <Text variant="body-sm" style={[styles.label, { color: textColor }]}>{t('onboarding.personalInfo.city')} {t('onboarding.personalInfo.required')}</Text>
+            <Text variant="body-sm" style={[styles.label, { color: textColor }]}>
+              {t('onboarding.personalInfo.city')} {t('onboarding.personalInfo.required')}
+            </Text>
             <TextInput
               value={formData.city}
               onChangeText={(text) => updateField('city', text)}
@@ -366,12 +424,16 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
               placeholderTextColor={mutedColor}
             />
             {errors.city && (
-              <Text variant="body-sm" style={styles.errorText}>{errors.city}</Text>
+              <Text variant="body-sm" style={styles.errorText}>
+                {errors.city}
+              </Text>
             )}
           </View>
         </View>
 
-        <Text variant="body-sm" style={[styles.label, { color: textColor }]}>{t('onboarding.personalInfo.phone')}</Text>
+        <Text variant="body-sm" style={[styles.label, { color: textColor }]}>
+          {t('onboarding.personalInfo.phone')}
+        </Text>
         <TextInput
           value={formData.phone}
           onChangeText={(text) => updateField('phone', text)}
@@ -380,7 +442,9 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
           placeholderTextColor={mutedColor}
         />
 
-        <Text variant="body-sm" style={[styles.label, { color: textColor }]}>{t('onboarding.personalInfo.email')}</Text>
+        <Text variant="body-sm" style={[styles.label, { color: textColor }]}>
+          {t('onboarding.personalInfo.email')}
+        </Text>
         <TextInput
           value={formData.email}
           onChangeText={(text) => updateField('email', text)}
@@ -392,7 +456,9 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
 
         {/* ID Document Upload */}
         <View style={styles.uploadSection}>
-          <Text variant="body-sm" style={[styles.label, { color: textColor }]}>{t('onboarding.personalInfo.idDocument')}</Text>
+          <Text variant="body-sm" style={[styles.label, { color: textColor }]}>
+            {t('onboarding.personalInfo.idDocument')}
+          </Text>
           <Text variant="body-sm" style={{ color: mutedColor, marginBottom: 12 }}>
             {t('onboarding.personalInfo.idDocumentDesc')}
           </Text>
@@ -425,7 +491,9 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
           )}
 
           {uploading && (
-            <View style={[styles.uploadPreview, { backgroundColor: isDark ? '#1A1A1A' : '#f3f4f6' }]}>
+            <View
+              style={[styles.uploadPreview, { backgroundColor: isDark ? '#1A1A1A' : '#f3f4f6' }]}
+            >
               <ActivityIndicator size="small" color={accentColor} />
               <Text variant="body-sm" style={{ color: mutedColor, marginLeft: 12 }}>
                 {t('onboarding.personalInfo.uploading')}
@@ -434,7 +502,9 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
           )}
 
           {(uploadedFile || formData.id_document_url) && !uploading && (
-            <View style={[styles.uploadPreview, { backgroundColor: isDark ? '#1A1A1A' : '#f3f4f6' }]}>
+            <View
+              style={[styles.uploadPreview, { backgroundColor: isDark ? '#1A1A1A' : '#f3f4f6' }]}
+            >
               {uploadedFile?.type?.startsWith('image/') && uploadedFile.uri && (
                 <Image source={{ uri: uploadedFile.uri }} style={styles.previewImage} />
               )}

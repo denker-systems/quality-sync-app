@@ -242,11 +242,13 @@ When adding Prettier, create `.prettierrc`:
 ### Environment Variables Not Loading
 
 1. **Restart Metro bundler:**
+
    ```bash
    npm start -- --clear
    ```
 
 2. **Verify .env file exists:**
+
    ```bash
    ls -la .env
    ```

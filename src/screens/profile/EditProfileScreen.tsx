@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, KeyboardAvoidingView, Platform, TextInput, ActivityIndicator } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
+  TextInput,
+  ActivityIndicator,
+} from 'react-native';
 import { ScreenLayout } from '@/components/common';
 import { Text, Card, CardContent, Button } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -8,7 +15,7 @@ import { useMyEmployee } from '@/hooks/useMyEmployee';
 import { useNavigation } from '@react-navigation/native';
 import { supabase } from '@/config/supabase';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { User, Save } from 'lucide-react-native';
+import { User } from 'lucide-react-native';
 
 export const EditProfileScreen = () => {
   const navigation = useNavigation();
@@ -16,13 +23,13 @@ export const EditProfileScreen = () => {
   const { isDark } = useTheme();
   const { t } = useLanguage();
   const { data: employee, isLoading } = useMyEmployee();
-  
+
   const textColor = isDark ? '#FAFAFA' : '#171717';
   const mutedColor = isDark ? '#A3A3A3' : '#737373';
   const accentColor = isDark ? '#6BBD68' : '#489A45';
   const inputBg = isDark ? '#1A1A1A' : '#FFFFFF';
   const borderColor = isDark ? '#2E2E2E' : '#E5E5E5';
-  
+
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',
@@ -58,7 +65,7 @@ export const EditProfileScreen = () => {
   const updateProfile = useMutation({
     mutationFn: async (data: typeof formData) => {
       console.log('💾 EDIT_PROFILE: Saving profile:', data);
-      
+
       if (!employee?.id) throw new Error('No employee ID');
 
       const { error } = await (supabase as any)
@@ -95,7 +102,7 @@ export const EditProfileScreen = () => {
   };
 
   const updateField = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleBackToProfile = () => {
@@ -104,7 +111,11 @@ export const EditProfileScreen = () => {
 
   if (isLoading) {
     return (
-      <ScreenLayout title={t('editProfile.title')} onBackPress={handleBackToProfile} scrollable={false}>
+      <ScreenLayout
+        title={t('editProfile.title')}
+        onBackPress={handleBackToProfile}
+        scrollable={false}
+      >
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={accentColor} />
           <Text variant="body" style={{ color: mutedColor, marginTop: 16 }}>
@@ -117,7 +128,7 @@ export const EditProfileScreen = () => {
 
   return (
     <ScreenLayout title={t('editProfile.title')} onBackPress={handleBackToProfile}>
-      <KeyboardAvoidingView 
+      <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
@@ -130,7 +141,9 @@ export const EditProfileScreen = () => {
               </Text>
             </View>
 
-            <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>{t('editProfile.firstName')}</Text>
+            <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>
+              {t('editProfile.firstName')}
+            </Text>
             <TextInput
               value={formData.first_name}
               onChangeText={(value) => updateField('first_name', value)}
@@ -138,7 +151,9 @@ export const EditProfileScreen = () => {
               placeholderTextColor={mutedColor}
             />
 
-            <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>{t('editProfile.lastName')}</Text>
+            <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>
+              {t('editProfile.lastName')}
+            </Text>
             <TextInput
               value={formData.last_name}
               onChangeText={(value) => updateField('last_name', value)}
@@ -146,7 +161,9 @@ export const EditProfileScreen = () => {
               placeholderTextColor={mutedColor}
             />
 
-            <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>{t('editProfile.phone')}</Text>
+            <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>
+              {t('editProfile.phone')}
+            </Text>
             <TextInput
               value={formData.phone}
               onChangeText={(value) => updateField('phone', value)}
@@ -155,7 +172,9 @@ export const EditProfileScreen = () => {
               placeholderTextColor={mutedColor}
             />
 
-            <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>{t('editProfile.email')}</Text>
+            <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>
+              {t('editProfile.email')}
+            </Text>
             <TextInput
               value={formData.email}
               onChangeText={(value) => updateField('email', value)}
@@ -173,7 +192,9 @@ export const EditProfileScreen = () => {
               {t('editProfile.address')}
             </Text>
 
-            <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>{t('editProfile.address1')}</Text>
+            <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>
+              {t('editProfile.address1')}
+            </Text>
             <TextInput
               value={formData.address1}
               onChangeText={(value) => updateField('address1', value)}
@@ -181,7 +202,9 @@ export const EditProfileScreen = () => {
               placeholderTextColor={mutedColor}
             />
 
-            <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>{t('editProfile.address2')}</Text>
+            <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>
+              {t('editProfile.address2')}
+            </Text>
             <TextInput
               value={formData.address2}
               onChangeText={(value) => updateField('address2', value)}
@@ -191,22 +214,32 @@ export const EditProfileScreen = () => {
 
             <View style={styles.row}>
               <View style={styles.postCode}>
-                <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>{t('editProfile.postCode')}</Text>
+                <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>
+                  {t('editProfile.postCode')}
+                </Text>
                 <TextInput
                   value={formData.post_code}
                   onChangeText={(value) => updateField('post_code', value)}
                   keyboardType="numeric"
-                  style={[styles.input, { backgroundColor: inputBg, borderColor, color: textColor }]}
+                  style={[
+                    styles.input,
+                    { backgroundColor: inputBg, borderColor, color: textColor },
+                  ]}
                   placeholderTextColor={mutedColor}
                 />
               </View>
 
               <View style={styles.city}>
-                <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>{t('editProfile.city')}</Text>
+                <Text variant="body-sm" style={[styles.label, { color: mutedColor }]}>
+                  {t('editProfile.city')}
+                </Text>
                 <TextInput
                   value={formData.city}
                   onChangeText={(value) => updateField('city', value)}
-                  style={[styles.input, { backgroundColor: inputBg, borderColor, color: textColor }]}
+                  style={[
+                    styles.input,
+                    { backgroundColor: inputBg, borderColor, color: textColor },
+                  ]}
                   placeholderTextColor={mutedColor}
                 />
               </View>

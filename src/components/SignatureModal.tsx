@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Modal, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Text, Button } from 'react-native-paper';
+import { Text } from 'react-native-paper';
 import { X } from 'lucide-react-native';
 import { SignatureCanvas } from './SignatureCanvas';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -29,7 +29,7 @@ export const SignatureModal: React.FC<SignatureModalProps> = ({
   const { isDark } = useTheme();
   const { t } = useLanguage();
   const [isProcessing, setIsProcessing] = useState(false);
-  
+
   const modalTitle = title || t('signature.modalTitle');
   const modalDescription = description || t('signature.modalDescription');
 
@@ -42,7 +42,7 @@ export const SignatureModal: React.FC<SignatureModalProps> = ({
   const handleSignatureComplete = async (signatureData: string) => {
     console.log('✅ SignatureModal: Signature captured');
     setIsProcessing(true);
-    
+
     try {
       await onComplete(signatureData);
       console.log('✅ SignatureModal: Signature saved successfully');
@@ -67,9 +67,11 @@ export const SignatureModal: React.FC<SignatureModalProps> = ({
     >
       <SafeAreaView style={[styles.container, { backgroundColor: bgColor }]}>
         {/* Header */}
-        <View style={[styles.header, { backgroundColor: headerBg, borderBottomColor: borderColor }]}>
-          <TouchableOpacity 
-            onPress={handleCancel} 
+        <View
+          style={[styles.header, { backgroundColor: headerBg, borderBottomColor: borderColor }]}
+        >
+          <TouchableOpacity
+            onPress={handleCancel}
             style={styles.closeButton}
             disabled={isProcessing}
           >
@@ -87,10 +89,7 @@ export const SignatureModal: React.FC<SignatureModalProps> = ({
 
         {/* Signature Canvas */}
         <View style={styles.canvasContainer}>
-          <SignatureCanvas
-            onComplete={handleSignatureComplete}
-            onCancel={handleCancel}
-          />
+          <SignatureCanvas onComplete={handleSignatureComplete} onCancel={handleCancel} />
         </View>
 
         {/* Footer Info */}
@@ -123,8 +122,7 @@ const styles = StyleSheet.create({
   title: {
     fontWeight: '600',
   },
-  description: {
-  },
+  description: {},
   canvasContainer: {
     flex: 1,
     justifyContent: 'center',

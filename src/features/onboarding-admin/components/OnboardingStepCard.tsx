@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Switch, TouchableOpacity } from 'react-native';
-import { Text, Card, CardContent, Surface } from '@/components/ui';
+import { Text, Surface } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
 import { GripVertical, Edit2, Trash2 } from 'lucide-react-native';
 import { AdminOnboardingStep, STEP_TYPE_LABELS } from '../types';
@@ -53,7 +53,9 @@ export function OnboardingStepCard({
 
       <View style={[styles.controls, { borderTopColor: borderColor }]}>
         <View style={styles.toggleContainer}>
-          <Text variant="body-sm" style={{ color: mutedColor }}>Required</Text>
+          <Text variant="body-sm" style={{ color: mutedColor }}>
+            Required
+          </Text>
           <Switch
             value={step.is_required}
             onValueChange={() => onToggleRequired(step)}
@@ -63,7 +65,9 @@ export function OnboardingStepCard({
         </View>
 
         <View style={styles.toggleContainer}>
-          <Text variant="body-sm" style={{ color: mutedColor }}>Active</Text>
+          <Text variant="body-sm" style={{ color: mutedColor }}>
+            Active
+          </Text>
           <Switch
             value={step.is_active}
             onValueChange={() => onToggleActive(step)}

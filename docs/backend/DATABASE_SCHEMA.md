@@ -29,11 +29,13 @@ CREATE TABLE employees (
 ```
 
 **Key Fields:**
+
 - `user_id` - Links to Supabase auth user
 - `company_id` - Links to company
 - `personal_number` - Swedish personnummer
 
 **RLS Policies:**
+
 - Users can view their own employee record
 - Users can update their own employee record
 
@@ -56,6 +58,7 @@ CREATE TABLE companies (
 ```
 
 **RLS Policies:**
+
 - Users can view companies they're associated with
 
 ## Relationships
@@ -82,11 +85,7 @@ export type Company = Database['public']['Tables']['companies']['Row'];
 ### Get Employee by User ID
 
 ```typescript
-const { data, error } = await supabase
-  .from('employees')
-  .select('*')
-  .eq('user_id', userId)
-  .single();
+const { data, error } = await supabase.from('employees').select('*').eq('user_id', userId).single();
 ```
 
 ### Get Employee with Company
@@ -94,10 +93,12 @@ const { data, error } = await supabase
 ```typescript
 const { data, error } = await supabase
   .from('employees')
-  .select(`
+  .select(
+    `
     *,
     company:companies(*)
-  `)
+  `,
+  )
   .eq('user_id', userId)
   .single();
 ```

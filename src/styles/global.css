@@ -9,12 +9,12 @@
   --color-bg-50: 245 247 245;
   --color-bg-100: 238 242 238;
   --color-bg-200: 229 234 229;
-  
+
   /* Light mode - text */
   --color-foreground: 23 23 23;
   --color-muted: 115 115 115;
   --color-muted-foreground: 82 82 82;
-  
+
   /* Light mode - border */
   --color-border: 229 229 229;
 }
@@ -25,12 +25,12 @@
   --color-bg-50: 26 26 26;
   --color-bg-100: 36 36 36;
   --color-bg-200: 46 46 46;
-  
+
   /* Dark mode - text */
   --color-foreground: 250 250 250;
   --color-muted: 115 115 115;
   --color-muted-foreground: 163 163 163;
-  
+
   /* Dark mode - border */
   --color-border: 61 61 61;
 }

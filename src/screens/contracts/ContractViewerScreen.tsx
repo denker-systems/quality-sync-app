@@ -18,11 +18,11 @@ export const ContractViewerScreen = () => {
   const route = useRoute<ContractViewerRouteProp>();
   const { contractId } = route.params;
   const { isDark } = useTheme();
-  
+
   const textColor = isDark ? '#FAFAFA' : '#171717';
   const mutedColor = isDark ? '#A3A3A3' : '#737373';
   const accentColor = isDark ? '#6BBD68' : '#489A45';
-  
+
   const { data: contract, isLoading, error } = useContract(contractId);
 
   if (isLoading) {
@@ -59,9 +59,14 @@ export const ContractViewerScreen = () => {
       <Animated.View sharedTransitionTag={`contract-${contractId}`}>
         <Card variant="elevated" style={styles.infoCard}>
           <CardContent style={styles.headerContent}>
-            <View style={[styles.headerImageContainer, { backgroundColor: isDark ? '#2A2A2A' : '#F5F5F5' }]}>
-              <Image 
-                source={require('../../../assets/images/contract.png')} 
+            <View
+              style={[
+                styles.headerImageContainer,
+                { backgroundColor: isDark ? '#2A2A2A' : '#F5F5F5' },
+              ]}
+            >
+              <Image
+                source={require('../../../assets/images/contract.png')}
                 style={styles.headerImage}
                 resizeMode="contain"
               />
@@ -87,8 +92,11 @@ export const ContractViewerScreen = () => {
         <AnimatedEntrance preset="fadeInUp" delay={100}>
           <View style={styles.badgeContainer}>
             <Badge variant="default">
-              {contract.contract_type === 'employment' ? 'Anställningsavtal' : 
-               contract.contract_type === 'nda' ? 'Sekretessavtal' : 'Avtal'}
+              {contract.contract_type === 'employment'
+                ? 'Anställningsavtal'
+                : contract.contract_type === 'nda'
+                  ? 'Sekretessavtal'
+                  : 'Avtal'}
             </Badge>
             <View style={styles.dateRow}>
               <Calendar size={14} color={mutedColor} />
@@ -115,9 +123,11 @@ export const ContractViewerScreen = () => {
               <CardContent>
                 <View style={styles.signatureHeader}>
                   <PenTool size={20} color={accentColor} />
-                  <Text variant="h3" style={{ color: textColor }}>Digital signatur</Text>
+                  <Text variant="h3" style={{ color: textColor }}>
+                    Digital signatur
+                  </Text>
                 </View>
-                
+
                 {/* Signature Status */}
                 <View style={styles.signatureStatus}>
                   <CheckCircle size={20} color={accentColor} />
@@ -133,8 +143,18 @@ export const ContractViewerScreen = () => {
 
                 {/* Signature Image */}
                 <View style={styles.signatureImageContainer}>
-                  <Text variant="body-sm" style={{ color: mutedColor, marginBottom: 8 }}>Signatur:</Text>
-                  <View style={[styles.signatureImageBox, { backgroundColor: isDark ? '#0F0F0F' : '#FFFFFF', borderColor: isDark ? '#3D3D3D' : '#E5E5E5' }]}>
+                  <Text variant="body-sm" style={{ color: mutedColor, marginBottom: 8 }}>
+                    Signatur:
+                  </Text>
+                  <View
+                    style={[
+                      styles.signatureImageBox,
+                      {
+                        backgroundColor: isDark ? '#0F0F0F' : '#FFFFFF',
+                        borderColor: isDark ? '#3D3D3D' : '#E5E5E5',
+                      },
+                    ]}
+                  >
                     <Image
                       source={{ uri: contract.signature_data.signature }}
                       style={styles.signatureImage}

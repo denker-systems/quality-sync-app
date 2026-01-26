@@ -18,7 +18,7 @@ export const useMyEmployee = () => {
         .select('company_id')
         .eq('id', user.id)
         .single();
-      
+
       if (profileErr) throw profileErr;
       const companyId = (profile as any)?.company_id as string | null;
       if (!companyId || !user.email) return null;
@@ -38,7 +38,7 @@ export const useMyEmployee = () => {
           .eq('company_id', companyId)
           .ilike('email', user.email)
           .maybeSingle();
-        
+
         data = emailResult.data;
         error = emailResult.error;
       }

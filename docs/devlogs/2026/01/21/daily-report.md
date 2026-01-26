@@ -1,19 +1,21 @@
 # Daily Report: 2026-01-21 (Tisdag)
 
 ## 📊 Sammanfattning
+
 Omfattande UI/UX-session med fokus på Settings-subscreens, dark mode-fixes och ProfileScreen-förbättringar. Skapade nya screens för Security, About och ChangePassword. Fixade dark mode-konsistens i Card, Text och EditProfile-komponenter.
 
 ## 🔀 Git Commits
 
-| Hash | Typ | Beskrivning |
-|------|-----|-------------|
-| `6040a43` | feat | Add settings subscreens, dark mode fixes, and profile improvements |
-| `e749b22` | chore | Remove fortnox-optimization folder and update dependencies |
-| `37684b7` | feat | Add dark/light theme support and employee features |
+| Hash      | Typ   | Beskrivning                                                        |
+| --------- | ----- | ------------------------------------------------------------------ |
+| `6040a43` | feat  | Add settings subscreens, dark mode fixes, and profile improvements |
+| `e749b22` | chore | Remove fortnox-optimization folder and update dependencies         |
+| `37684b7` | feat  | Add dark/light theme support and employee features                 |
 
 ## ✨ Nya Features
 
 ### 1. Settings Subscreens
+
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  SETTINGS NAVIGATION                                                        │
@@ -28,6 +30,7 @@ Omfattande UI/UX-session med fokus på Settings-subscreens, dark mode-fixes och 
 ```
 
 ### 2. SecurityScreen med MFA-synk
+
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  MFA SYNC FROM SUPABASE                                                     │
@@ -40,6 +43,7 @@ Omfattande UI/UX-session med fokus på Settings-subscreens, dark mode-fixes och 
 ```
 
 ### 3. ProfileScreen Header Redesign
+
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  PROFILE HEADER                                                             │
@@ -55,11 +59,13 @@ Omfattande UI/UX-session med fokus på Settings-subscreens, dark mode-fixes och 
 ## 🐛 Bugfixes
 
 ### Dark Mode Consistency
+
 - **Card.tsx**: Refaktorerad att använda `useTheme` för dynamiska färger
 - **Text.tsx**: Fixad att använda `useTheme` för textfärger
 - **EditProfileScreen**: Tog bort hårdkodade färger
 
 ### Navigation
+
 - Back-knapp på EditProfile går nu till Profile (inte Home)
 - Settings-subscreens navigerar tillbaka till Settings
 
@@ -82,16 +88,16 @@ Omfattande UI/UX-session med fokus på Settings-subscreens, dark mode-fixes och 
 
 Komplett djupdykning i onboarding-admin feature-modulen:
 
-| Fil | Rader | Syfte |
-|-----|-------|-------|
-| `index.ts` | 13 | Public API exports |
-| `types.ts` | 52 | TypeScript interfaces |
-| `OnboardingAdminScreen.tsx` | 84 | Admin management UI |
-| `OnboardingPreviewScreen.tsx` | 375 | Full preview mode |
-| `OnboardingStepsEditor.tsx` | 156 | Step list + controls |
-| `OnboardingStepCard.tsx` | 144 | Individual step card |
-| `StepPreviewModal.tsx` | 253 | Modal för step rendering |
-| `useOnboardingSteps.ts` | 141 | CRUD hooks |
+| Fil                           | Rader | Syfte                    |
+| ----------------------------- | ----- | ------------------------ |
+| `index.ts`                    | 13    | Public API exports       |
+| `types.ts`                    | 52    | TypeScript interfaces    |
+| `OnboardingAdminScreen.tsx`   | 84    | Admin management UI      |
+| `OnboardingPreviewScreen.tsx` | 375   | Full preview mode        |
+| `OnboardingStepsEditor.tsx`   | 156   | Step list + controls     |
+| `OnboardingStepCard.tsx`      | 144   | Individual step card     |
+| `StepPreviewModal.tsx`        | 253   | Modal för step rendering |
+| `useOnboardingSteps.ts`       | 141   | CRUD hooks               |
 
 ### Arkitektur
 
@@ -106,13 +112,13 @@ OnboardingAdminScreen (RoleGuard: admin/superadmin)
 
 ### Status
 
-| Feature | Status |
-|---------|--------|
-| Lista steg | ✅ |
-| Toggle required/active | ✅ |
-| Preview mode | ✅ |
-| Add/Edit/Delete step | ⏳ TODO |
-| Drag-and-drop reorder | ⏳ TODO |
+| Feature                | Status  |
+| ---------------------- | ------- |
+| Lista steg             | ✅      |
+| Toggle required/active | ✅      |
+| Preview mode           | ✅      |
+| Add/Edit/Delete step   | ⏳ TODO |
+| Drag-and-drop reorder  | ⏳ TODO |
 
 ## 📋 Nästa Steg
 

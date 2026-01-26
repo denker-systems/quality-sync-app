@@ -24,7 +24,7 @@ declare module 'react-native' {
   interface TouchableOpacityProps {
     className?: string;
   }
-  interface FlatListProps<T> {
+  interface FlatListProps {
     className?: string;
   }
 }

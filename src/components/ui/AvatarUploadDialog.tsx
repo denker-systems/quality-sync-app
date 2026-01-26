@@ -1,15 +1,14 @@
 /**
  * Avatar Upload Dialog
- * 
+ *
  * Dialog for uploading profile picture with camera or gallery
  */
 
 import React, { useState } from 'react';
-import { 
-  View, 
-  ScrollView, 
-  Pressable, 
-  Modal, 
+import {
+  View,
+  Pressable,
+  Modal,
   StyleSheet,
   Alert,
   ActivityIndicator,
@@ -18,7 +17,6 @@ import {
   Platform,
 } from 'react-native';
 import { MotiView } from 'moti';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text } from '@/components/ui/Text';
 import { Button } from '@/components/ui/Button';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -36,18 +34,17 @@ interface AvatarUploadDialogProps {
   employeeId?: string;
 }
 
-export function AvatarUploadDialog({ 
-  visible, 
-  onClose, 
+export function AvatarUploadDialog({
+  visible,
+  onClose,
   onUploadComplete,
   employeeId,
 }: AvatarUploadDialogProps) {
   const { isDark } = useTheme();
   const [uploading, setUploading] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  
+
   const textColor = isDark ? '#FAFAFA' : '#171717';
-  const mutedColor = isDark ? '#A3A3A3' : '#737373';
   const accentColor = isDark ? '#6BBD68' : '#489A45';
   const surface = isDark ? '#1A1A1A' : '#FFFFFF';
 
@@ -107,7 +104,11 @@ export function AvatarUploadDialog({
       const fileName = `${employeeId}_${Date.now()}.jpg`;
       const filePath = fileName;
 
-      console.log('📤 Uploading avatar to Supabase Storage:', { fileName, employeeId, platform: Platform.OS });
+      console.log('📤 Uploading avatar to Supabase Storage:', {
+        fileName,
+        employeeId,
+        platform: Platform.OS,
+      });
 
       let uploadData;
       let uploadError;
@@ -117,14 +118,12 @@ export function AvatarUploadDialog({
         console.log('🌐 Web platform - fetching blob:', selectedImage);
         const response = await fetch(selectedImage);
         const blob = await response.blob();
-        
-        const { data, error } = await supabase.storage
-          .from('avatars')
-          .upload(filePath, blob, {
-            contentType: 'image/jpeg',
-            upsert: true,
-          });
-        
+
+        const { data, error } = await supabase.storage.from('avatars').upload(filePath, blob, {
+          contentType: 'image/jpeg',
+          upsert: true,
+        });
+
         uploadData = data;
         uploadError = error;
       } else {
@@ -133,14 +132,14 @@ export function AvatarUploadDialog({
         const base64 = await FileSystem.readAsStringAsync(selectedImage, {
           encoding: 'base64',
         });
-        
+
         const { data, error } = await supabase.storage
           .from('avatars')
           .upload(filePath, decode(base64), {
             contentType: 'image/jpeg',
             upsert: true,
           });
-        
+
         uploadData = data;
         uploadError = error;
       }
@@ -154,9 +153,7 @@ export function AvatarUploadDialog({
       console.log('✅ Upload successful:', uploadData);
 
       // Get public URL
-      const { data: urlData } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(filePath);
+      const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(filePath);
 
       console.log('✅ Avatar uploaded:', urlData.publicUrl);
 
@@ -215,7 +212,7 @@ export function AvatarUploadDialog({
             {selectedImage ? (
               <View style={styles.previewContainer}>
                 <Image source={{ uri: selectedImage }} style={styles.preview} />
-                <TouchableOpacity 
+                <TouchableOpacity
                   onPress={() => setSelectedImage(null)}
                   style={[styles.removeButton, { backgroundColor: isDark ? '#2A2A2A' : '#F5F5F5' }]}
                 >
@@ -255,11 +252,7 @@ export function AvatarUploadDialog({
                 disabled={uploading}
                 style={[styles.uploadButton, { backgroundColor: accentColor }]}
               >
-                {uploading ? (
-                  <ActivityIndicator size="small" color="#FFFFFF" />
-                ) : (
-                  'Ladda upp'
-                )}
+                {uploading ? <ActivityIndicator size="small" color="#FFFFFF" /> : 'Ladda upp'}
               </Button>
             )}
           </View>

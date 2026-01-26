@@ -44,6 +44,7 @@ Multi-Factor Authentication (MFA) provides an additional layer of security. It's
 ### What authenticator apps are supported?
 
 Any TOTP-compatible authenticator app works:
+
 - Google Authenticator
 - Microsoft Authenticator
 - Authy
@@ -63,12 +64,14 @@ Sessions last 7 days by default. After that, you'll need to log in again.
 ### What features are available?
 
 **Current (v1.0):**
+
 - Email/password login
 - Multi-Factor Authentication (MFA)
 - User profile viewing
 - Session persistence
 
 **Planned:**
+
 - Company data display
 - Employee data management
 - Avatar upload
@@ -225,6 +228,7 @@ See [Play Store Deployment](../deployment/PLAY_STORE.md) for complete guide.
 ### Why is the app slow?
 
 Common causes:
+
 - Network latency
 - Large data sets
 - Unoptimized queries
@@ -245,6 +249,7 @@ See [Performance Optimization](../development/PERFORMANCE.md) for solutions.
 ### Is my data secure?
 
 Yes. Security measures include:
+
 - HTTPS encryption
 - Row Level Security (RLS)
 - JWT authentication
@@ -285,12 +290,14 @@ See [Issue Reporting](../contributing/ISSUES.md) for guidelines.
 ### What's the difference between this and the web app?
 
 The mobile app provides a native mobile experience with:
+
 - Push notifications (planned)
 - Offline mode (planned)
 - Native camera access
 - Better mobile UX
 
 But shares the same:
+
 - Backend (Supabase)
 - Database
 - Authentication

@@ -1,31 +1,31 @@
 import React from 'react';
 import { View, StyleSheet, ActivityIndicator, Image } from 'react-native';
 import { ScreenLayout, EmptyState } from '@/components/common';
-import { Text, Card, CardContent, Badge } from '@/components/ui';
+import { Text, Card, CardContent } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useMyShifts, MyShift } from '@/hooks/useMyShifts';
 import { Calendar, Clock, Coffee, MapPin, Flame, Trophy, Target } from 'lucide-react-native';
-import { AnimatedEntrance, AnimatedListItem, SPRING_CONFIGS, STAGGER_DELAYS } from '@/lib/animations';
+import { AnimatedEntrance, AnimatedListItem, STAGGER_DELAYS } from '@/lib/animations';
 
 const ShiftCard = ({ shift, t }: { shift: MyShift; t: (key: string) => string }) => {
   const { isDark } = useTheme();
   const fromDate = new Date(shift.from_time);
   const toDate = new Date(shift.to_time);
-  
+
   const textColor = isDark ? '#FAFAFA' : '#171717';
   const mutedColor = isDark ? '#A3A3A3' : '#737373';
   const accentColor = isDark ? '#6BBD68' : '#489A45';
-  
+
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' });
   };
-  
+
   const formatDate = (date: Date) => {
-    return date.toLocaleDateString('sv-SE', { 
-      weekday: 'long', 
-      day: 'numeric', 
-      month: 'long' 
+    return date.toLocaleDateString('sv-SE', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
     });
   };
 
@@ -38,8 +38,8 @@ const ShiftCard = ({ shift, t }: { shift: MyShift; t: (key: string) => string })
   const isPast = fromDate < new Date();
 
   return (
-    <Card 
-      variant="elevated" 
+    <Card
+      variant="elevated"
       style={[styles.shiftCard, isToday && styles.todayCard, isPast && styles.pastCard]}
     >
       <CardContent>
@@ -51,7 +51,9 @@ const ShiftCard = ({ shift, t }: { shift: MyShift; t: (key: string) => string })
             </Text>
             {isToday && (
               <View style={[styles.todayBadge, { backgroundColor: accentColor }]}>
-                <Text variant="tiny" style={{ color: '#FFFFFF' }}>{t('common.today')}</Text>
+                <Text variant="tiny" style={{ color: '#FFFFFF' }}>
+                  {t('common.today')}
+                </Text>
               </View>
             )}
           </View>
@@ -84,7 +86,12 @@ const ShiftCard = ({ shift, t }: { shift: MyShift; t: (key: string) => string })
           )}
         </View>
 
-        <View style={[styles.durationBadge, { backgroundColor: isDark ? 'rgba(107,189,104,0.15)' : '#EDF5EC' }]}>
+        <View
+          style={[
+            styles.durationBadge,
+            { backgroundColor: isDark ? 'rgba(107,189,104,0.15)' : '#EDF5EC' },
+          ]}
+        >
           <Text variant="body-sm" style={{ color: accentColor }}>
             {workHours}h {workMins > 0 ? `${workMins}m` : ''} {t('schedule.workTime')}
           </Text>
@@ -97,35 +104,28 @@ const ShiftCard = ({ shift, t }: { shift: MyShift; t: (key: string) => string })
 export const ScheduleScreen = () => {
   const { isDark } = useTheme();
   const { t } = useLanguage();
-  const { data: shifts, isLoading, error, refetch } = useMyShifts();
-  const [refreshing, setRefreshing] = React.useState(false);
-  
+  const { data: shifts, isLoading, error } = useMyShifts();
+
   const textColor = isDark ? '#FAFAFA' : '#171717';
   const mutedColor = isDark ? '#A3A3A3' : '#737373';
   const accentColor = isDark ? '#6BBD68' : '#489A45';
 
   // Calculate streak and stats
   const now = new Date();
-  const upcomingShifts = (shifts || []).filter(s => new Date(s.from_time) >= now);
-  const pastShifts = (shifts || []).filter(s => new Date(s.from_time) < now);
-  const thisWeekShifts = upcomingShifts.filter(s => {
+  const upcomingShifts = (shifts || []).filter((s) => new Date(s.from_time) >= now);
+  const pastShifts = (shifts || []).filter((s) => new Date(s.from_time) < now);
+  const thisWeekShifts = upcomingShifts.filter((s) => {
     const shiftDate = new Date(s.from_time);
     const weekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
     return shiftDate <= weekFromNow;
   });
-  
+
   const totalHoursThisWeek = thisWeekShifts.reduce((acc, shift) => {
     const from = new Date(shift.from_time);
     const to = new Date(shift.to_time);
     const hours = (to.getTime() - from.getTime()) / (1000 * 60 * 60);
-    return acc + hours - ((shift.breaks_duration || 0) / 60);
+    return acc + hours - (shift.breaks_duration || 0) / 60;
   }, 0);
-
-  const handleRefresh = async () => {
-    setRefreshing(true);
-    await refetch();
-    setRefreshing(false);
-  };
 
   if (isLoading) {
     return (
@@ -157,8 +157,8 @@ export const ScheduleScreen = () => {
       {upcomingShifts.length === 0 && pastShifts.length === 0 ? (
         <AnimatedEntrance preset="scaleIn">
           <View style={styles.emptyStateContainer}>
-            <Image 
-              source={require('../../../assets/images/schedule.png')} 
+            <Image
+              source={require('../../../assets/images/schedule.png')}
               style={styles.emptyImage}
               resizeMode="contain"
             />
@@ -178,25 +178,52 @@ export const ScheduleScreen = () => {
               <CardContent>
                 <View style={styles.statsGrid}>
                   <View style={styles.statItem}>
-                    <View style={[styles.statIcon, { backgroundColor: isDark ? 'rgba(239,68,68,0.15)' : '#FEE2E2' }]}>
+                    <View
+                      style={[
+                        styles.statIcon,
+                        { backgroundColor: isDark ? 'rgba(239,68,68,0.15)' : '#FEE2E2' },
+                      ]}
+                    >
                       <Flame size={24} color="#EF4444" />
                     </View>
-                    <Text variant="display" style={{ color: '#EF4444' }}>{pastShifts.length}</Text>
-                    <Text variant="body-sm" style={{ color: mutedColor }}>{t('schedule.streak')}</Text>
+                    <Text variant="display" style={{ color: '#EF4444' }}>
+                      {pastShifts.length}
+                    </Text>
+                    <Text variant="body-sm" style={{ color: mutedColor }}>
+                      {t('schedule.streak')}
+                    </Text>
                   </View>
                   <View style={styles.statItem}>
-                    <View style={[styles.statIcon, { backgroundColor: isDark ? 'rgba(107,189,104,0.15)' : '#EDF5EC' }]}>
+                    <View
+                      style={[
+                        styles.statIcon,
+                        { backgroundColor: isDark ? 'rgba(107,189,104,0.15)' : '#EDF5EC' },
+                      ]}
+                    >
                       <Target size={24} color={accentColor} />
                     </View>
-                    <Text variant="display" style={{ color: accentColor }}>{thisWeekShifts.length}</Text>
-                    <Text variant="body-sm" style={{ color: mutedColor }}>{t('schedule.thisWeek')}</Text>
+                    <Text variant="display" style={{ color: accentColor }}>
+                      {thisWeekShifts.length}
+                    </Text>
+                    <Text variant="body-sm" style={{ color: mutedColor }}>
+                      {t('schedule.thisWeek')}
+                    </Text>
                   </View>
                   <View style={styles.statItem}>
-                    <View style={[styles.statIcon, { backgroundColor: isDark ? 'rgba(251,191,36,0.15)' : '#FEF3C7' }]}>
+                    <View
+                      style={[
+                        styles.statIcon,
+                        { backgroundColor: isDark ? 'rgba(251,191,36,0.15)' : '#FEF3C7' },
+                      ]}
+                    >
                       <Trophy size={24} color="#F59E0B" />
                     </View>
-                    <Text variant="display" style={{ color: '#F59E0B' }}>{Math.round(totalHoursThisWeek)}</Text>
-                    <Text variant="body-sm" style={{ color: mutedColor }}>{t('schedule.hours')}</Text>
+                    <Text variant="display" style={{ color: '#F59E0B' }}>
+                      {Math.round(totalHoursThisWeek)}
+                    </Text>
+                    <Text variant="body-sm" style={{ color: mutedColor }}>
+                      {t('schedule.hours')}
+                    </Text>
                   </View>
                 </View>
               </CardContent>
@@ -209,7 +236,11 @@ export const ScheduleScreen = () => {
                 {t('schedule.upcomingShifts')} ({upcomingShifts.length})
               </Text>
               {upcomingShifts.map((shift, index) => (
-                <AnimatedListItem key={shift.shift_id || index} index={index} staggerDelay={STAGGER_DELAYS.fast}>
+                <AnimatedListItem
+                  key={shift.shift_id || index}
+                  index={index}
+                  staggerDelay={STAGGER_DELAYS.fast}
+                >
                   <ShiftCard shift={shift} t={t} />
                 </AnimatedListItem>
               ))}
@@ -222,7 +253,11 @@ export const ScheduleScreen = () => {
                 {t('schedule.pastShifts')}
               </Text>
               {pastShifts.slice(-5).map((shift, index) => (
-                <AnimatedListItem key={shift.shift_id || index} index={upcomingShifts.length + index} staggerDelay={STAGGER_DELAYS.fast}>
+                <AnimatedListItem
+                  key={shift.shift_id || index}
+                  index={upcomingShifts.length + index}
+                  staggerDelay={STAGGER_DELAYS.fast}
+                >
                   <ShiftCard shift={shift} t={t} />
                 </AnimatedListItem>
               ))}

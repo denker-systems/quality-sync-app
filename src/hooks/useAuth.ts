@@ -16,7 +16,7 @@ export const useAuth = () => {
       if (event === 'TOKEN_REFRESHED') {
         return;
       }
-      
+
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
@@ -33,30 +33,20 @@ export const useAuth = () => {
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    console.log('🔐 useAuth.signIn called');
-    console.log('  Email:', email);
-    console.log('  Password length:', password.length);
-    
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
-      
-      console.log('📡 Supabase response:');
-      console.log('  Error:', error);
-      console.log('  Data:', data);
-      
+
       if (error) {
         console.error('❌ Login failed:', error.message);
-      } else {
-        console.log('✅ Login successful');
       }
-      
+
       return { error };
     } catch (err) {
-      console.error('💥 Exception during login:', err);
-      return { error: err as any };
+      console.error('💥 Exception during login');
+      return { error: err as Error };
     }
   };
 

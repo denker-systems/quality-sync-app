@@ -5,7 +5,7 @@ import { Home, User, Calendar, Settings, Star, FileText } from 'lucide-react-nat
 import { MotiView } from 'moti';
 import { MotiPressable } from 'moti/interactions';
 import { useTheme } from '@/contexts/ThemeContext';
-import { SPRING_CONFIGS, useBouncyPress, STAGGER_DELAYS } from '@/lib/animations';
+import { SPRING_CONFIGS, STAGGER_DELAYS } from '@/lib/animations';
 
 interface TabItem {
   key: string;
@@ -35,23 +35,17 @@ export function FloatingTabBar({ activeTab, onTabPress }: FloatingTabBarProps) {
   };
 
   return (
-    <View 
-      style={[
-        styles.container, 
-        { paddingBottom: Math.max(insets.bottom, 16) }
-      ]}
+    <View
+      style={[styles.container, { paddingBottom: Math.max(insets.bottom, 16) }]}
       pointerEvents="box-none"
     >
-      <View 
-        style={[
-          styles.tabContainer,
-          isDark ? styles.tabContainerDark : styles.tabContainerLight
-        ]}
+      <View
+        style={[styles.tabContainer, isDark ? styles.tabContainerDark : styles.tabContainerLight]}
       >
         {tabs.map((tab, index) => {
           const isActive = activeTab === tab.key;
           const Icon = tab.icon;
-          
+
           return (
             <MotiView
               key={tab.key}
@@ -66,7 +60,7 @@ export function FloatingTabBar({ activeTab, onTabPress }: FloatingTabBarProps) {
                   isActive && (isDark ? styles.activeButtonDark : styles.activeButtonLight),
                   !isActive && (isDark ? styles.inactiveButtonDark : styles.inactiveButtonLight),
                 ]}
-                animate={useBouncyPress(isActive)}
+                animate={isActive ? { scale: 0.97 } : { scale: 1 }}
                 transition={SPRING_CONFIGS.snappy}
               >
                 <MotiView
@@ -80,12 +74,11 @@ export function FloatingTabBar({ activeTab, onTabPress }: FloatingTabBarProps) {
                     loop: isActive,
                   }}
                 >
-                  <Icon 
-                    size={24} 
-                    color={isActive 
-                      ? (isDark ? '#0F0F0F' : '#FFFFFF')
-                      : (isDark ? '#A3A3A3' : '#737373')
-                    } 
+                  <Icon
+                    size={24}
+                    color={
+                      isActive ? (isDark ? '#0F0F0F' : '#FFFFFF') : isDark ? '#A3A3A3' : '#737373'
+                    }
                   />
                 </MotiView>
               </MotiPressable>

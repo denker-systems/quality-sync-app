@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Card, Text, List, Divider } from 'react-native-paper';
-import { Building2, MapPin, Phone, Mail, Globe } from 'lucide-react-native';
+import { Building2 } from 'lucide-react-native';
 import { useCompanyData } from '@/hooks/useCompanyData';
 
 export const CompanyInfoCard = () => {
@@ -32,7 +32,7 @@ export const CompanyInfoCard = () => {
         <List.Item
           title="Företagsnamn"
           description={company.name || '-'}
-          left={props => <List.Icon {...props} icon="office-building" />}
+          left={(props) => <List.Icon {...props} icon="office-building" />}
           titleStyle={styles.listTitle}
           descriptionStyle={styles.listDescription}
         />
@@ -41,7 +41,7 @@ export const CompanyInfoCard = () => {
           <List.Item
             title="Adress"
             description={company.address}
-            left={props => <List.Icon {...props} icon="map-marker" />}
+            left={(props) => <List.Icon {...props} icon="map-marker" />}
             titleStyle={styles.listTitle}
             descriptionStyle={styles.listDescription}
           />
@@ -51,7 +51,7 @@ export const CompanyInfoCard = () => {
           <List.Item
             title="Kontakt Email"
             description={company.contact_email}
-            left={props => <List.Icon {...props} icon="email" />}
+            left={(props) => <List.Icon {...props} icon="email" />}
             titleStyle={styles.listTitle}
             descriptionStyle={styles.listDescription}
           />
@@ -61,7 +61,7 @@ export const CompanyInfoCard = () => {
           <List.Item
             title="Organisationsnummer"
             description={company.organization_number}
-            left={props => <List.Icon {...props} icon="identifier" />}
+            left={(props) => <List.Icon {...props} icon="identifier" />}
             titleStyle={styles.listTitle}
             descriptionStyle={styles.listDescription}
           />

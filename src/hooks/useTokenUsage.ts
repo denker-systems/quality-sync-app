@@ -24,7 +24,7 @@ export const useTokenUsage = () => {
     enabled: !!user?.id,
     queryFn: async (): Promise<TokenUsageStats | null> => {
       console.log('🤖 TOKEN_USAGE: Fetching stats for user:', user?.id);
-      
+
       if (!user?.id) return null;
 
       // Hämta token usage från ai_token_usage

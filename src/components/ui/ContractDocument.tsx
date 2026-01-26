@@ -1,6 +1,6 @@
 /**
  * Contract Document Component
- * 
+ *
  * Renders contract content with professional document styling
  * Supports H1-H6 headings and structured formatting
  */
@@ -16,26 +16,29 @@ interface ContractDocumentProps {
 
 export const ContractDocument = memo(function ContractDocument({ content }: ContractDocumentProps) {
   const { isDark } = useTheme();
-  
+
   const textColor = isDark ? '#FAFAFA' : '#171717';
   const headingColor = isDark ? '#FFFFFF' : '#0F0F0F';
-  const mutedColor = isDark ? '#A3A3A3' : '#737373';
 
   // Parse content into sections
   const lines = content.split('\n');
-  
+
   return (
     <View style={styles.document}>
       {lines.map((line, index) => {
         const trimmedLine = line.trim();
-        
+
         // Skip empty lines
         if (!trimmedLine) {
           return <View key={index} style={styles.spacer} />;
         }
 
         // H1 - All caps titles (e.g., "ANSTÄLLNINGSAVTAL")
-        if (trimmedLine === trimmedLine.toUpperCase() && trimmedLine.length > 3 && !trimmedLine.match(/^\d/)) {
+        if (
+          trimmedLine === trimmedLine.toUpperCase() &&
+          trimmedLine.length > 3 &&
+          !trimmedLine.match(/^\d/)
+        ) {
           return (
             <Text key={index} variant="h1" style={[styles.h1, { color: headingColor }]}>
               {trimmedLine}

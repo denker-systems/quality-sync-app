@@ -26,14 +26,17 @@ export const OnboardingStepDialog = memo(function OnboardingStepDialog({
 }: OnboardingStepDialogProps) {
   const { isDark } = useTheme();
   const { t } = useLanguage();
-  
-  const theme = useMemo(() => ({
-    textColor: isDark ? '#FAFAFA' : '#171717',
-    mutedColor: isDark ? '#A3A3A3' : '#737373',
-    surface: isDark ? '#1A1A1A' : '#FFFFFF',
-    accentColor: isDark ? '#6BBD68' : '#489A45',
-    titleColor: isDark ? '#0F0F0F' : '#FFFFFF',
-  }), [isDark]);
+
+  const theme = useMemo(
+    () => ({
+      textColor: isDark ? '#FAFAFA' : '#171717',
+      mutedColor: isDark ? '#A3A3A3' : '#737373',
+      surface: isDark ? '#1A1A1A' : '#FFFFFF',
+      accentColor: isDark ? '#6BBD68' : '#489A45',
+      titleColor: isDark ? '#0F0F0F' : '#FFFFFF',
+    }),
+    [isDark],
+  );
 
   return (
     <Modal transparent visible={visible} animationType="none" onRequestClose={onClose}>
@@ -64,8 +67,8 @@ export const OnboardingStepDialog = memo(function OnboardingStepDialog({
                 {description}
               </Text>
             ) : null}
-            <Button 
-              variant="primary" 
+            <Button
+              variant="primary"
               onPress={() => {
                 onAction?.();
                 onClose();

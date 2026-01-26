@@ -5,6 +5,7 @@ Complete guide to Supabase configuration and usage in Quality Sync Mobile.
 ## Overview
 
 Quality Sync Mobile uses Supabase as its backend-as-a-service, providing:
+
 - **Authentication:** User management and MFA
 - **Database:** PostgreSQL with Row Level Security
 - **Real-time:** Live data subscriptions
@@ -13,6 +14,7 @@ Quality Sync Mobile uses Supabase as its backend-as-a-service, providing:
 ## Shared Backend
 
 The mobile app shares the same Supabase project as the Quality Sync web application:
+
 - Same database schema
 - Same authentication system
 - Same RLS policies
@@ -54,21 +56,25 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 ### Key Configuration Options
 
 #### `storage: AsyncStorage`
+
 - Stores session in device storage
 - Persists across app restarts
 - Secure on both iOS and Android
 
 #### `autoRefreshToken: true`
+
 - Automatically refreshes access tokens
 - Prevents session expiry
 - Happens in background
 
 #### `persistSession: true`
+
 - Saves session to storage
 - Restores on app launch
 - Required for "remember me" functionality
 
 #### `detectSessionInUrl: false`
+
 - Disables URL-based session detection
 - Not needed for mobile apps
 - Prevents unnecessary checks
@@ -104,7 +110,9 @@ if (error) {
 ### Get Current User
 
 ```typescript
-const { data: { user } } = await supabase.auth.getUser();
+const {
+  data: { user },
+} = await supabase.auth.getUser();
 
 if (user) {
   console.log('Logged in as:', user.email);
@@ -116,20 +124,20 @@ if (user) {
 ### Auth State Listener
 
 ```typescript
-const { data: { subscription } } = supabase.auth.onAuthStateChange(
-  (event, session) => {
-    console.log('Auth event:', event);
-    console.log('Session:', session);
-    
-    if (event === 'SIGNED_IN') {
-      // User signed in
-    } else if (event === 'SIGNED_OUT') {
-      // User signed out
-    } else if (event === 'TOKEN_REFRESHED') {
-      // Token was refreshed
-    }
+const {
+  data: { subscription },
+} = supabase.auth.onAuthStateChange((event, session) => {
+  console.log('Auth event:', event);
+  console.log('Session:', session);
+
+  if (event === 'SIGNED_IN') {
+    // User signed in
+  } else if (event === 'SIGNED_OUT') {
+    // User signed out
+  } else if (event === 'TOKEN_REFRESHED') {
+    // Token was refreshed
   }
-);
+});
 
 // Cleanup
 subscription.unsubscribe();
@@ -140,11 +148,7 @@ subscription.unsubscribe();
 ### Select Data
 
 ```typescript
-const { data, error } = await supabase
-  .from('employees')
-  .select('*')
-  .eq('user_id', userId)
-  .single();
+const { data, error } = await supabase.from('employees').select('*').eq('user_id', userId).single();
 
 if (error) {
   console.error('Query error:', error.message);
@@ -158,10 +162,12 @@ if (error) {
 ```typescript
 const { data, error } = await supabase
   .from('employees')
-  .select(`
+  .select(
+    `
     *,
     company:companies(*)
-  `)
+  `,
+  )
   .eq('user_id', userId)
   .single();
 ```
@@ -193,10 +199,7 @@ const { data, error } = await supabase
 ### Delete Data
 
 ```typescript
-const { error } = await supabase
-  .from('table_name')
-  .delete()
-  .eq('id', recordId);
+const { error } = await supabase.from('table_name').delete().eq('id', recordId);
 ```
 
 ## Real-time Subscriptions
@@ -217,7 +220,7 @@ const subscription = supabase
     (payload) => {
       console.log('Change received:', payload);
       // Update local state
-    }
+    },
   )
   .subscribe();
 
@@ -237,6 +240,7 @@ subscription.unsubscribe();
 ### What is RLS?
 
 Row Level Security ensures users can only access data they're authorized to see:
+
 - Enforced at database level
 - Cannot be bypassed
 - Applies to all queries
@@ -258,6 +262,7 @@ USING (auth.uid() = user_id);
 ### Checking Policies
 
 If a query returns no data, check:
+
 1. RLS is enabled on the table
 2. Appropriate policies exist
 3. User is authenticated
@@ -284,8 +289,7 @@ if (!error) {
 
 ```typescript
 // Create challenge
-const { data: challenge, error: challengeError } = 
-  await supabase.auth.mfa.challenge({ factorId });
+const { data: challenge, error: challengeError } = await supabase.auth.mfa.challenge({ factorId });
 
 // Verify code
 const { data, error } = await supabase.auth.mfa.verify({
@@ -324,9 +328,9 @@ if (!error) {
 ```typescript
 try {
   const { data, error } = await supabase.from('table').select();
-  
+
   if (error) throw error;
-  
+
   return data;
 } catch (error) {
   if (error.code === 'PGRST116') {
@@ -385,16 +389,15 @@ const employee: Employee = {
 ### Type-Safe Queries
 
 ```typescript
-const { data, error } = await supabase
-  .from('employees')
-  .select('*')
-  .returns<Employee[]>();
+const { data, error } = await supabase.from('employees').select('*').returns<Employee[]>();
 ```
 
 ## Best Practices
 
 ### 1. Error Handling
+
 Always check for errors:
+
 ```typescript
 const { data, error } = await supabase.from('table').select();
 if (error) {
@@ -406,14 +409,18 @@ if (error) {
 ```
 
 ### 2. Type Safety
+
 Use generated types for type safety:
+
 ```typescript
 import { Database } from '@/types/database.types';
 type Tables = Database['public']['Tables'];
 ```
 
 ### 3. Query Optimization
+
 Select only needed columns:
+
 ```typescript
 // ❌ Bad - fetches all columns
 .select('*')
@@ -423,7 +430,9 @@ Select only needed columns:
 ```
 
 ### 4. Connection Pooling
+
 Reuse the supabase client:
+
 ```typescript
 // ✅ Good - single instance
 export const supabase = createClient(url, key);
@@ -433,7 +442,9 @@ const supabase = createClient(url, key); // Don't repeat
 ```
 
 ### 5. Secure Storage
+
 Never expose service role key in mobile app:
+
 ```typescript
 // ✅ Good - anon key
 const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
@@ -449,6 +460,7 @@ const supabaseServiceKey = '...'; // NEVER in mobile app
 **Problem:** Cannot connect to Supabase
 
 **Solutions:**
+
 1. Verify URL and anon key in `.env`
 2. Check network connection
 3. Verify Supabase project is active
@@ -459,6 +471,7 @@ const supabaseServiceKey = '...'; // NEVER in mobile app
 **Problem:** Queries return empty even though data exists
 
 **Solutions:**
+
 1. Check if user is authenticated
 2. Verify RLS policies exist
 3. Test query in Supabase dashboard
@@ -469,6 +482,7 @@ const supabaseServiceKey = '...'; // NEVER in mobile app
 **Problem:** User logged out after app restart
 
 **Solutions:**
+
 1. Verify `persistSession: true`
 2. Check AsyncStorage permissions
 3. Clear app data and retry
@@ -478,6 +492,7 @@ const supabaseServiceKey = '...'; // NEVER in mobile app
 **Problem:** User logged out unexpectedly
 
 **Solutions:**
+
 1. Verify `autoRefreshToken: true`
 2. Check network connectivity
 3. Verify token hasn't been revoked

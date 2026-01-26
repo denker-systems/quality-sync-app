@@ -13,19 +13,20 @@ Call this skill when starting a significant new functional area (e.g., "TimeRepo
 ## Steps
 
 1.  **Create Directory Structure**
-    -   Create `src/features/<feature-name>/`.
-    -   Create subdirectories: `components/`, `hooks/`, `screens/`, `services/`, `types/`.
+    - Create `src/features/<feature-name>/`.
+    - Create subdirectories: `components/`, `hooks/`, `screens/`, `services/`, `types/`.
 
 2.  **Create Feature Entry Point**
-    -   Create `src/features/<feature-name>/index.ts` to export public API.
+    - Create `src/features/<feature-name>/index.ts` to export public API.
 
 3.  **Create Initial Screen**
-    -   Use the `create-screen` skill to create the main screen for this feature inside `src/features/<feature-name>/screens/`.
+    - Use the `create-screen` skill to create the main screen for this feature inside `src/features/<feature-name>/screens/`.
 
 4.  **Register Feature**
-    -   Add the new screen to `src/navigation/AppNavigator.tsx` or create a new Stack Navigator for the feature if it has multiple screens.
+    - Add the new screen to `src/navigation/AppNavigator.tsx` or create a new Stack Navigator for the feature if it has multiple screens.
 
 ## Template Structure
+
 ```
 src/features/<feature-name>/
 ├── components/       # Feature-specific UI components

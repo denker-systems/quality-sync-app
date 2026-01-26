@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { View, TextInput, StyleSheet, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { ScreenLayout } from '@/components/common';
-import { 
-  Search, 
+import {
+  Search,
   X,
   Calendar,
   FileText,
@@ -32,22 +32,25 @@ function SearchResult({ icon: Icon, title, subtitle, type, onPress }: SearchResu
   const mutedColor = isDark ? '#A3A3A3' : '#737373';
 
   return (
-    <Pressable 
-      style={({ pressed }) => [
-        styles.resultItem,
-        pressed && { opacity: 0.7 }
-      ]}
+    <Pressable
+      style={({ pressed }) => [styles.resultItem, pressed && { opacity: 0.7 }]}
       onPress={onPress}
     >
       <View style={[styles.resultIcon, { backgroundColor: iconBgColor }]}>
         <Icon size={20} color={iconColor} />
       </View>
       <View style={styles.resultText}>
-        <Text variant="body-lg" style={{ color: textColor }}>{title}</Text>
-        <Text variant="body-sm" style={{ color: mutedColor }}>{subtitle}</Text>
+        <Text variant="body-lg" style={{ color: textColor }}>
+          {title}
+        </Text>
+        <Text variant="body-sm" style={{ color: mutedColor }}>
+          {subtitle}
+        </Text>
       </View>
       <View style={styles.resultType}>
-        <Text variant="caption" style={{ color: mutedColor }}>{type}</Text>
+        <Text variant="caption" style={{ color: mutedColor }}>
+          {type}
+        </Text>
         <ChevronRight size={16} color={mutedColor} />
       </View>
     </Pressable>
@@ -55,11 +58,41 @@ function SearchResult({ icon: Icon, title, subtitle, type, onPress }: SearchResu
 }
 
 const getQuickSearchItems = (t: (key: string) => string) => [
-  { icon: Calendar, title: t('search.mySchedule'), subtitle: t('search.seeUpcomingShifts'), type: t('schedule.title'), screen: 'Schedule' },
-  { icon: FileText, title: t('search.myContracts'), subtitle: t('search.contractsAndDocs'), type: t('contracts.title'), screen: 'Contracts' },
-  { icon: User, title: t('search.myProfile'), subtitle: t('search.personalInfo'), type: t('profile.title'), screen: 'Profile' },
-  { icon: Building2, title: t('search.companyInfo'), subtitle: t('search.contactInfo'), type: 'Info', screen: 'Profile' },
-  { icon: Clock, title: t('search.timeReport'), subtitle: t('search.registerTime'), type: t('schedule.title'), screen: 'Schedule' },
+  {
+    icon: Calendar,
+    title: t('search.mySchedule'),
+    subtitle: t('search.seeUpcomingShifts'),
+    type: t('schedule.title'),
+    screen: 'Schedule',
+  },
+  {
+    icon: FileText,
+    title: t('search.myContracts'),
+    subtitle: t('search.contractsAndDocs'),
+    type: t('contracts.title'),
+    screen: 'Contracts',
+  },
+  {
+    icon: User,
+    title: t('search.myProfile'),
+    subtitle: t('search.personalInfo'),
+    type: t('profile.title'),
+    screen: 'Profile',
+  },
+  {
+    icon: Building2,
+    title: t('search.companyInfo'),
+    subtitle: t('search.contactInfo'),
+    type: 'Info',
+    screen: 'Profile',
+  },
+  {
+    icon: Clock,
+    title: t('search.timeReport'),
+    subtitle: t('search.registerTime'),
+    type: t('schedule.title'),
+    screen: 'Schedule',
+  },
 ];
 
 export function SearchScreen() {
@@ -74,11 +107,12 @@ export function SearchScreen() {
   const borderColor = isDark ? '#2E2E2E' : '#E5E5E5';
 
   const quickSearchItems = getQuickSearchItems(t);
-  
+
   const filteredItems = searchQuery
-    ? quickSearchItems.filter(item => 
-        item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.subtitle.toLowerCase().includes(searchQuery.toLowerCase())
+    ? quickSearchItems.filter(
+        (item) =>
+          item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.subtitle.toLowerCase().includes(searchQuery.toLowerCase()),
       )
     : quickSearchItems;
 

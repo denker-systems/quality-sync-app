@@ -7,15 +7,18 @@ trigger: manual
 ## ⛔ GIT & GITHUB - STRICT RULES
 
 ### ALLOWED:
+
 - ✅ `git status` - Show status (auto-OK)
 - ✅ `git log` - Show history (auto-OK)
 - ✅ `git diff` - Show changes (auto-OK)
 
 ### REQUIRES USER APPROVAL:
+
 - ⚠️ `git commit` - Only when explicitly asked or as part of a workflow
 - ⚠️ `git push` - Only when explicitly asked or as part of a workflow
 
 ### ABSOLUTELY FORBIDDEN (NEVER RUN):
+
 - ❌ **git merge** - NEVER
 - ❌ **git rebase** - NEVER
 - ❌ **git reset** - NEVER
@@ -23,8 +26,10 @@ trigger: manual
 - ❌ **GitHub API changes** - NEVER
 
 ### Summary:
+
 **Cascade MUST NOT run commit and push automatically.**
 Commit and push occur only:
+
 1. When the user explicitly requests it
 2. As part of /end-session, /daily-report, or another workflow
 3. NEVER in the middle of work before changes are verified
@@ -32,18 +37,21 @@ Commit and push occur only:
 ## CORE PRINCIPLES
 
 ### 1. Methodical Approach
+
 - ALWAYS INVESTIGATE before acting
 - Read relevant memories and rules FIRST
 - Use Sequential Thinking for complex decisions
 - Document every step and decision
 
 ### 2. Caution
+
 - NEVER make destructive changes without confirmation
 - ASK when uncertain instead of guessing
 - Test in small steps, verify after every change
 - Always maintain backup capability (git)
 
 ### 3. Responsible MCP Usage
+
 - Use MCP tools PROACTIVELY when they fit
 - Verify results before proceeding
 - Log all MCP calls for traceability
@@ -53,23 +61,29 @@ Commit and push occur only:
 ## MCP TOOLS - WHEN AND HOW
 
 ### Context7 (PRIMARY for documentation)
+
 USE WHEN:
+
 - You need to understand a library (Expo, React Native, React Navigation)
 - You are implementing new functionality
 - You seek best practices
 
 COMMANDS:
+
 - `mcp0_resolve-library-id(libraryName)`
 - `mcp0_get-library-docs(context7CompatibleLibraryID, topic, mode)`
 
 ### Supabase MCP
+
 USE WHEN:
+
 - Working with the shared database
 - Checking tables/schema
 - Creating migrations
 - Checking logs
 
 COMMANDS:
+
 - `mcp4_list_tables(schemas: ["public"])`
 - `mcp4_execute_sql(query)` - for SELECT
 - `mcp4_apply_migration(name, query)` - for DDL
@@ -77,22 +91,28 @@ COMMANDS:
 - `mcp4_get_logs(service)`
 
 ### Sequential Thinking
+
 USE WHEN:
+
 - The problem is complex
 - You need to structure thoughts
 - You are planning a feature
 - You are debugging difficult bugs
 
 COMMAND:
+
 - `mcp3_sequentialthinking(thought, thoughtNumber, totalThoughts, nextThoughtNeeded)`
 
 ### Web Search
+
 USE WHEN:
+
 - Checking specific error messages
 - Looking up very recent Expo/React Native changes not in Context7
 - Finding community solutions (StackOverflow, GitHub Issues)
 
 COMMAND:
+
 - `search_web(query)`
 
 ---
@@ -144,16 +164,19 @@ COMMAND:
 ## PROTECTED AREAS
 
 ### Auth Files (DOUBLE CONFIRMATION)
+
 - `src/hooks/useAuth.ts`
 - `src/features/auth/*`
 - `src/features/mfa/*`
 - `src/navigation/AppNavigator.tsx` (AuthGuard logic)
 
 ### Database (MIGRATION REQUIRED)
+
 - All schema changes must go through the shared `fortnox-quinyx-sync` workflow or explicit SQL execution via MCP.
 - Remember: Database is shared with the Web App.
 
 ### Secrets (NEVER EXPOSE)
+
 - All keys in `.env`
 - Use `process.env.EXPO_PUBLIC_*` for public keys
 - NEVER use hardcoded values for secrets
@@ -163,12 +186,14 @@ COMMAND:
 ## CODE STYLE
 
 ### TypeScript
+
 - Strict mode
 - Interfaces over types for objects
 - Named exports (NOT default)
 - Validate with Zod
 
 ### React Native
+
 - Functional components
 - Custom hooks for logic
 - `StyleSheet.create` for styles
@@ -176,6 +201,7 @@ COMMAND:
 - Handle platform differences (`Platform.OS`)
 
 ### Commits
+
 - Conventional Commits format
 - `feat/fix/refactor/docs/style/test/chore`
 - Scope in parentheses
@@ -185,6 +211,7 @@ COMMAND:
 ## ERROR HANDLING
 
 ### On Error:
+
 1. Read the error message carefully (check Metro/Expo logs)
 2. Search documentation with Context7
 3. Use Sequential Thinking for analysis
@@ -192,6 +219,7 @@ COMMAND:
 5. Verify that the error is resolved
 
 ### On Uncertainty:
+
 1. ASK the user
 2. Show alternatives
 3. Recommend the safest path
@@ -202,10 +230,12 @@ COMMAND:
 ## ACTIVATION MODES FOR RULES
 
 ### Always On
+
 - `global-rules.md`
 - `project-tech-stack-rules.md`
 
 ### Glob Pattern
+
 - `react-native-expo-rules.md` - `*.tsx`, `*.ts`, `app.config.js`
 - `styling-ui-rules.md` - `src/components/**/*.tsx`, `src/screens/**/*.tsx`
 

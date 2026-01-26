@@ -8,14 +8,13 @@ import { supabase } from '@/config/supabase';
 import { Platform } from 'react-native';
 
 const DEVICE_HASH_KEY = '@mfa_device_hash';
-const DEVICE_NAME_KEY = '@mfa_device_name';
 
 // Simple hash function for device identification
 function simpleHash(str: string): string {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
     const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
+    hash = (hash << 5) - hash + char;
     hash = hash & hash;
   }
   return Math.abs(hash).toString(36) + Date.now().toString(36);
@@ -111,17 +110,18 @@ class TrustedDeviceService {
       console.log(`🔐 Trusting device for ${hoursToTrust} hours until:`, expiresAt);
 
       // Upsert trusted device (use 'any' cast since table may not be in generated types)
-      const { error } = await (supabase as any)
-        .from('trusted_devices')
-        .upsert({
+      const { error } = await (supabase as any).from('trusted_devices').upsert(
+        {
           user_id: userId,
           device_hash: deviceHash,
           device_name: deviceName,
           expires_at: expiresAt.toISOString(),
           last_used_at: new Date().toISOString(),
-        }, {
+        },
+        {
           onConflict: 'user_id,device_hash',
-        });
+        },
+      );
 
       if (error) {
         console.error('❌ Error trusting device:', error);
@@ -172,7 +172,7 @@ class TrustedDeviceService {
 
       const settings = data?.security_settings as Record<string, unknown> | null;
       return (settings?.mfa_trusted_device_hours as number) || 6;
-    } catch (err) {
+    } catch {
       return 6; // Default to 6 hours
     }
   }

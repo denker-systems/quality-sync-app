@@ -5,6 +5,7 @@ Complete installation guide for Quality Sync Mobile app.
 ## System Requirements
 
 ### Required
+
 - **Node.js:** 18.x or higher
 - **npm:** 9.x or higher (comes with Node.js)
 - **Expo CLI:** Installed automatically with dependencies
@@ -13,12 +14,14 @@ Complete installation guide for Quality Sync Mobile app.
 ### Platform-Specific Requirements
 
 #### iOS Development (macOS only)
+
 - **macOS:** 12.0 (Monterey) or higher
 - **Xcode:** 14.0 or higher
 - **iOS Simulator:** Included with Xcode
 - **CocoaPods:** Installed automatically
 
 #### Android Development
+
 - **Android Studio:** Latest stable version
 - **Android SDK:** API Level 31 or higher
 - **Android Emulator:** Configured in Android Studio
@@ -40,6 +43,7 @@ npm install
 ```
 
 This will install:
+
 - React Native & Expo SDK
 - Supabase client
 - React Navigation
@@ -66,6 +70,7 @@ EXPO_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
 ```
 
 **Where to find these:**
+
 1. Go to your Supabase project dashboard
 2. Navigate to **Settings** → **API**
 3. Copy the **Project URL** and **anon/public key**
@@ -102,9 +107,9 @@ EXPO_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
    - Install Android SDK and tools
 
 2. **Configure Environment Variables:**
-   
+
    Add to your `~/.bashrc`, `~/.zshrc`, or equivalent:
-   
+
    ```bash
    export ANDROID_HOME=$HOME/Library/Android/sdk
    export PATH=$PATH:$ANDROID_HOME/emulator
@@ -178,6 +183,7 @@ Or press `a` in the terminal where Metro is running.
 ### Development Tools
 
 Install recommended VS Code extensions:
+
 - **React Native Tools** - Debugging and IntelliSense
 - **Prettier** - Code formatting
 - **ESLint** - Code linting
@@ -188,17 +194,20 @@ Install recommended VS Code extensions:
 ### Common Installation Issues
 
 #### "Cannot find module" errors
+
 ```bash
 rm -rf node_modules package-lock.json
 npm install
 ```
 
 #### Metro bundler won't start
+
 ```bash
 npm start -- --clear
 ```
 
 #### iOS build fails
+
 ```bash
 cd ios
 pod install
@@ -207,6 +216,7 @@ npm run ios
 ```
 
 #### Android build fails
+
 - Ensure Android Studio is properly installed
 - Check that ANDROID_HOME is set correctly
 - Verify AVD is running

@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { StyleSheet, View, Image } from 'react-native';
-import { Text, Button, Surface } from '@/components/ui';
+import { Text, Surface } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { PartyPopper } from 'lucide-react-native';
@@ -21,7 +21,6 @@ export const WelcomeStep: React.FC<WelcomeStepProps> = ({
   content,
   step,
   onComplete,
-  employeeName,
   submitRef,
 }) => {
   const { isDark } = useTheme();
@@ -29,18 +28,22 @@ export const WelcomeStep: React.FC<WelcomeStepProps> = ({
   const textColor = isDark ? '#FAFAFA' : '#171717';
   const mutedColor = isDark ? '#A3A3A3' : '#737373';
   const accentColor = isDark ? '#6BBD68' : '#489A45';
-  
-  const handleStart = () => {
+
+  const handleStart = useCallback(() => {
     console.log('🚀 WELCOME_STEP handleStart clicked');
     onComplete({ started: true, started_at: new Date().toISOString() });
-  };
+  }, [onComplete]);
 
-  const title = getOnboardingStepTitle(step, language === 'sv' ? 'sv' : 'en') || 
-    content?.welcome_message || content?.message || 
+  const title =
+    getOnboardingStepTitle(step, language === 'sv' ? 'sv' : 'en') ||
+    content?.welcome_message ||
+    content?.message ||
     t('onboarding.welcome.defaultTitle');
-    
-  const description = getOnboardingStepDescription(step, language === 'sv' ? 'sv' : 'en') || 
-    content?.company_intro || content?.description || 
+
+  const description =
+    getOnboardingStepDescription(step, language === 'sv' ? 'sv' : 'en') ||
+    content?.company_intro ||
+    content?.description ||
     t('onboarding.welcome.defaultDescription');
 
   const imageUrl = content?.welcome_image_url;
@@ -54,29 +57,25 @@ export const WelcomeStep: React.FC<WelcomeStepProps> = ({
         submitRef.current = null;
       }
     };
-  }, [submitRef]);
+  }, [handleStart, submitRef]);
 
   return (
     <>
       <Surface style={styles.card} elevation={0}>
         {imageUrl ? (
           <View style={styles.imageContainer}>
-            <Image 
-              source={{ uri: imageUrl }} 
-              style={styles.welcomeImage}
-              resizeMode="contain"
-            />
+            <Image source={{ uri: imageUrl }} style={styles.welcomeImage} resizeMode="contain" />
           </View>
         ) : (
           <View style={styles.iconContainer}>
             <PartyPopper size={64} color={accentColor} />
           </View>
         )}
-        
+
         <Text variant="h2" style={[styles.title, { color: textColor }]}>
           {title}
         </Text>
-        
+
         {content?.show_company_info !== false && (
           <Text variant="body-lg" style={[styles.description, { color: mutedColor }]}>
             {description}

@@ -48,9 +48,7 @@ export function Badge({ children, variant = 'default', showDot = false }: BadgeP
 
   return (
     <View style={[styles.container, { backgroundColor: style.bg }]}>
-      {hasDot && (
-        <View style={[styles.dot, { backgroundColor: style.dot || style.text }]} />
-      )}
+      {hasDot && <View style={[styles.dot, { backgroundColor: style.dot || style.text }]} />}
       {typeof children === 'string' ? (
         <Text variant="tiny" style={[styles.text, { color: style.text }]}>
           {children}

@@ -8,7 +8,11 @@ import { getOnboardingStepTitle } from '@/utils/onboardingLanguage';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useMyEmployee } from '@/hooks/useMyEmployee';
-import { useMyOnboarding, useUpdateOnboardingProgress, useUpdateOnboardingStatus } from '@/hooks/useOnboarding';
+import {
+  useMyOnboarding,
+  useUpdateOnboardingProgress,
+  useUpdateOnboardingStatus,
+} from '@/hooks/useOnboarding';
 import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import {
   WelcomeStep,
@@ -22,7 +26,10 @@ import {
 import type { RootStackParamList } from '@/types';
 
 type OnboardingStepScreenRouteProp = RouteProp<RootStackParamList, 'OnboardingStep'>;
-type OnboardingStepScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'OnboardingStep'>;
+type OnboardingStepScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'OnboardingStep'
+>;
 
 export const OnboardingStepScreen = () => {
   const route = useRoute<OnboardingStepScreenRouteProp>();
@@ -58,9 +65,9 @@ export const OnboardingStepScreen = () => {
 
   const { onboarding, steps, progress } = onboardingData;
   const currentStep = steps[stepIndex];
-  
+
   // Hitta progress för just detta steg via dess ID
-  const currentProgress = progress.find(p => p.step_id === currentStep?.id);
+  const currentProgress = progress.find((p) => p.step_id === currentStep?.id);
 
   if (!currentStep || !currentProgress) {
     return (
@@ -74,7 +81,7 @@ export const OnboardingStepScreen = () => {
     );
   }
 
-  const completedSteps = progress.filter(p => p.status === 'completed').length;
+  const completedSteps = progress.filter((p) => p.status === 'completed').length;
   const totalSteps = steps.length;
   const progressPercentage = totalSteps > 0 ? completedSteps / totalSteps : 0;
 
@@ -86,16 +93,16 @@ export const OnboardingStepScreen = () => {
       stepIndex,
       stepType: currentStep?.step_type,
       stepData,
-      isPreview: !!previewData
+      isPreview: !!previewData,
     });
 
     if (previewData) {
       if (stepIndex === steps.length - 1) {
         navigation.goBack();
       } else {
-        navigation.replace('OnboardingStep', { 
+        navigation.replace('OnboardingStep', {
           stepIndex: stepIndex + 1,
-          previewData 
+          previewData,
         });
       }
       return;
@@ -108,7 +115,7 @@ export const OnboardingStepScreen = () => {
         status: 'completed',
         stepData,
       });
-      
+
       // Check if this was the last step
       if (stepIndex === steps.length - 1) {
         await updateStatus.mutateAsync({
@@ -150,9 +157,9 @@ export const OnboardingStepScreen = () => {
 
   const handlePrevious = () => {
     if (hasPrevious) {
-      navigation.replace('OnboardingStep', { 
+      navigation.replace('OnboardingStep', {
         stepIndex: stepIndex - 1,
-        previewData 
+        previewData,
       });
     }
   };
@@ -194,12 +201,7 @@ export const OnboardingStepScreen = () => {
 
     switch (currentStep.step_type) {
       case 'welcome':
-        return (
-          <WelcomeStep
-            {...commonProps}
-            employeeName={employee?.first_name || undefined}
-          />
-        );
+        return <WelcomeStep {...commonProps} employeeName={employee?.first_name || undefined} />;
       case 'personal_info':
         return <PersonalInfoStep {...commonProps} employee={employee} />;
       case 'emergency_contact':
@@ -232,9 +234,9 @@ export const OnboardingStepScreen = () => {
   };
 
   return (
-    <ScreenLayout 
-      title={t('onboarding.title')} 
-      scrollable={false} 
+    <ScreenLayout
+      title={t('onboarding.title')}
+      scrollable={false}
       noPadding
       onBackPress={handleBack}
       contentStyle={{ paddingBottom: 0 }}
@@ -250,14 +252,11 @@ export const OnboardingStepScreen = () => {
               {getOnboardingStepTitle(currentStep, language === 'sv' ? 'sv' : 'en')}
             </Text>
           </View>
-          <ProgressBar 
-            progress={progressPercentage} 
-            style={styles.progressBar} 
-          />
+          <ProgressBar progress={progressPercentage} style={styles.progressBar} />
         </Surface>
 
         {/* Step Content - ScrollView */}
-        <ScrollView 
+        <ScrollView
           style={styles.content}
           contentContainerStyle={styles.contentContainer}
           showsVerticalScrollIndicator={false}

@@ -5,6 +5,7 @@ Quick guide for updating documentation to match the new comprehensive structure.
 ## Documentation Sections
 
 ### Getting Started (`docs/getting-started/`)
+
 - `QUICK_START.md` - Quick start guide
 - `INSTALLATION.md` - Installation steps
 - `ENVIRONMENT.md` - Environment config
@@ -13,12 +14,14 @@ Quick guide for updating documentation to match the new comprehensive structure.
 **Update when:** Installation, dependencies, env vars, or structure changes
 
 ### Architecture (`docs/architecture/`)
+
 - `OVERVIEW.md` - Architecture overview
 - `TECH_STACK.md` - Technologies used
 
 **Update when:** Architecture, libraries, or design decisions change
 
 ### Features (`docs/features/`)
+
 - `AUTHENTICATION.md` - Auth with PKCE
 - `MFA.md` - Multi-Factor Authentication
 - Create new files for new features
@@ -26,23 +29,27 @@ Quick guide for updating documentation to match the new comprehensive structure.
 **Update when:** Features added, modified, or removed
 
 ### Backend (`docs/backend/`)
+
 - `SUPABASE.md` - Supabase setup
 - `DATABASE_SCHEMA.md` - Database structure
 
 **Update when:** Database schema, RLS policies, or Supabase config changes
 
 ### Development (`docs/development/`)
+
 - `WORKFLOW.md` - Development workflow
 
 **Update when:** Development practices or tools change
 
 ### Reference (`docs/reference/`)
+
 - `TROUBLESHOOTING.md` - Common problems
 - `FAQ.md` - Frequently asked questions
 
 **Update when:** New issues discovered or common questions arise
 
 ### Root Files
+
 - `README.md` - Project overview
 - `ROADMAP.md` - Implementation roadmap
 - `SETUP.md` - Setup guide
@@ -62,9 +69,11 @@ Quick guide for updating documentation to match the new comprehensive structure.
 # Documentation Update: YYYY-MM-DD HH:mm
 
 ## Updated Files
+
 - docs/section/file.md
 
 ## Reason
+
 - [Why the update was needed]
 ```
 

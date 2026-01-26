@@ -15,15 +15,10 @@ interface PageHeaderProps {
   rightContent?: React.ReactNode;
 }
 
-export function PageHeader({ 
-  title, 
-  showBack = true,
-  onBackPress,
-  rightContent,
-}: PageHeaderProps) {
+export function PageHeader({ title, showBack = true, onBackPress, rightContent }: PageHeaderProps) {
   const navigation = useNavigation();
   const { isDark } = useTheme();
-  
+
   const textColor = isDark ? '#FAFAFA' : '#171717';
   const bgColor = isDark ? '#1A1A1A' : '#F5F5F5';
 

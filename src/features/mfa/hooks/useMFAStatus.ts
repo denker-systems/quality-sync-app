@@ -37,7 +37,7 @@ export function useMFAStatus(): UseMFAStatusReturn {
     try {
       const { currentLevel, nextLevel } = await mfaService.getAssuranceLevel();
       const factors = await mfaService.listFactors();
-      const verifiedFactors = factors.filter(f => f.status === 'verified');
+      const verifiedFactors = factors.filter((f) => f.status === 'verified');
       const isEnrolled = verifiedFactors.length > 0;
 
       // Check if device is trusted (MFA bypass for configured hours)
@@ -84,14 +84,14 @@ export function useMFAStatus(): UseMFAStatusReturn {
   const isRequired = status?.isRequired ?? false;
   const isEnrolled = status?.isEnrolled ?? false;
   // Device trusted = no challenge needed even if enrolled
-  const needsChallenge = status 
+  const needsChallenge = status
     ? status.isRequired && status.isEnrolled && status.currentLevel !== 'aal2' && !isDeviceTrusted
     : false;
 
   // Function to trust current device after successful MFA
   const trustCurrentDevice = useCallback(async () => {
     if (!user) return;
-    
+
     // Default to 6 hours, could be fetched from company settings
     const hoursToTrust = 6;
     await trustedDeviceService.trustDevice(user.id, hoursToTrust);

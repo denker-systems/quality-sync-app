@@ -31,7 +31,7 @@ export function IconButton({
 
   const getBackgroundColor = () => {
     if (disabled) return isDark ? '#1A1A1A' : '#F5F5F5';
-    
+
     switch (variant) {
       case 'primary':
         return isDark ? '#FAFAFA' : '#1A1A1A';

@@ -1,6 +1,6 @@
 import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { StyleSheet, View, Dimensions, Platform } from 'react-native';
-import { Button, Surface, Text } from 'react-native-paper';
+import { Button, Text } from 'react-native-paper';
 import SignatureScreen from 'react-native-signature-canvas';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -27,6 +27,7 @@ export const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
   const [isEmpty, setIsEmpty] = useState(true);
   const [isDrawing, setIsDrawing] = useState(false);
   const lastPointRef = useRef<{ x: number; y: number } | null>(null);
+  const signatureRef = useRef<any>(null);
 
   const canvasBg = isDark ? '#262626' : '#ffffff';
   const penColor = isDark ? '#FAFAFA' : '#000000';
@@ -54,7 +55,7 @@ export const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
   const getCanvasPoint = useCallback((e: React.MouseEvent | React.TouchEvent) => {
     if (!canvasRef.current) return null;
     const rect = canvasRef.current.getBoundingClientRect();
-    
+
     let clientX: number, clientY: number;
     if ('touches' in e) {
       if (e.touches.length === 0) return null;
@@ -64,44 +65,50 @@ export const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
       clientX = e.clientX;
       clientY = e.clientY;
     }
-    
+
     return {
       x: clientX - rect.left,
       y: clientY - rect.top,
     };
   }, []);
 
-  const startDrawing = useCallback((e: React.MouseEvent | React.TouchEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const point = getCanvasPoint(e);
-    if (!point) return;
-    
-    console.log('✍️ SignatureCanvas: Drawing started');
-    setIsDrawing(true);
-    setIsEmpty(false);
-    lastPointRef.current = point;
-    onScrollChange?.(false);
-  }, [getCanvasPoint, onScrollChange]);
+  const startDrawing = useCallback(
+    (e: React.MouseEvent | React.TouchEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const point = getCanvasPoint(e);
+      if (!point) return;
 
-  const draw = useCallback((e: React.MouseEvent | React.TouchEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!isDrawing || !canvasRef.current || !lastPointRef.current) return;
-    
-    const point = getCanvasPoint(e);
-    if (!point) return;
-    
-    const ctx = canvasRef.current.getContext('2d');
-    if (ctx) {
-      ctx.beginPath();
-      ctx.moveTo(lastPointRef.current.x, lastPointRef.current.y);
-      ctx.lineTo(point.x, point.y);
-      ctx.stroke();
-    }
-    
-    lastPointRef.current = point;
-  }, [isDrawing, getCanvasPoint]);
+      console.log('✍️ SignatureCanvas: Drawing started');
+      setIsDrawing(true);
+      setIsEmpty(false);
+      lastPointRef.current = point;
+      onScrollChange?.(false);
+    },
+    [getCanvasPoint, onScrollChange],
+  );
+
+  const draw = useCallback(
+    (e: React.MouseEvent | React.TouchEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!isDrawing || !canvasRef.current || !lastPointRef.current) return;
+
+      const point = getCanvasPoint(e);
+      if (!point) return;
+
+      const ctx = canvasRef.current.getContext('2d');
+      if (ctx) {
+        ctx.beginPath();
+        ctx.moveTo(lastPointRef.current.x, lastPointRef.current.y);
+        ctx.lineTo(point.x, point.y);
+        ctx.stroke();
+      }
+
+      lastPointRef.current = point;
+    },
+    [isDrawing, getCanvasPoint],
+  );
 
   const stopDrawing = useCallback(() => {
     if (isDrawing) {
@@ -140,9 +147,9 @@ export const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
         <Text variant="bodySmall" style={[styles.instruction, { color: mutedColor }]}>
           {t('signature.instruction')}
         </Text>
-        
+
         <div
-          style={{ 
+          style={{
             borderRadius: 8,
             overflow: 'hidden',
             alignItems: 'center',
@@ -184,12 +191,7 @@ export const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
           <Button mode="outlined" onPress={handleClear} style={styles.button}>
             {t('signature.clear')}
           </Button>
-          <Button 
-            mode="contained" 
-            onPress={handleConfirm} 
-            style={styles.button}
-            disabled={isEmpty}
-          >
+          <Button mode="contained" onPress={handleConfirm} style={styles.button} disabled={isEmpty}>
             {t('signature.confirm')}
           </Button>
         </View>
@@ -198,8 +200,6 @@ export const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
   }
 
   // Native implementation using react-native-signature-canvas
-  const signatureRef = useRef<any>(null);
-
   const handleNativeSignature = (signature: string) => {
     console.log('✅ SignatureCanvas (Native): Signature captured');
     onComplete(signature);
@@ -237,9 +237,12 @@ export const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
       <Text variant="bodySmall" style={[styles.instruction, { color: mutedColor }]}>
         {t('signature.instruction')}
       </Text>
-      
-      <View 
-        style={[styles.canvas, { width: canvasWidth, height: canvasHeight, backgroundColor: canvasBg, borderColor }]}
+
+      <View
+        style={[
+          styles.canvas,
+          { width: canvasWidth, height: canvasHeight, backgroundColor: canvasBg, borderColor },
+        ]}
         onStartShouldSetResponder={() => true}
         onMoveShouldSetResponder={() => true}
       >
@@ -270,11 +273,7 @@ export const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
         <Button mode="outlined" onPress={handleNativeClear} style={styles.button}>
           {t('signature.clear')}
         </Button>
-        <Button 
-          mode="contained" 
-          onPress={handleNativeEnd} 
-          style={styles.button}
-        >
+        <Button mode="contained" onPress={handleNativeEnd} style={styles.button}>
           {t('signature.confirm')}
         </Button>
       </View>

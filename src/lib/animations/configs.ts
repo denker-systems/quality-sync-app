@@ -1,6 +1,6 @@
 /**
  * Animation Configurations
- * 
+ *
  * Optimized spring and timing configurations for 60+ FPS
  * All configs use worklet-compatible values
  */
@@ -19,7 +19,7 @@ export const SPRING_CONFIGS = {
     stiffness: 350,
     mass: 0.8,
   } as MotiTransition,
-  
+
   // Bouncy and playful for engaging elements
   bouncy: {
     type: 'spring',
@@ -27,7 +27,7 @@ export const SPRING_CONFIGS = {
     stiffness: 300,
     mass: 0.6,
   } as MotiTransition,
-  
+
   // Smooth and natural for page transitions
   smooth: {
     type: 'spring',
@@ -35,7 +35,7 @@ export const SPRING_CONFIGS = {
     stiffness: 280,
     mass: 1,
   } as MotiTransition,
-  
+
   // Gentle and subtle for background animations
   gentle: {
     type: 'spring',
@@ -54,12 +54,12 @@ export const TIMING_CONFIGS = {
     type: 'timing',
     duration: 200,
   } as MotiTransition,
-  
+
   medium: {
     type: 'timing',
     duration: 300,
   } as MotiTransition,
-  
+
   slow: {
     type: 'timing',
     duration: 450,
@@ -85,32 +85,32 @@ export const ENTRANCE_PRESETS = {
     from: { opacity: 0, translateY: 20, scale: 0.95 },
     animate: { opacity: 1, translateY: 0, scale: 1 },
   },
-  
+
   fadeInUpSubtle: {
     from: { opacity: 0, translateY: 12 },
     animate: { opacity: 1, translateY: 0 },
   },
-  
+
   scaleIn: {
     from: { opacity: 0, scale: 0.85 },
     animate: { opacity: 1, scale: 1 },
   },
-  
+
   slideInRight: {
     from: { opacity: 0, translateX: 30 },
     animate: { opacity: 1, translateX: 0 },
   },
-  
+
   slideInLeft: {
     from: { opacity: 0, translateX: -30 },
     animate: { opacity: 1, translateX: 0 },
   },
-  
+
   bounceIn: {
     from: { opacity: 0, scale: 0.3 },
     animate: { opacity: 1, scale: 1 },
   },
-  
+
   rotateIn: {
     from: { opacity: 0, scale: 0.7, rotate: '-5deg' },
     animate: { opacity: 1, scale: 1, rotate: '0deg' },
@@ -124,12 +124,12 @@ export const EXIT_PRESETS = {
   fadeOut: {
     opacity: 0,
   },
-  
+
   fadeOutDown: {
     opacity: 0,
     translateY: 20,
   },
-  
+
   scaleOut: {
     opacity: 0,
     scale: 0.9,

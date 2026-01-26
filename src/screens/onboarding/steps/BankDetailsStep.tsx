@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, ScrollView } from 'react-native';
-import { Text, TextInput, Button, Surface, SegmentedButtons } from 'react-native-paper';
+import React, { useState, useEffect, useCallback } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { Text, TextInput, Surface, SegmentedButtons } from 'react-native-paper';
 import { Building2 } from 'lucide-react-native';
 import { useLanguage } from '@/contexts/LanguageContext';
 import type { OnboardingStep } from '@/hooks/useOnboarding';
@@ -25,17 +25,6 @@ export const BankDetailsStep: React.FC<BankDetailsStepProps> = ({
 }) => {
   const { t, language } = useLanguage();
   console.log('🏦 BANK_DETAILS_STEP render:', { stepData });
-  
-  useEffect(() => {
-    if (submitRef) {
-      submitRef.current = handleSubmit;
-    }
-    return () => {
-      if (submitRef) {
-        submitRef.current = null;
-      }
-    };
-  }, [submitRef]);
 
   const [formData, setFormData] = useState({
     bank_name: stepData?.bank_name || '',
@@ -52,10 +41,10 @@ export const BankDetailsStep: React.FC<BankDetailsStepProps> = ({
     { value: 'plusgiro', label: t('onboarding.bankDetails.plusgiro') },
   ];
 
-  const validate = () => {
+  const validate = useCallback(() => {
     console.log('🔍 BANK_DETAILS_STEP validate:', formData);
     const newErrors: Record<string, string> = {};
-    
+
     if (formData.account_type === 'bank') {
       if (!formData.bank_name.trim()) {
         newErrors.bank_name = t('onboarding.bankDetails.errorBankName');
@@ -66,11 +55,11 @@ export const BankDetailsStep: React.FC<BankDetailsStepProps> = ({
         newErrors.clearing_number = t('onboarding.bankDetails.errorInvalidClearingNumber');
       }
     }
-    
+
     if (!formData.account_number.trim()) {
       newErrors.account_number = t('onboarding.bankDetails.errorAccountNumber');
     }
-    
+
     if (Object.keys(newErrors).length > 0) {
       console.warn('⚠️ BANK_DETAILS_STEP validation failed:', newErrors);
     } else {
@@ -78,20 +67,31 @@ export const BankDetailsStep: React.FC<BankDetailsStepProps> = ({
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
+  }, [formData, t]);
 
-  const handleSubmit = () => {
+  const handleSubmit = useCallback(() => {
     console.log('📤 BANK_DETAILS_STEP handleSubmit:', formData);
-    
+
     if (validate()) {
       onComplete({ bank_details: formData });
     }
-  };
+  }, [formData, onComplete, validate]);
+
+  useEffect(() => {
+    if (submitRef) {
+      submitRef.current = handleSubmit;
+    }
+    return () => {
+      if (submitRef) {
+        submitRef.current = null;
+      }
+    };
+  }, [handleSubmit, submitRef]);
 
   const updateField = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }));
+      setErrors((prev) => ({ ...prev, [field]: '' }));
     }
   };
 
@@ -101,12 +101,15 @@ export const BankDetailsStep: React.FC<BankDetailsStepProps> = ({
         <View style={styles.header}>
           <Building2 size={24} color="#0056b3" />
           <Text variant="titleLarge" style={styles.title}>
-            {getOnboardingStepTitle(step, language === 'sv' ? 'sv' : 'en') || t('onboarding.bankDetails.title')}
+            {getOnboardingStepTitle(step, language === 'sv' ? 'sv' : 'en') ||
+              t('onboarding.bankDetails.title')}
           </Text>
         </View>
-        
+
         <Text variant="bodyMedium" style={styles.description}>
-          {getOnboardingStepDescription(step, language === 'sv' ? 'sv' : 'en') || content?.description || t('onboarding.bankDetails.description')}
+          {getOnboardingStepDescription(step, language === 'sv' ? 'sv' : 'en') ||
+            content?.description ||
+            t('onboarding.bankDetails.description')}
         </Text>
 
         <View style={styles.infoBox}>
@@ -115,7 +118,9 @@ export const BankDetailsStep: React.FC<BankDetailsStepProps> = ({
           </Text>
         </View>
 
-        <Text variant="labelLarge" style={styles.label}>{t('onboarding.bankDetails.accountType')}</Text>
+        <Text variant="labelLarge" style={styles.label}>
+          {t('onboarding.bankDetails.accountType')}
+        </Text>
         <SegmentedButtons
           value={formData.account_type}
           onValueChange={(value) => updateField('account_type', value)}
@@ -134,9 +139,7 @@ export const BankDetailsStep: React.FC<BankDetailsStepProps> = ({
               error={!!errors.bank_name}
               style={styles.input}
             />
-            {errors.bank_name && (
-              <Text style={styles.errorText}>{errors.bank_name}</Text>
-            )}
+            {errors.bank_name && <Text style={styles.errorText}>{errors.bank_name}</Text>}
 
             <TextInput
               label={`${t('onboarding.bankDetails.clearingNumber')} ${t('onboarding.bankDetails.required')}`}
@@ -155,8 +158,13 @@ export const BankDetailsStep: React.FC<BankDetailsStepProps> = ({
         )}
 
         <TextInput
-          label={formData.account_type === 'bank' ? `${t('onboarding.bankDetails.accountNumber')} ${t('onboarding.bankDetails.required')}` : 
-                 formData.account_type === 'bankgiro' ? `${t('onboarding.bankDetails.bankgiroNumber')} ${t('onboarding.bankDetails.required')}` : `${t('onboarding.bankDetails.plusgiroNumber')} ${t('onboarding.bankDetails.required')}`}
+          label={
+            formData.account_type === 'bank'
+              ? `${t('onboarding.bankDetails.accountNumber')} ${t('onboarding.bankDetails.required')}`
+              : formData.account_type === 'bankgiro'
+                ? `${t('onboarding.bankDetails.bankgiroNumber')} ${t('onboarding.bankDetails.required')}`
+                : `${t('onboarding.bankDetails.plusgiroNumber')} ${t('onboarding.bankDetails.required')}`
+          }
           value={formData.account_number}
           onChangeText={(text) => updateField('account_number', text)}
           mode="outlined"
@@ -164,9 +172,7 @@ export const BankDetailsStep: React.FC<BankDetailsStepProps> = ({
           error={!!errors.account_number}
           style={styles.input}
         />
-        {errors.account_number && (
-          <Text style={styles.errorText}>{errors.account_number}</Text>
-        )}
+        {errors.account_number && <Text style={styles.errorText}>{errors.account_number}</Text>}
       </Surface>
     </>
   );

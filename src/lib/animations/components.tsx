@@ -1,6 +1,6 @@
 /**
  * Optimized Animation Components
- * 
+ *
  * Pre-built animated components with best practices baked in
  * All components use memoization and worklets for maximum FPS
  */
@@ -28,7 +28,7 @@ export const AnimatedEntrance = memo(function AnimatedEntrance({
   style,
 }: AnimatedEntranceProps) {
   const animation = ENTRANCE_PRESETS[preset];
-  
+
   return (
     <MotiView
       from={animation.from}
@@ -91,7 +91,7 @@ export const AnimatedGridItem = memo(function AnimatedGridItem({
   style,
 }: AnimatedGridItemProps) {
   const rotateDirection = index % 2 === 0 ? '-5deg' : '5deg';
-  
+
   return (
     <MotiView
       from={{ opacity: 0, scale: 0.7, translateY: 30, rotate: rotateDirection }}

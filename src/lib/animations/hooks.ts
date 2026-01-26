@@ -1,6 +1,6 @@
 /**
  * Animation Hooks
- * 
+ *
  * Optimized hooks for high-performance animations
  * All hooks use memoization and worklets for maximum FPS
  */
@@ -11,23 +11,20 @@ import type { MotiPressableInteractionProp } from 'moti/interactions';
 /**
  * Creates a memoized press animation callback
  * Optimized for components that re-render frequently
- * 
+ *
  * @example
  * const pressAnimation = usePressAnimation({ scaleDown: 0.96 });
  * <MotiPressable animate={pressAnimation} />
  */
-export function usePressAnimation(options: {
-  scaleDown?: number;
-  scaleUp?: number;
-  opacityPressed?: number;
-  isActive?: boolean;
-} = {}) {
-  const {
-    scaleDown = 0.96,
-    scaleUp = 1,
-    opacityPressed = 0.85,
-    isActive = false,
-  } = options;
+export function usePressAnimation(
+  options: {
+    scaleDown?: number;
+    scaleUp?: number;
+    opacityPressed?: number;
+    isActive?: boolean;
+  } = {},
+) {
+  const { scaleDown = 0.96, scaleUp = 1, opacityPressed = 0.85, isActive = false } = options;
 
   return useCallback<MotiPressableInteractionProp>(
     ({ pressed }) => {
@@ -37,7 +34,7 @@ export function usePressAnimation(options: {
         opacity: pressed ? opacityPressed : 1,
       };
     },
-    [scaleDown, scaleUp, opacityPressed, isActive]
+    [scaleDown, scaleUp, opacityPressed, isActive],
   );
 }
 
@@ -54,7 +51,7 @@ export function useBouncyPress(isActive: boolean = false) {
         opacity: pressed ? 0.8 : 1,
       };
     },
-    [isActive]
+    [isActive],
   );
 }
 
@@ -63,16 +60,13 @@ export function useBouncyPress(isActive: boolean = false) {
  * Scales up slightly on press for "lifting" effect
  */
 export function useLiftPress() {
-  return useCallback<MotiPressableInteractionProp>(
-    ({ pressed }) => {
-      'worklet';
-      return {
-        scale: pressed ? 1.05 : 1,
-        opacity: pressed ? 0.9 : 1,
-      };
-    },
-    []
-  );
+  return useCallback<MotiPressableInteractionProp>(({ pressed }) => {
+    'worklet';
+    return {
+      scale: pressed ? 1.05 : 1,
+      opacity: pressed ? 0.9 : 1,
+    };
+  }, []);
 }
 
 /**
@@ -91,7 +85,7 @@ export function useStaggeredEntrance(index: number, delayMs: number = 60) {
         delay: index * delayMs,
       },
     }),
-    [index, delayMs]
+    [index, delayMs],
   );
 }
 
@@ -99,11 +93,14 @@ export function useStaggeredEntrance(index: number, delayMs: number = 60) {
  * Creates a memoized loop animation for pulsing effects
  * Optimized for continuous animations like active states
  */
-export function usePulseAnimation(isActive: boolean, options: {
-  scaleMin?: number;
-  scaleMax?: number;
-  duration?: number;
-} = {}) {
+export function usePulseAnimation(
+  isActive: boolean,
+  options: {
+    scaleMin?: number;
+    scaleMax?: number;
+    duration?: number;
+  } = {},
+) {
   const { scaleMin = 1, scaleMax = 1.05, duration = 2000 } = options;
 
   return useMemo(
@@ -113,6 +110,6 @@ export function usePulseAnimation(isActive: boolean, options: {
         ? { type: 'timing' as const, duration, loop: true }
         : { type: 'timing' as const, duration: 200 },
     }),
-    [isActive, scaleMin, scaleMax, duration]
+    [isActive, scaleMin, scaleMax, duration],
   );
 }

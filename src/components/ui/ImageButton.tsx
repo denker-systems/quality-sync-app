@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, Image, ImageSourcePropType, StyleSheet, View } from 'react-native';
+import { TouchableOpacity, Image, ImageSourcePropType, StyleSheet } from 'react-native';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Text } from './Text';
 import { Card, CardContent } from './Card';
@@ -17,21 +17,15 @@ export function ImageButton({ title, image, onPress, disabled = false }: ImageBu
   const textColor = isDark ? '#FAFAFA' : '#171717';
 
   return (
-    <TouchableOpacity 
-      onPress={onPress} 
+    <TouchableOpacity
+      onPress={onPress}
       activeOpacity={0.7}
       disabled={disabled}
       style={styles.button}
     >
       <Card variant="elevated" style={[styles.card, { backgroundColor: bgColor }]}>
         <CardContent style={styles.cardContent}>
-          {image && (
-            <Image 
-              source={image} 
-              style={styles.image}
-              resizeMode="contain"
-            />
-          )}
+          {image && <Image source={image} style={styles.image} resizeMode="contain" />}
           <Text variant="body-lg" style={{ color: textColor, textAlign: 'center' }}>
             {title}
           </Text>

@@ -71,6 +71,7 @@ git commit -m "type(scope): description"
 ```
 
 **Types:**
+
 - `feat` - New feature
 - `fix` - Bug fix
 - `docs` - Documentation
@@ -81,6 +82,7 @@ git commit -m "type(scope): description"
 - `chore` - Maintenance
 
 **Examples:**
+
 ```bash
 git commit -m "feat(auth): add password reset"
 git commit -m "fix(profile): resolve avatar loading issue"
@@ -201,7 +203,7 @@ export type { FeatureType } from './types/feature.types';
 ```typescript
 /**
  * Authenticates user with email and password
- * 
+ *
  * @param email - User's email address
  * @param password - User's password
  * @returns Promise resolving to user session
@@ -215,6 +217,7 @@ async function signIn(email: string, password: string): Promise<Session> {
 ### Feature Documentation
 
 When adding a feature:
+
 1. Create `docs/features/FEATURE_NAME.md`
 2. Explain purpose and usage
 3. Include code examples
@@ -252,6 +255,7 @@ Fix all type errors before submitting PR.
 ### PR Title
 
 Use Conventional Commits format:
+
 ```
 feat(auth): add password reset functionality
 fix(profile): resolve avatar loading issue
@@ -261,6 +265,7 @@ docs: update contributing guide
 ### PR Description
 
 Include:
+
 - **What:** What changes were made
 - **Why:** Why these changes were needed
 - **How:** How the changes work
@@ -268,23 +273,29 @@ Include:
 - **Screenshots:** For UI changes
 
 **Template:**
+
 ```markdown
 ## What
+
 Brief description of changes
 
 ## Why
+
 Explanation of why these changes are needed
 
 ## How
+
 Technical details of implementation
 
 ## Testing
+
 - [ ] Tested on iOS
 - [ ] Tested on Android
 - [ ] No console errors
 - [ ] TypeScript check passes
 
 ## Screenshots
+
 (if applicable)
 ```
 

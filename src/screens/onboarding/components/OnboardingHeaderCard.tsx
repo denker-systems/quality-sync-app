@@ -40,11 +40,21 @@ export function OnboardingHeaderCard({
               {title}
             </Text>
             <Text variant="body" style={{ color: mutedColor, marginTop: 4 }}>
-              {welcomeName ? t('onboarding.welcomeName', { name: welcomeName }) : t('onboarding.welcomeMessage')}
+              {welcomeName
+                ? t('onboarding.welcomeName', { name: welcomeName })
+                : t('onboarding.welcomeMessage')}
             </Text>
           </View>
-          <Badge variant={status === 'completed' ? 'success' : status === 'in_progress' ? 'warning' : 'default'}>
-            {status === 'completed' ? t('onboarding.completed') : status === 'in_progress' ? t('onboarding.inProgress') : t('onboarding.notStarted')}
+          <Badge
+            variant={
+              status === 'completed' ? 'success' : status === 'in_progress' ? 'warning' : 'default'
+            }
+          >
+            {status === 'completed'
+              ? t('onboarding.completed')
+              : status === 'in_progress'
+                ? t('onboarding.inProgress')
+                : t('onboarding.notStarted')}
           </Badge>
         </View>
 
@@ -54,21 +64,33 @@ export function OnboardingHeaderCard({
               {t('onboarding.progressLabel')}
             </Text>
             <Text variant="body-sm" style={{ color: textColor, fontWeight: '600' }}>
-              {t('onboarding.completedStepsLabel', { completed: completedSteps, total: totalSteps })}
+              {t('onboarding.completedStepsLabel', {
+                completed: completedSteps,
+                total: totalSteps,
+              })}
             </Text>
           </View>
           <ProgressBar progress={progressPercentage} style={styles.progressBar} />
         </View>
 
         {status !== 'completed' && (
-          <View style={[styles.startButtonContainer, { borderTopColor: isDark ? '#2E2E2E' : '#E5E5E5' }]}>
+          <View
+            style={[
+              styles.startButtonContainer,
+              { borderTopColor: isDark ? '#2E2E2E' : '#E5E5E5' },
+            ]}
+          >
             <Button
               variant="primary"
               onPress={onStart}
               disabled={isPending}
               style={{ backgroundColor: accentColor }}
             >
-              {isPending ? t('onboarding.starting') : status === 'in_progress' ? t('onboarding.continueButton') : t('onboarding.startButton')}
+              {isPending
+                ? t('onboarding.starting')
+                : status === 'in_progress'
+                  ? t('onboarding.continueButton')
+                  : t('onboarding.startButton')}
             </Button>
           </View>
         )}

@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import { Wifi } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
 

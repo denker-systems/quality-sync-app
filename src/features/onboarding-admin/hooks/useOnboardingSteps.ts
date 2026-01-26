@@ -121,10 +121,7 @@ export function useDeleteOnboardingStep() {
     mutationFn: async (stepId: string) => {
       console.log('🗑️ Deleting onboarding step:', stepId);
 
-      const { error } = await (supabase as any)
-        .from('onboarding_steps')
-        .delete()
-        .eq('id', stepId);
+      const { error } = await (supabase as any).from('onboarding_steps').delete().eq('id', stepId);
 
       if (error) {
         console.error('❌ Failed to delete step:', error);

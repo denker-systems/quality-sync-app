@@ -1,6 +1,6 @@
 /**
  * Centralized Theme Configuration
- * 
+ *
  * Single source of truth for all colors, spacing, and design tokens
  * Used throughout the app for consistent theming
  */
@@ -11,7 +11,7 @@ export const COLORS = {
     light: '#489A45',
     dark: '#6BBD68',
   },
-  
+
   // Text colors
   text: {
     primary: {
@@ -27,7 +27,7 @@ export const COLORS = {
       dark: '#FFFFFF',
     },
   },
-  
+
   // Background colors
   background: {
     primary: {
@@ -43,13 +43,13 @@ export const COLORS = {
       dark: '#2A2A2A',
     },
   },
-  
+
   // Border colors
   border: {
     light: '#E5E5E5',
     dark: '#2E2E2E',
   },
-  
+
   // Input colors
   input: {
     background: {
@@ -61,7 +61,7 @@ export const COLORS = {
       dark: '#333333',
     },
   },
-  
+
   // Status colors
   success: {
     light: '#10b981',
@@ -79,7 +79,7 @@ export const COLORS = {
     light: '#3b82f6',
     dark: '#3b82f6',
   },
-  
+
   // Gamification colors
   streak: '#EF4444',
   trophy: '#F59E0B',

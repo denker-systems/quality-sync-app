@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, ScrollView } from 'react-native';
-import { Text, TextInput, Button, Surface, SegmentedButtons } from 'react-native-paper';
+import React, { useState, useEffect, useCallback } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { Text, TextInput, Surface, SegmentedButtons } from 'react-native-paper';
 import { Phone } from 'lucide-react-native';
 import { useLanguage } from '@/contexts/LanguageContext';
 import type { OnboardingStep } from '@/hooks/useOnboarding';
@@ -25,17 +25,6 @@ export const EmergencyContactStep: React.FC<EmergencyContactStepProps> = ({
 }) => {
   const { t, language } = useLanguage();
   console.log('🆘 EMERGENCY_CONTACT_STEP render:', { stepData });
-  
-  useEffect(() => {
-    if (submitRef) {
-      submitRef.current = handleSubmit;
-    }
-    return () => {
-      if (submitRef) {
-        submitRef.current = null;
-      }
-    };
-  }, [submitRef]);
 
   const [formData, setFormData] = useState({
     contact_name: stepData?.contact_name || '',
@@ -52,17 +41,17 @@ export const EmergencyContactStep: React.FC<EmergencyContactStepProps> = ({
     { value: 'other', label: t('onboarding.emergencyContact.relationOther') },
   ];
 
-  const validate = () => {
+  const validate = useCallback(() => {
     console.log('🔍 EMERGENCY_CONTACT_STEP validate:', formData);
     const newErrors: Record<string, string> = {};
-    
+
     if (!formData.contact_name.trim()) {
       newErrors.contact_name = t('onboarding.emergencyContact.errorName');
     }
     if (!formData.contact_phone.trim()) {
       newErrors.contact_phone = t('onboarding.emergencyContact.errorPhone');
     }
-    
+
     if (Object.keys(newErrors).length > 0) {
       console.warn('⚠️ EMERGENCY_CONTACT_STEP validation failed:', newErrors);
     } else {
@@ -70,20 +59,31 @@ export const EmergencyContactStep: React.FC<EmergencyContactStepProps> = ({
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
+  }, [formData, t]);
 
-  const handleSubmit = () => {
+  const handleSubmit = useCallback(() => {
     console.log('📤 EMERGENCY_CONTACT_STEP handleSubmit:', formData);
-    
+
     if (validate()) {
       onComplete({ emergency_contact: formData });
     }
-  };
+  }, [formData, onComplete, validate]);
+
+  useEffect(() => {
+    if (submitRef) {
+      submitRef.current = handleSubmit;
+    }
+    return () => {
+      if (submitRef) {
+        submitRef.current = null;
+      }
+    };
+  }, [handleSubmit, submitRef]);
 
   const updateField = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }));
+      setErrors((prev) => ({ ...prev, [field]: '' }));
     }
   };
 
@@ -93,12 +93,15 @@ export const EmergencyContactStep: React.FC<EmergencyContactStepProps> = ({
         <View style={styles.header}>
           <Phone size={24} color="#0056b3" />
           <Text variant="titleLarge" style={styles.title}>
-            {getOnboardingStepTitle(step, language === 'sv' ? 'sv' : 'en') || t('onboarding.emergencyContact.title')}
+            {getOnboardingStepTitle(step, language === 'sv' ? 'sv' : 'en') ||
+              t('onboarding.emergencyContact.title')}
           </Text>
         </View>
-        
+
         <Text variant="bodyMedium" style={styles.description}>
-          {getOnboardingStepDescription(step, language === 'sv' ? 'sv' : 'en') || content?.description || t('onboarding.emergencyContact.description')}
+          {getOnboardingStepDescription(step, language === 'sv' ? 'sv' : 'en') ||
+            content?.description ||
+            t('onboarding.emergencyContact.description')}
         </Text>
 
         <View style={styles.infoBox}>
@@ -115,11 +118,11 @@ export const EmergencyContactStep: React.FC<EmergencyContactStepProps> = ({
           error={!!errors.contact_name}
           style={styles.input}
         />
-        {errors.contact_name && (
-          <Text style={styles.errorText}>{errors.contact_name}</Text>
-        )}
+        {errors.contact_name && <Text style={styles.errorText}>{errors.contact_name}</Text>}
 
-        <Text variant="labelLarge" style={styles.label}>{t('onboarding.emergencyContact.relation')}</Text>
+        <Text variant="labelLarge" style={styles.label}>
+          {t('onboarding.emergencyContact.relation')}
+        </Text>
         <SegmentedButtons
           value={formData.contact_relation}
           onValueChange={(value) => updateField('contact_relation', value)}
@@ -136,9 +139,7 @@ export const EmergencyContactStep: React.FC<EmergencyContactStepProps> = ({
           error={!!errors.contact_phone}
           style={styles.input}
         />
-        {errors.contact_phone && (
-          <Text style={styles.errorText}>{errors.contact_phone}</Text>
-        )}
+        {errors.contact_phone && <Text style={styles.errorText}>{errors.contact_phone}</Text>}
 
         <TextInput
           label={t('onboarding.emergencyContact.email')}

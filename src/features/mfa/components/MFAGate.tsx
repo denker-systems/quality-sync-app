@@ -13,7 +13,7 @@ import type { MFAGateProps } from '../types/mfa.types';
 type MFAState = 'loading' | 'passed' | 'needs-enrollment' | 'needs-challenge';
 
 export function MFAGate({ children }: MFAGateProps) {
-  const { status, isLoading, isRequired, isEnrolled, needsChallenge, refresh } = useMFAStatus();
+  const { isLoading, isRequired, isEnrolled, needsChallenge, refresh } = useMFAStatus();
   const [mfaState, setMFAState] = useState<MFAState>('loading');
 
   useEffect(() => {
@@ -79,10 +79,7 @@ export function MFAGate({ children }: MFAGateProps) {
           <Text variant="bodyMedium" style={styles.description}>
             Din organisation kräver tvåfaktorsautentisering för säkerhet
           </Text>
-          <MFAEnrollment 
-            onEnrolled={handleEnrolled}
-            required={true}
-          />
+          <MFAEnrollment onEnrolled={handleEnrolled} required={true} />
         </View>
       </View>
     );

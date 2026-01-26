@@ -5,7 +5,15 @@ import { RoleGuard } from '@/components/common/RoleGuard';
 import { Text, Card, CardContent, Button, Badge, Surface, ProgressBar } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useNavigation } from '@react-navigation/native';
-import { Eye, RotateCcw, X, CheckCircle, Clock, AlertCircle, ChevronRight } from 'lucide-react-native';
+import {
+  Eye,
+  RotateCcw,
+  X,
+  CheckCircle,
+  Clock,
+  AlertCircle,
+  ChevronRight,
+} from 'lucide-react-native';
 import { useOnboardingSteps } from '../hooks/useOnboardingSteps';
 import { useCompanyData } from '@/hooks/useCompanyData';
 import { MockEmployee, PreviewProgress, STEP_TYPE_LABELS } from '../types';
@@ -33,7 +41,6 @@ export function OnboardingPreviewScreen() {
   const { company } = useCompanyData();
   const { data: steps, isLoading } = useOnboardingSteps();
 
-  const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [previewProgress, setPreviewProgress] = useState<PreviewProgress[]>([]);
   const [resetKey, setResetKey] = useState(0);
 
@@ -50,73 +57,30 @@ export function OnboardingPreviewScreen() {
   useEffect(() => {
     if (steps && steps.length > 0) {
       const initialProgress: PreviewProgress[] = steps
-        .filter(s => s.is_active)
-        .map(step => ({
+        .filter((s) => s.is_active)
+        .map((step) => ({
           stepId: step.id,
           status: 'pending',
           stepData: {},
         }));
       setPreviewProgress(initialProgress);
-      setCurrentStepIndex(0);
     }
   }, [steps, resetKey]);
 
-  const activeSteps = steps?.filter(s => s.is_active) || [];
-  const currentStep = activeSteps[currentStepIndex];
-  const currentProgress = previewProgress[currentStepIndex];
+  const activeSteps = steps?.filter((s) => s.is_active) || [];
 
-  const completedSteps = previewProgress.filter(p => p.status === 'completed').length;
+  const completedSteps = previewProgress.filter((p) => p.status === 'completed').length;
   const totalSteps = activeSteps.length;
   const progressPercentage = totalSteps > 0 ? completedSteps / totalSteps : 0;
 
   const handleReset = () => {
-    setResetKey(prev => prev + 1);
+    setResetKey((prev) => prev + 1);
   };
 
   const handleClose = () => {
     navigation.goBack();
   };
 
-  const handleStepComplete = async (stepData: Record<string, any>) => {
-    console.log('🧪 PREVIEW: Step completed (not saved):', {
-      stepIndex: currentStepIndex,
-      stepType: currentStep?.step_type,
-    });
-
-    // Update local preview progress
-    setPreviewProgress(prev => {
-      const updated = [...prev];
-      if (updated[currentStepIndex]) {
-        updated[currentStepIndex] = {
-          ...updated[currentStepIndex],
-          status: 'completed',
-          stepData,
-        };
-      }
-      return updated;
-    });
-
-    // Move to next step or show completion
-    if (currentStepIndex < activeSteps.length - 1) {
-      setCurrentStepIndex(currentStepIndex + 1);
-    }
-  };
-
-  const handleStepSave = async (stepData: Record<string, any>) => {
-    console.log('🧪 PREVIEW: Step saved (local only):', stepData);
-
-    setPreviewProgress(prev => {
-      const updated = [...prev];
-      if (updated[currentStepIndex]) {
-        updated[currentStepIndex] = {
-          ...updated[currentStepIndex],
-          status: 'in_progress',
-          stepData,
-        };
-      }
-      return updated;
-    });
-  };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -146,7 +110,7 @@ export function OnboardingPreviewScreen() {
     };
 
     // Navigate to OnboardingStepScreen with preview data
-    navigation.navigate('OnboardingStep', { 
+    navigation.navigate('OnboardingStep', {
       stepIndex: index,
       previewData,
     });
@@ -207,8 +171,8 @@ export function OnboardingPreviewScreen() {
           </View>
         </Surface>
 
-        <ScrollView 
-          style={styles.scrollContainer} 
+        <ScrollView
+          style={styles.scrollContainer}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
           nestedScrollEnabled={true}
@@ -216,7 +180,9 @@ export function OnboardingPreviewScreen() {
           {/* Progress Header */}
           <Surface elevation={1} style={styles.progressHeader}>
             <View style={styles.progressHeaderContent}>
-              <Text variant="h3" style={{ color: textColor }}>Onboarding Preview</Text>
+              <Text variant="h3" style={{ color: textColor }}>
+                Onboarding Preview
+              </Text>
               <Badge variant={completedSteps === totalSteps ? 'success' : 'default'}>
                 {`${completedSteps}/${totalSteps} completed`}
               </Badge>
@@ -232,7 +198,6 @@ export function OnboardingPreviewScreen() {
               </Text>
               {activeSteps.map((step, index) => {
                 const stepProgress = previewProgress[index];
-                const isActive = index === currentStepIndex;
 
                 return (
                   <TouchableOpacity
@@ -251,13 +216,7 @@ export function OnboardingPreviewScreen() {
                       <View style={styles.stepHeader}>
                         {getStatusIcon(stepProgress?.status || 'pending')}
                         <View style={styles.stepInfo}>
-                          <Text
-                            variant="body-lg"
-                            style={[
-                              styles.stepTitle,
-                              { color: textColor },
-                            ]}
-                          >
+                          <Text variant="body-lg" style={[styles.stepTitle, { color: textColor }]}>
                             {step.title || `Step ${index + 1}`}
                           </Text>
                           <Text variant="body-sm" style={{ color: mutedColor }}>
@@ -272,9 +231,7 @@ export function OnboardingPreviewScreen() {
               })}
             </CardContent>
           </Card>
-
-          </ScrollView>
-
+        </ScrollView>
       </ScreenLayout>
     </RoleGuard>
   );

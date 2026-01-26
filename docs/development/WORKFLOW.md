@@ -7,21 +7,25 @@ Daily development practices and workflows for Quality Sync Mobile.
 ### Starting a Session
 
 1. **Pull latest changes**
+
    ```bash
    git pull origin main
    ```
 
 2. **Install dependencies** (if package.json changed)
+
    ```bash
    npm install
    ```
 
 3. **Start development server**
+
    ```bash
    npm start
    ```
 
 4. **Run on device/simulator**
+
    ```bash
    npm run ios     # iOS
    npm run android # Android
@@ -41,11 +45,13 @@ Daily development practices and workflows for Quality Sync Mobile.
 ### Ending a Session
 
 1. **Run TypeScript check**
+
    ```bash
    npx tsc --noEmit
    ```
 
 2. **Commit changes**
+
    ```bash
    git add .
    git commit -m "type(scope): description"
@@ -61,15 +67,18 @@ Daily development practices and workflows for Quality Sync Mobile.
 ### Branch Strategy
 
 **Main branch:** `main`
+
 - Production-ready code
 - Protected branch
 - Requires PR for changes
 
 **Feature branches:** `feature/feature-name`
+
 - New features
 - Merged via PR
 
 **Bugfix branches:** `fix/bug-description`
+
 - Bug fixes
 - Merged via PR
 
@@ -86,6 +95,7 @@ Follow Conventional Commits format:
 ```
 
 **Types:**
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation changes
@@ -96,6 +106,7 @@ Follow Conventional Commits format:
 - `chore`: Maintenance tasks
 
 **Examples:**
+
 ```bash
 git commit -m "feat(auth): implement MFA enrollment"
 git commit -m "fix(profile): resolve data loading issue"
@@ -106,6 +117,7 @@ git commit -m "refactor(hooks): simplify useAuth logic"
 ### Creating a Feature
 
 1. **Create branch**
+
    ```bash
    git checkout -b feature/feature-name
    ```
@@ -116,12 +128,14 @@ git commit -m "refactor(hooks): simplify useAuth logic"
    - Update docs
 
 3. **Commit changes**
+
    ```bash
    git add .
    git commit -m "feat(scope): description"
    ```
 
 4. **Push branch**
+
    ```bash
    git push origin feature/feature-name
    ```
@@ -136,11 +150,13 @@ git commit -m "refactor(hooks): simplify useAuth logic"
 ### Adding a New Screen
 
 1. **Create screen file**
+
    ```bash
    src/screens/category/ScreenName.tsx
    ```
 
 2. **Implement screen**
+
    ```typescript
    export default function ScreenName() {
      return (
@@ -152,6 +168,7 @@ git commit -m "refactor(hooks): simplify useAuth logic"
    ```
 
 3. **Add to navigation**
+
    ```typescript
    // src/navigation/AppNavigator.tsx
    <Stack.Screen name="ScreenName" component={ScreenName} />
@@ -169,26 +186,31 @@ git commit -m "refactor(hooks): simplify useAuth logic"
 ### Adding a New Feature
 
 1. **Create feature directory**
+
    ```bash
    mkdir -p src/features/feature-name/{components,hooks,services,types}
    ```
 
 2. **Create components**
+
    ```bash
    src/features/feature-name/components/Component.tsx
    ```
 
 3. **Create hooks**
+
    ```bash
    src/features/feature-name/hooks/useFeature.ts
    ```
 
 4. **Create services**
+
    ```bash
    src/features/feature-name/services/feature.service.ts
    ```
 
 5. **Create types**
+
    ```bash
    src/features/feature-name/types/feature.types.ts
    ```
@@ -204,28 +226,31 @@ git commit -m "refactor(hooks): simplify useAuth logic"
 ### Adding a New Hook
 
 1. **Create hook file**
+
    ```bash
    src/hooks/useHookName.ts
    ```
 
 2. **Implement hook**
+
    ```typescript
    export function useHookName() {
      const [state, setState] = useState();
-     
+
      // Hook logic
-     
+
      return { state, setState };
    }
    ```
 
 3. **Add TypeScript types**
+
    ```typescript
    interface HookReturn {
      state: StateType;
      setState: (value: StateType) => void;
    }
-   
+
    export function useHookName(): HookReturn {
      // ...
    }
@@ -236,11 +261,13 @@ git commit -m "refactor(hooks): simplify useAuth logic"
 ### Manual Testing
 
 1. **Test on iOS Simulator**
+
    ```bash
    npm run ios
    ```
 
 2. **Test on Android Emulator**
+
    ```bash
    npm run android
    ```
@@ -294,17 +321,20 @@ console.warn('Warning:', warning);
 ### Common Issues
 
 **Metro bundler cache:**
+
 ```bash
 npm start -- --clear
 ```
 
 **Module resolution:**
+
 ```bash
 rm -rf node_modules
 npm install
 ```
 
 **iOS build issues:**
+
 ```bash
 cd ios
 pod install
@@ -343,7 +373,7 @@ npm run ios
 ```typescript
 /**
  * Custom hook for managing authentication state
- * 
+ *
  * @returns {Object} Authentication state and methods
  * @property {User | null} user - Current user object
  * @property {boolean} loading - Loading state
@@ -358,6 +388,7 @@ export function useAuth() {
 ### Feature Documentation
 
 When adding a feature:
+
 1. Create doc in `docs/features/FEATURE_NAME.md`
 2. Explain purpose and usage
 3. Include code examples
@@ -366,6 +397,7 @@ When adding a feature:
 ### Session Logs
 
 Document development sessions:
+
 - Session init: Goals and context
 - Session end: Achievements and next steps
 - Daily report: Summary of day's work
@@ -421,6 +453,7 @@ eas build --profile production --platform ios
 ### Using Workflows
 
 Simply mention the workflow in chat:
+
 ```
 @[/init-session]
 ```

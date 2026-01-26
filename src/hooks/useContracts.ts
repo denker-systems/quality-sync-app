@@ -47,18 +47,24 @@ export function useMyContracts(employeeId?: string) {
       // Hämta employee-uppgifter för att fylla i avtalet
       const { data: employeeData, error: employeeError } = await supabase
         .from('employees')
-        .select('first_name, last_name, personal_identity_number, email, phone, address1, post_code, city, employment_date, monthly_salary, hourly_wage')
+        .select(
+          'first_name, last_name, personal_identity_number, email, phone, address1, post_code, city, employment_date, monthly_salary, hourly_wage',
+        )
         .eq('id', employeeId)
         .single();
 
       if (employeeError) {
-        console.warn('⚠️ Could not fetch employee data for contract personalization:', employeeError);
+        console.warn(
+          '⚠️ Could not fetch employee data for contract personalization:',
+          employeeError,
+        );
       }
 
       // Hämta alla completed progress records med contract_signing steg
       const { data: progress, error: progressError } = await supabase
         .from('employee_onboarding_progress')
-        .select(`
+        .select(
+          `
           id,
           status,
           step_data,
@@ -69,7 +75,8 @@ export function useMyContracts(employeeId?: string) {
             title,
             content
           )
-        `)
+        `,
+        )
         .in('onboarding_id', onboardingIds)
         .eq('status', 'completed');
 
@@ -94,25 +101,51 @@ export function useMyContracts(employeeId?: string) {
               email: emp.email,
               phone: emp.phone,
             });
-            console.log('📝 Contract content before replace (first 200 chars):', contractContent.substring(0, 200));
-            
+            console.log(
+              '📝 Contract content before replace (first 200 chars):',
+              contractContent.substring(0, 200),
+            );
+
             contractContent = contractContent
-              .replace(/\[Namn\]|\[Medarbetarens namn\]/g, `${emp.first_name || ''} ${emp.last_name || ''}`.trim())
-              .replace(/\[Personnummer\]|\[XXXXXX-XXXX\]/g, emp.personal_identity_number || 'Ej angivet')
+              .replace(
+                /\[Namn\]|\[Medarbetarens namn\]/g,
+                `${emp.first_name || ''} ${emp.last_name || ''}`.trim(),
+              )
+              .replace(
+                /\[Personnummer\]|\[XXXXXX-XXXX\]/g,
+                emp.personal_identity_number || 'Ej angivet',
+              )
               .replace(/\[E-post\]/g, emp.email || 'Ej angivet')
               .replace(/\[Telefon\]/g, emp.phone || 'Ej angivet')
               .replace(/\[Adress\]/g, emp.address1 || 'Ej angivet')
               .replace(/\[Postnummer\]/g, emp.post_code || 'Ej angivet')
               .replace(/\[Ort\]/g, emp.city || 'Ej angivet')
-              .replace(/\[Anställningsdatum\]/g, emp.employment_date ? new Date(emp.employment_date).toLocaleDateString('sv-SE') : 'Ej angivet')
-              .replace(/\[Månadslön\]/g, emp.monthly_salary ? `${emp.monthly_salary} SEK` : 'Enligt överenskommelse')
-              .replace(/\[Timlön\]/g, emp.hourly_wage ? `${emp.hourly_wage} SEK` : 'Enligt överenskommelse');
-            
-            console.log('📝 Contract content after replace (first 200 chars):', contractContent.substring(0, 200));
+              .replace(
+                /\[Anställningsdatum\]/g,
+                emp.employment_date
+                  ? new Date(emp.employment_date).toLocaleDateString('sv-SE')
+                  : 'Ej angivet',
+              )
+              .replace(
+                /\[Månadslön\]/g,
+                emp.monthly_salary ? `${emp.monthly_salary} SEK` : 'Enligt överenskommelse',
+              )
+              .replace(
+                /\[Timlön\]/g,
+                emp.hourly_wage ? `${emp.hourly_wage} SEK` : 'Enligt överenskommelse',
+              );
+
+            console.log(
+              '📝 Contract content after replace (first 200 chars):',
+              contractContent.substring(0, 200),
+            );
           } else {
-            console.warn('⚠️ No employee data or contract content:', { hasEmployeeData: !!employeeData, hasContent: !!contractContent });
+            console.warn('⚠️ No employee data or contract content:', {
+              hasEmployeeData: !!employeeData,
+              hasContent: !!contractContent,
+            });
           }
-          
+
           return {
             id: p.id,
             employee_id: employeeId,
@@ -121,7 +154,10 @@ export function useMyContracts(employeeId?: string) {
             signature_data: { signature: p.step_data.signature },
             created_at: p.completed_at,
             contract_title: cleanTitle,
-            contract_type: (p.step?.content?.contract_type || 'custom') as 'employment' | 'nda' | 'custom',
+            contract_type: (p.step?.content?.contract_type || 'custom') as
+              | 'employment'
+              | 'nda'
+              | 'custom',
             contract_content: contractContent,
           };
         });
@@ -148,7 +184,8 @@ export function useContract(contractId?: string) {
 
       const { data, error } = await supabase
         .from('employee_onboarding_progress')
-        .select(`
+        .select(
+          `
           id,
           status,
           step_data,
@@ -159,7 +196,8 @@ export function useContract(contractId?: string) {
             title,
             content
           )
-        `)
+        `,
+        )
         .eq('id', contractId)
         .single();
 
@@ -187,7 +225,9 @@ export function useContract(contractId?: string) {
       if (onboarding) {
         const { data: employeeData } = await supabase
           .from('employees')
-          .select('first_name, last_name, personal_identity_number, email, phone, address1, post_code, city, employment_date, monthly_salary, hourly_wage')
+          .select(
+            'first_name, last_name, personal_identity_number, email, phone, address1, post_code, city, employment_date, monthly_salary, hourly_wage',
+          )
           .eq('id', (onboarding as any).employee_id)
           .single();
 
@@ -195,16 +235,33 @@ export function useContract(contractId?: string) {
         if (employeeData && contractContent) {
           const emp = employeeData as any;
           contractContent = contractContent
-            .replace(/\[Namn\]|\[Medarbetarens namn\]/g, `${emp.first_name || ''} ${emp.last_name || ''}`.trim())
-            .replace(/\[Personnummer\]|\[XXXXXX-XXXX\]/g, emp.personal_identity_number || 'Ej angivet')
+            .replace(
+              /\[Namn\]|\[Medarbetarens namn\]/g,
+              `${emp.first_name || ''} ${emp.last_name || ''}`.trim(),
+            )
+            .replace(
+              /\[Personnummer\]|\[XXXXXX-XXXX\]/g,
+              emp.personal_identity_number || 'Ej angivet',
+            )
             .replace(/\[E-post\]/g, emp.email || 'Ej angivet')
             .replace(/\[Telefon\]/g, emp.phone || 'Ej angivet')
             .replace(/\[Adress\]/g, emp.address1 || 'Ej angivet')
             .replace(/\[Postnummer\]/g, emp.post_code || 'Ej angivet')
             .replace(/\[Ort\]/g, emp.city || 'Ej angivet')
-            .replace(/\[Anställningsdatum\]/g, emp.employment_date ? new Date(emp.employment_date).toLocaleDateString('sv-SE') : 'Ej angivet')
-            .replace(/\[Månadslön\]/g, emp.monthly_salary ? `${emp.monthly_salary} SEK` : 'Enligt överenskommelse')
-            .replace(/\[Timlön\]/g, emp.hourly_wage ? `${emp.hourly_wage} SEK` : 'Enligt överenskommelse');
+            .replace(
+              /\[Anställningsdatum\]/g,
+              emp.employment_date
+                ? new Date(emp.employment_date).toLocaleDateString('sv-SE')
+                : 'Ej angivet',
+            )
+            .replace(
+              /\[Månadslön\]/g,
+              emp.monthly_salary ? `${emp.monthly_salary} SEK` : 'Enligt överenskommelse',
+            )
+            .replace(
+              /\[Timlön\]/g,
+              emp.hourly_wage ? `${emp.hourly_wage} SEK` : 'Enligt överenskommelse',
+            );
         }
       }
 
@@ -216,7 +273,10 @@ export function useContract(contractId?: string) {
         signature_data: { signature: p.step_data?.signature },
         created_at: p.completed_at,
         contract_title: cleanTitle,
-        contract_type: (p.step?.content?.contract_type || 'custom') as 'employment' | 'nda' | 'custom',
+        contract_type: (p.step?.content?.contract_type || 'custom') as
+          | 'employment'
+          | 'nda'
+          | 'custom',
         contract_content: contractContent,
       };
 

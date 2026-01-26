@@ -19,33 +19,29 @@ interface ScreenLayoutProps {
   noPadding?: boolean;
 }
 
-export function ScreenLayout({ 
-  children, 
+export function ScreenLayout({
+  children,
   title,
   isRoot = false,
   showBack,
   onBackPress,
   headerRight,
-  scrollable = true, 
+  scrollable = true,
   style,
   contentStyle,
   noPadding = false,
 }: ScreenLayoutProps) {
   const insets = useSafeAreaInsets();
   const { isDark } = useTheme();
-  
+
   const backgroundColor = isDark ? '#0F0F0F' : '#FFFFFF';
-  
+
   // Determine header configuration based on isRoot
   const shouldShowBack = showBack !== undefined ? showBack : !isRoot;
   const rightContent = headerRight || (isRoot ? <MenuButton /> : undefined);
-  
-  const containerStyle = [
-    styles.container,
-    { backgroundColor, paddingTop: insets.top },
-    style,
-  ];
-  
+
+  const containerStyle = [styles.container, { backgroundColor, paddingTop: insets.top }, style];
+
   const scrollContentStyle = [
     styles.scrollContent,
     !noPadding && styles.padding,
@@ -64,14 +60,14 @@ export function ScreenLayout({
     return (
       <View style={containerStyle}>
         {title && (
-          <PageHeader 
-            title={title} 
+          <PageHeader
+            title={title}
             showBack={shouldShowBack}
             onBackPress={onBackPress}
             rightContent={rightContent}
           />
         )}
-        <ScrollView 
+        <ScrollView
           style={styles.scrollView}
           contentContainerStyle={scrollContentStyle}
           showsVerticalScrollIndicator={false}
@@ -91,8 +87,8 @@ export function ScreenLayout({
   return (
     <View style={containerStyle}>
       {title && (
-        <PageHeader 
-          title={title} 
+        <PageHeader
+          title={title}
           showBack={shouldShowBack}
           onBackPress={onBackPress}
           rightContent={rightContent}

@@ -39,12 +39,11 @@ export const OnboardingScreen = () => {
         console.error('Failed to start onboarding:', error);
       }
     } else if (onboarding.status === 'in_progress') {
-      const firstIncompleteIndex = progress.findIndex(p => p.status !== 'completed');
+      const firstIncompleteIndex = progress.findIndex((p) => p.status !== 'completed');
       const targetIndex = firstIncompleteIndex !== -1 ? firstIncompleteIndex : 0;
       navigation.navigate('OnboardingStep', { stepIndex: targetIndex });
     }
   };
-
 
   if (isLoading) {
     return (
@@ -74,14 +73,18 @@ export const OnboardingScreen = () => {
   }
 
   const { onboarding, steps, progress } = onboardingData;
-  const progressMap = new Map(progress.map(p => [p.step_id, p]));
-  const completedSteps = steps.filter(step => progressMap.get(step.id)?.status === 'completed').length;
+  const progressMap = new Map(progress.map((p) => [p.step_id, p]));
+  const completedSteps = steps.filter(
+    (step) => progressMap.get(step.id)?.status === 'completed',
+  ).length;
   const totalSteps = steps.length;
   const progressPercentage = totalSteps > 0 ? completedSteps / totalSteps : 0;
   const hasStarted = onboarding.status === 'in_progress' || onboarding.status === 'completed';
-  const firstIncompleteIndex = steps.findIndex(step => progressMap.get(step.id)?.status !== 'completed');
-  const activeIndex = firstIncompleteIndex === -1 ? Math.max(steps.length - 1, 0) : firstIncompleteIndex;
-
+  const firstIncompleteIndex = steps.findIndex(
+    (step) => progressMap.get(step.id)?.status !== 'completed',
+  );
+  const activeIndex =
+    firstIncompleteIndex === -1 ? Math.max(steps.length - 1, 0) : firstIncompleteIndex;
 
   return (
     <ScreenLayout title={t('onboarding.title')} isRoot={true}>

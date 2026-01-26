@@ -6,7 +6,11 @@ import type { Company } from '@/types';
 export const useCompanyData = () => {
   const { user } = useAuth();
 
-  const { data: company, isLoading, error } = useQuery({
+  const {
+    data: company,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['company-data', user?.id],
     enabled: !!user?.id,
     queryFn: async (): Promise<Company | null> => {

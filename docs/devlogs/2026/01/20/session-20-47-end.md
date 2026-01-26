@@ -1,6 +1,7 @@
 # Session End: 2026-01-20 20:47
 
 **Achievements:**
+
 - [x] Initial project setup completed
 - [x] Expo + React Native project structure created
 - [x] Supabase integration configured
@@ -14,6 +15,7 @@
 - [x] Session logs created (session-end, daily-report)
 
 **Next Steps:**
+
 - [ ] Test MFA enrollment flow on physical device
 - [ ] Implement company data fetching and display
 - [ ] Create employee profile screen with full functionality

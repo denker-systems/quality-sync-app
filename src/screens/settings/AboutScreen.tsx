@@ -5,19 +5,13 @@ import { ScreenLayout } from '@/components/common';
 import { Text, Card, CardContent } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { 
-  Info, 
-  FileText, 
-  Shield,
-  Mail,
-  ExternalLink,
-} from 'lucide-react-native';
+import { Info, FileText, Shield, Mail, ExternalLink } from 'lucide-react-native';
 
 export function AboutScreen() {
   const { isDark } = useTheme();
   const { t } = useLanguage();
   const navigation = useNavigation<any>();
-  
+
   const textColor = isDark ? '#FAFAFA' : '#171717';
   const mutedColor = isDark ? '#A3A3A3' : '#737373';
   const accentColor = isDark ? '#6BBD68' : '#489A45';
@@ -50,7 +44,7 @@ export function AboutScreen() {
       <View style={styles.section}>
         <Card variant="elevated">
           <CardContent style={styles.cardContent}>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.linkItem}
               onPress={() => handleOpenLink('https://qualitysync.se/privacy')}
             >
@@ -65,7 +59,7 @@ export function AboutScreen() {
 
             <View style={[styles.divider, { backgroundColor: isDark ? '#2E2E2E' : '#E5E5E5' }]} />
 
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.linkItem}
               onPress={() => handleOpenLink('https://qualitysync.se/terms')}
             >
@@ -80,7 +74,7 @@ export function AboutScreen() {
 
             <View style={[styles.divider, { backgroundColor: isDark ? '#2E2E2E' : '#E5E5E5' }]} />
 
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.linkItem}
               onPress={() => handleOpenLink('mailto:support@qualitysync.se')}
             >

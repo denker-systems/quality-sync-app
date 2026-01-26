@@ -7,18 +7,13 @@ interface CardProps extends ViewProps {
   children: React.ReactNode;
 }
 
-export function Card({ 
-  variant = 'default', 
-  children, 
-  style,
-  ...props 
-}: CardProps) {
+export function Card({ variant = 'default', children, style, ...props }: CardProps) {
   const { isDark } = useTheme();
-  
+
   const getVariantStyle = () => {
     const bgColor = isDark ? '#1A1A1A' : '#FFFFFF';
     const borderColor = isDark ? '#2E2E2E' : '#E5E5E5';
-    
+
     switch (variant) {
       case 'elevated':
         return {
@@ -45,10 +40,7 @@ export function Card({
   };
 
   return (
-    <View 
-      style={[styles.base, getVariantStyle(), style]}
-      {...props}
-    >
+    <View style={[styles.base, getVariantStyle(), style]} {...props}>
       {children}
     </View>
   );

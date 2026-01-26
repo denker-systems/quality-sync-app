@@ -5,7 +5,13 @@ import Animated from 'react-native-reanimated';
 import { ScreenLayout, EmptyState } from '@/components/common';
 import { Text, Card, CardContent, Badge } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
-import { AnimatedEntrance, AnimatedListItem, SPRING_CONFIGS, useLiftPress, STAGGER_DELAYS } from '@/lib/animations';
+import {
+  AnimatedEntrance,
+  AnimatedListItem,
+  SPRING_CONFIGS,
+  useLiftPress,
+  STAGGER_DELAYS,
+} from '@/lib/animations';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useMyEmployee } from '@/hooks/useMyEmployee';
 import { useMyContracts, SignedContract } from '@/hooks/useContracts';
@@ -30,7 +36,7 @@ export const ContractsScreen = () => {
   const { t } = useLanguage();
   const { data: employee } = useMyEmployee();
   const { data: contracts, isLoading, error } = useMyContracts(employee?.id);
-  
+
   // Debug logging
   React.useEffect(() => {
     console.log('🔍 ContractsScreen - Employee ID:', employee?.id);
@@ -38,20 +44,24 @@ export const ContractsScreen = () => {
     console.log('🔍 ContractsScreen - Loading:', isLoading);
     console.log('🔍 ContractsScreen - Error:', error);
   }, [employee?.id, contracts, isLoading, error]);
-  
+
   // Always call hooks at top level
   const liftPressAnimation = useLiftPress();
-  
+
   const textColor = isDark ? '#FAFAFA' : '#171717';
   const mutedColor = isDark ? '#A3A3A3' : '#737373';
   const accentColor = isDark ? '#6BBD68' : '#489A45';
 
   const getTypeText = (type?: string) => {
     switch (type) {
-      case 'employment': return t('contracts.employment');
-      case 'nda': return t('contracts.nda');
-      case 'custom': return t('contracts.custom');
-      default: return t('contracts.contract');
+      case 'employment':
+        return t('contracts.employment');
+      case 'nda':
+        return t('contracts.nda');
+      case 'custom':
+        return t('contracts.custom');
+      default:
+        return t('contracts.contract');
     }
   };
 
@@ -82,12 +92,26 @@ export const ContractsScreen = () => {
               <CardContent>
                 <View style={styles.progressHeader}>
                   <View style={styles.progressInfo}>
-                    <Text variant="h2" style={{ color: accentColor }}>{contracts.length}</Text>
-                    <Text variant="body-sm" style={{ color: mutedColor }}>Signerade avtal</Text>
+                    <Text variant="h2" style={{ color: accentColor }}>
+                      {contracts.length}
+                    </Text>
+                    <Text variant="body-sm" style={{ color: mutedColor }}>
+                      Signerade avtal
+                    </Text>
                   </View>
-                  <View style={[styles.completionBadge, { backgroundColor: isDark ? 'rgba(107,189,104,0.15)' : '#EDF5EC' }]}>
+                  <View
+                    style={[
+                      styles.completionBadge,
+                      { backgroundColor: isDark ? 'rgba(107,189,104,0.15)' : '#EDF5EC' },
+                    ]}
+                  >
                     <CheckCircle size={24} color={accentColor} />
-                    <Text variant="body" style={{ color: accentColor, fontWeight: '600', marginLeft: 8 }}>100%</Text>
+                    <Text
+                      variant="body"
+                      style={{ color: accentColor, fontWeight: '600', marginLeft: 8 }}
+                    >
+                      100%
+                    </Text>
                   </View>
                 </View>
               </CardContent>
@@ -96,50 +120,59 @@ export const ContractsScreen = () => {
 
           <View style={styles.contractsList}>
             {contracts.map((contract, index) => (
-            <AnimatedListItem key={contract.id} index={index} staggerDelay={STAGGER_DELAYS.medium}>
-              {/* @ts-expect-error sharedTransitionTag is supported at runtime */}
-              <Animated.View sharedTransitionTag={`contract-${contract.id}`}>
-                <MotiPressable
-                  onPress={() => handleViewContract(contract)}
-                  animate={liftPressAnimation}
-                  transition={SPRING_CONFIGS.snappy}
-                >
-                  <Card variant="elevated" style={styles.contractCard}>
-                    <CardContent style={styles.contractCardContent}>
-                      {/* Contract Image */}
-                      <View style={[styles.contractImageContainer, { backgroundColor: isDark ? '#2A2A2A' : '#F5F5F5' }]}>
-                        <Image 
-                          source={getContractImage(contract.contract_type)} 
-                          style={styles.contractImage}
-                          resizeMode="contain"
-                        />
-                      </View>
-                      
-                      {/* Contract Info */}
-                      <View style={styles.contractInfo}>
-                        <View style={styles.contractHeader}>
-                          <Text variant="body-lg" style={{ color: textColor, fontWeight: '600' }}>
-                            {contract.contract_title}
-                          </Text>
-                          <Eye size={16} color={mutedColor} />
+              <AnimatedListItem
+                key={contract.id}
+                index={index}
+                staggerDelay={STAGGER_DELAYS.medium}
+              >
+                {/* @ts-expect-error sharedTransitionTag is supported at runtime */}
+                <Animated.View sharedTransitionTag={`contract-${contract.id}`}>
+                  <MotiPressable
+                    onPress={() => handleViewContract(contract)}
+                    animate={liftPressAnimation}
+                    transition={SPRING_CONFIGS.snappy}
+                  >
+                    <Card variant="elevated" style={styles.contractCard}>
+                      <CardContent style={styles.contractCardContent}>
+                        {/* Contract Image */}
+                        <View
+                          style={[
+                            styles.contractImageContainer,
+                            { backgroundColor: isDark ? '#2A2A2A' : '#F5F5F5' },
+                          ]}
+                        >
+                          <Image
+                            source={getContractImage(contract.contract_type)}
+                            style={styles.contractImage}
+                            resizeMode="contain"
+                          />
                         </View>
 
-                        <View style={styles.contractMeta}>
-                          <Badge variant="default">{getTypeText(contract.contract_type)}</Badge>
-                          <View style={styles.dateRow}>
-                            <Calendar size={12} color={mutedColor} />
-                            <Text variant="body-sm" style={{ color: mutedColor }}>
-                              {new Date(contract.signed_at).toLocaleDateString('sv-SE')}
+                        {/* Contract Info */}
+                        <View style={styles.contractInfo}>
+                          <View style={styles.contractHeader}>
+                            <Text variant="body-lg" style={{ color: textColor, fontWeight: '600' }}>
+                              {contract.contract_title}
                             </Text>
+                            <Eye size={16} color={mutedColor} />
+                          </View>
+
+                          <View style={styles.contractMeta}>
+                            <Badge variant="default">{getTypeText(contract.contract_type)}</Badge>
+                            <View style={styles.dateRow}>
+                              <Calendar size={12} color={mutedColor} />
+                              <Text variant="body-sm" style={{ color: mutedColor }}>
+                                {new Date(contract.signed_at).toLocaleDateString('sv-SE')}
+                              </Text>
+                            </View>
                           </View>
                         </View>
-                      </View>
-                    </CardContent>
-                  </Card>
-                </MotiPressable>
-              </Animated.View>
-            </AnimatedListItem>
-          ))}
+                      </CardContent>
+                    </Card>
+                  </MotiPressable>
+                </Animated.View>
+              </AnimatedListItem>
+            ))}
           </View>
         </>
       ) : (

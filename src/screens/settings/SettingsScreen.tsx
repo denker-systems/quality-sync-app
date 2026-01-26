@@ -1,17 +1,15 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, Switch } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { MotiView } from 'moti';
-import { MotiPressable } from 'moti/interactions';
 import { ScreenLayout } from '@/components/common';
 import { Text, Card, CardContent } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { AnimatedListItem, SPRING_CONFIGS, usePressAnimation, STAGGER_DELAYS } from '@/lib/animations';
-import { 
-  Palette, 
-  Bell, 
-  Lock, 
+import { AnimatedListItem, STAGGER_DELAYS } from '@/lib/animations';
+import {
+  Palette,
+  Bell,
+  Lock,
   Info,
   Key,
   Globe,
@@ -41,8 +39,12 @@ function SettingsItem({ icon: Icon, title, subtitle, onPress, rightContent }: Se
         <Icon size={20} color={iconColor} />
       </View>
       <View style={styles.settingsText}>
-        <Text variant="body-lg" style={{ color: textColor }}>{title}</Text>
-        <Text variant="body-sm" style={{ color: mutedColor }}>{subtitle}</Text>
+        <Text variant="body-lg" style={{ color: textColor }}>
+          {title}
+        </Text>
+        <Text variant="body-sm" style={{ color: mutedColor }}>
+          {subtitle}
+        </Text>
       </View>
       {rightContent || <ChevronRight size={20} color={mutedColor} />}
     </TouchableOpacity>
@@ -54,7 +56,7 @@ export function SettingsScreen() {
   const { language, setLanguage, t } = useLanguage();
   const navigation = useNavigation<any>();
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-  
+
   const textColor = isDark ? '#FAFAFA' : '#171717';
   const mutedColor = isDark ? '#A3A3A3' : '#737373';
   const accentColor = isDark ? '#6BBD68' : '#489A45';
@@ -82,155 +84,190 @@ export function SettingsScreen() {
         <View style={styles.section}>
           <Card variant="elevated">
             <CardContent style={styles.cardContent}>
-            <View style={styles.settingsItem}>
-              <View style={[styles.settingsIcon, { backgroundColor: isDark ? 'rgba(107,189,104,0.15)' : '#EDF5EC' }]}>
-                <Palette size={20} color={accentColor} />
-              </View>
-              <View style={styles.settingsText}>
-                <Text variant="body-lg" style={{ color: textColor }}>{t('settings.appearance')}</Text>
-                <Text variant="body-sm" style={{ color: mutedColor }}>{isDark ? t('settings.darkTheme') : t('settings.lightTheme')}</Text>
-              </View>
-              <View style={styles.themeButtons}>
-                <TouchableOpacity 
-                  onPress={() => isDark && toggleTheme()}
+              <View style={styles.settingsItem}>
+                <View
                   style={[
-                    styles.themeButton, 
-                    !isDark && styles.themeButtonActive,
-                    { backgroundColor: !isDark ? accentColor : (isDark ? '#2A2A2A' : '#F5F5F5') }
+                    styles.settingsIcon,
+                    { backgroundColor: isDark ? 'rgba(107,189,104,0.15)' : '#EDF5EC' },
                   ]}
                 >
-                  <Sun size={16} color={!isDark ? '#FFFFFF' : mutedColor} />
-                </TouchableOpacity>
-                <TouchableOpacity 
-                  onPress={() => !isDark && toggleTheme()}
-                  style={[
-                    styles.themeButton, 
-                    isDark && styles.themeButtonActive,
-                    { backgroundColor: isDark ? accentColor : (isDark ? '#2A2A2A' : '#F5F5F5') }
-                  ]}
-                >
-                  <Moon size={16} color={isDark ? '#FFFFFF' : mutedColor} />
-                </TouchableOpacity>
+                  <Palette size={20} color={accentColor} />
+                </View>
+                <View style={styles.settingsText}>
+                  <Text variant="body-lg" style={{ color: textColor }}>
+                    {t('settings.appearance')}
+                  </Text>
+                  <Text variant="body-sm" style={{ color: mutedColor }}>
+                    {isDark ? t('settings.darkTheme') : t('settings.lightTheme')}
+                  </Text>
+                </View>
+                <View style={styles.themeButtons}>
+                  <TouchableOpacity
+                    onPress={() => isDark && toggleTheme()}
+                    style={[
+                      styles.themeButton,
+                      !isDark && styles.themeButtonActive,
+                      { backgroundColor: !isDark ? accentColor : isDark ? '#2A2A2A' : '#F5F5F5' },
+                    ]}
+                  >
+                    <Sun size={16} color={!isDark ? '#FFFFFF' : mutedColor} />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => !isDark && toggleTheme()}
+                    style={[
+                      styles.themeButton,
+                      isDark && styles.themeButtonActive,
+                      { backgroundColor: isDark ? accentColor : isDark ? '#2A2A2A' : '#F5F5F5' },
+                    ]}
+                  >
+                    <Moon size={16} color={isDark ? '#FFFFFF' : mutedColor} />
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
         </View>
       </AnimatedListItem>
 
       {/* Notifications - Toggle */}
       <AnimatedListItem index={1} staggerDelay={STAGGER_DELAYS.medium}>
         <View style={styles.section}>
-        <Card variant="elevated">
-          <CardContent style={styles.cardContent}>
-            <View style={styles.settingsItem}>
-              <View style={[styles.settingsIcon, { backgroundColor: isDark ? 'rgba(107,189,104,0.15)' : '#EDF5EC' }]}>
-                <Bell size={20} color={accentColor} />
+          <Card variant="elevated">
+            <CardContent style={styles.cardContent}>
+              <View style={styles.settingsItem}>
+                <View
+                  style={[
+                    styles.settingsIcon,
+                    { backgroundColor: isDark ? 'rgba(107,189,104,0.15)' : '#EDF5EC' },
+                  ]}
+                >
+                  <Bell size={20} color={accentColor} />
+                </View>
+                <View style={styles.settingsText}>
+                  <Text variant="body-lg" style={{ color: textColor }}>
+                    {t('settings.notifications')}
+                  </Text>
+                  <Text variant="body-sm" style={{ color: mutedColor }}>
+                    {notificationsEnabled
+                      ? t('settings.notificationsEnabled')
+                      : t('settings.notificationsDisabled')}
+                  </Text>
+                </View>
+                <Switch
+                  value={notificationsEnabled}
+                  onValueChange={setNotificationsEnabled}
+                  trackColor={{ false: '#767577', true: accentColor }}
+                  thumbColor="#FFFFFF"
+                />
               </View>
-              <View style={styles.settingsText}>
-                <Text variant="body-lg" style={{ color: textColor }}>{t('settings.notifications')}</Text>
-                <Text variant="body-sm" style={{ color: mutedColor }}>{notificationsEnabled ? t('settings.notificationsEnabled') : t('settings.notificationsDisabled')}</Text>
-              </View>
-              <Switch
-                value={notificationsEnabled}
-                onValueChange={setNotificationsEnabled}
-                trackColor={{ false: '#767577', true: accentColor }}
-                thumbColor="#FFFFFF"
-              />
-            </View>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
         </View>
       </AnimatedListItem>
 
       {/* Language Toggle */}
       <AnimatedListItem index={2} staggerDelay={STAGGER_DELAYS.medium}>
         <View style={styles.section}>
-        <Card variant="elevated">
-          <CardContent style={styles.cardContent}>
-            <View style={styles.settingsItem}>
-              <View style={[styles.settingsIcon, { backgroundColor: isDark ? 'rgba(107,189,104,0.15)' : '#EDF5EC' }]}>
-                <Globe size={20} color={accentColor} />
-              </View>
-              <View style={styles.settingsText}>
-                <Text variant="body-lg" style={{ color: textColor }}>{t('settings.language')}</Text>
-                <Text variant="body-sm" style={{ color: mutedColor }}>{getLanguageLabel()}</Text>
-              </View>
-              <View style={styles.languageButtons}>
-                <TouchableOpacity 
-                  onPress={() => setLanguage('sv')}
+          <Card variant="elevated">
+            <CardContent style={styles.cardContent}>
+              <View style={styles.settingsItem}>
+                <View
                   style={[
-                    styles.languageButton,
-                    language === 'sv' && { backgroundColor: accentColor }
+                    styles.settingsIcon,
+                    { backgroundColor: isDark ? 'rgba(107,189,104,0.15)' : '#EDF5EC' },
                   ]}
                 >
-                  <Text variant="body-sm" style={{ color: language === 'sv' ? '#FFFFFF' : mutedColor }}>
-                    SV
+                  <Globe size={20} color={accentColor} />
+                </View>
+                <View style={styles.settingsText}>
+                  <Text variant="body-lg" style={{ color: textColor }}>
+                    {t('settings.language')}
                   </Text>
-                </TouchableOpacity>
-                <TouchableOpacity 
-                  onPress={() => setLanguage('en')}
-                  style={[
-                    styles.languageButton,
-                    language === 'en' && { backgroundColor: accentColor }
-                  ]}
-                >
-                  <Text variant="body-sm" style={{ color: language === 'en' ? '#FFFFFF' : mutedColor }}>
-                    EN
+                  <Text variant="body-sm" style={{ color: mutedColor }}>
+                    {getLanguageLabel()}
                   </Text>
-                </TouchableOpacity>
+                </View>
+                <View style={styles.languageButtons}>
+                  <TouchableOpacity
+                    onPress={() => setLanguage('sv')}
+                    style={[
+                      styles.languageButton,
+                      language === 'sv' && { backgroundColor: accentColor },
+                    ]}
+                  >
+                    <Text
+                      variant="body-sm"
+                      style={{ color: language === 'sv' ? '#FFFFFF' : mutedColor }}
+                    >
+                      SV
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => setLanguage('en')}
+                    style={[
+                      styles.languageButton,
+                      language === 'en' && { backgroundColor: accentColor },
+                    ]}
+                  >
+                    <Text
+                      variant="body-sm"
+                      style={{ color: language === 'en' ? '#FFFFFF' : mutedColor }}
+                    >
+                      EN
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
         </View>
       </AnimatedListItem>
 
       {/* Security - Navigate to screen */}
       <AnimatedListItem index={3} staggerDelay={STAGGER_DELAYS.medium}>
         <View style={styles.section}>
-        <Card variant="elevated">
-          <CardContent style={styles.cardContent}>
-            <SettingsItem
-              icon={Lock}
-              title={t('settings.security')}
-              subtitle={t('settings.securitySubtitle')}
-              onPress={handleSecurity}
-            />
-          </CardContent>
-        </Card>
+          <Card variant="elevated">
+            <CardContent style={styles.cardContent}>
+              <SettingsItem
+                icon={Lock}
+                title={t('settings.security')}
+                subtitle={t('settings.securitySubtitle')}
+                onPress={handleSecurity}
+              />
+            </CardContent>
+          </Card>
         </View>
       </AnimatedListItem>
 
       {/* Change Password - Navigate to screen */}
       <AnimatedListItem index={4} staggerDelay={STAGGER_DELAYS.medium}>
         <View style={styles.section}>
-        <Card variant="elevated">
-          <CardContent style={styles.cardContent}>
-            <SettingsItem
-              icon={Key}
-              title={t('settings.changePassword')}
-              subtitle={t('settings.changePasswordSubtitle')}
-              onPress={handleChangePassword}
-            />
-          </CardContent>
-        </Card>
+          <Card variant="elevated">
+            <CardContent style={styles.cardContent}>
+              <SettingsItem
+                icon={Key}
+                title={t('settings.changePassword')}
+                subtitle={t('settings.changePasswordSubtitle')}
+                onPress={handleChangePassword}
+              />
+            </CardContent>
+          </Card>
         </View>
       </AnimatedListItem>
 
       {/* About - Navigate to screen */}
       <AnimatedListItem index={5} staggerDelay={STAGGER_DELAYS.medium}>
         <View style={styles.section}>
-        <Card variant="elevated">
-          <CardContent style={styles.cardContent}>
-            <SettingsItem
-              icon={Info}
-              title={t('settings.about')}
-              subtitle={t('settings.aboutSubtitle')}
-              onPress={handleAbout}
-            />
-          </CardContent>
-        </Card>
+          <Card variant="elevated">
+            <CardContent style={styles.cardContent}>
+              <SettingsItem
+                icon={Info}
+                title={t('settings.about')}
+                subtitle={t('settings.aboutSubtitle')}
+                onPress={handleAbout}
+              />
+            </CardContent>
+          </Card>
         </View>
       </AnimatedListItem>
 

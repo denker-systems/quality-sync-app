@@ -61,12 +61,24 @@ function AppNavigatorContent() {
     setActiveTab(key);
     if (navigationRef) {
       switch (key) {
-        case 'home': navigationRef.navigate('Home'); break;
-        case 'onboarding': navigationRef.navigate('Onboarding'); break;
-        case 'schedule': navigationRef.navigate('Schedule'); break;
-        case 'contracts': navigationRef.navigate('Contracts'); break;
-        case 'profile': navigationRef.navigate('Profile'); break;
-        case 'settings': navigationRef.navigate('Settings'); break;
+        case 'home':
+          navigationRef.navigate('Home');
+          break;
+        case 'onboarding':
+          navigationRef.navigate('Onboarding');
+          break;
+        case 'schedule':
+          navigationRef.navigate('Schedule');
+          break;
+        case 'contracts':
+          navigationRef.navigate('Contracts');
+          break;
+        case 'profile':
+          navigationRef.navigate('Profile');
+          break;
+        case 'settings':
+          navigationRef.navigate('Settings');
+          break;
       }
     }
   };
@@ -76,14 +88,33 @@ function AppNavigatorContent() {
     setTimeout(() => {
       if (navigationRef) {
         switch (screen) {
-          case 'dashboard': navigationRef.navigate('Home'); setActiveTab('home'); break;
-          case 'schedule': navigationRef.navigate('Schedule'); setActiveTab('schedule'); break;
-          case 'profile': navigationRef.navigate('Profile'); break;
-          case 'onboarding': navigationRef.navigate('Onboarding'); break;
-          case 'onboarding-admin': navigationRef.navigate('OnboardingAdmin'); break;
-          case 'contracts': navigationRef.navigate('Contracts'); break;
-          case 'company': navigationRef.navigate('Company'); break;
-          case 'settings': navigationRef.navigate('Settings'); setActiveTab('settings'); break;
+          case 'dashboard':
+            navigationRef.navigate('Home');
+            setActiveTab('home');
+            break;
+          case 'schedule':
+            navigationRef.navigate('Schedule');
+            setActiveTab('schedule');
+            break;
+          case 'profile':
+            navigationRef.navigate('Profile');
+            break;
+          case 'onboarding':
+            navigationRef.navigate('Onboarding');
+            break;
+          case 'onboarding-admin':
+            navigationRef.navigate('OnboardingAdmin');
+            break;
+          case 'contracts':
+            navigationRef.navigate('Contracts');
+            break;
+          case 'company':
+            navigationRef.navigate('Company');
+            break;
+          case 'settings':
+            navigationRef.navigate('Settings');
+            setActiveTab('settings');
+            break;
         }
       }
     }, 100);
@@ -103,9 +134,11 @@ function AppNavigatorContent() {
   }
 
   return (
-    <NavigationContainer 
+    <NavigationContainer
       theme={navigationTheme}
-      ref={(ref) => { navigationRef = ref; }}
+      ref={(ref) => {
+        navigationRef = ref;
+      }}
       onStateChange={(state) => {
         if (state) {
           const route = state.routes[state.index];
@@ -122,47 +155,42 @@ function AppNavigatorContent() {
               gestureEnabled: true,
             }}
           >
-          {!user ? (
-            <Stack.Screen name="Login" component={LoginScreen} />
-          ) : (
-            <>
-              <Stack.Screen name="Home" component={HomeScreen} />
-              <Stack.Screen name="Search" component={SearchScreen} />
-              <Stack.Screen name="Schedule" component={ScheduleScreen} />
-              <Stack.Screen name="Profile" component={ProfileScreen} />
-              <Stack.Screen name="EditProfile" component={EditProfileScreen} />
-              <Stack.Screen name="Onboarding" component={OnboardingScreen} />
-              <Stack.Screen name="OnboardingStep" component={OnboardingStepScreen} />
-              <Stack.Screen name="OnboardingAdmin" component={OnboardingAdminScreen} />
-              <Stack.Screen name="OnboardingPreview" component={OnboardingPreviewScreen} />
-              <Stack.Screen name="Contracts" component={ContractsScreen} />
-              <Stack.Screen
-                name="ContractViewer"
-                component={ContractViewerScreen}
-                options={{ presentation: 'modal' }}
-              />
-              <Stack.Screen name="Settings" component={SettingsScreen} />
-              <Stack.Screen name="Company" component={CompanyScreen} />
-              <Stack.Screen name="Security" component={SecurityScreen} />
-              <Stack.Screen name="About" component={AboutScreen} />
-              <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
-            </>
-          )}
-        </Stack.Navigator>
+            {!user ? (
+              <Stack.Screen name="Login" component={LoginScreen} />
+            ) : (
+              <>
+                <Stack.Screen name="Home" component={HomeScreen} />
+                <Stack.Screen name="Search" component={SearchScreen} />
+                <Stack.Screen name="Schedule" component={ScheduleScreen} />
+                <Stack.Screen name="Profile" component={ProfileScreen} />
+                <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+                <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+                <Stack.Screen name="OnboardingStep" component={OnboardingStepScreen} />
+                <Stack.Screen name="OnboardingAdmin" component={OnboardingAdminScreen} />
+                <Stack.Screen name="OnboardingPreview" component={OnboardingPreviewScreen} />
+                <Stack.Screen name="Contracts" component={ContractsScreen} />
+                <Stack.Screen
+                  name="ContractViewer"
+                  component={ContractViewerScreen}
+                  options={{ presentation: 'modal' }}
+                />
+                <Stack.Screen name="Settings" component={SettingsScreen} />
+                <Stack.Screen name="Company" component={CompanyScreen} />
+                <Stack.Screen name="Security" component={SecurityScreen} />
+                <Stack.Screen name="About" component={AboutScreen} />
+                <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
+              </>
+            )}
+          </Stack.Navigator>
 
-        {shouldShowTabBar && (
-          <FloatingTabBar
-            activeTab={activeTab}
-            onTabPress={handleTabPress}
+          {shouldShowTabBar && <FloatingTabBar activeTab={activeTab} onTabPress={handleTabPress} />}
+
+          <FullscreenMenu
+            visible={menuVisible}
+            onClose={closeMenu}
+            onNavigate={handleNavigate}
+            onLogout={handleLogout}
           />
-        )}
-        
-        <FullscreenMenu
-          visible={menuVisible}
-          onClose={closeMenu}
-          onNavigate={handleNavigate}
-          onLogout={handleLogout}
-        />
         </View>
       </SwipeEdgeDetector>
     </NavigationContainer>

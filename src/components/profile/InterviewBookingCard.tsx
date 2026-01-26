@@ -40,7 +40,7 @@ export const InterviewBookingCard = () => {
             Intervjuinbjudan
           </Text>
         </View>
-        
+
         <Text variant="bodyMedium" style={styles.subtitle}>
           Du har blivit inbjuden till en intervju
         </Text>
@@ -49,16 +49,24 @@ export const InterviewBookingCard = () => {
           <View style={styles.detailRow}>
             <Calendar size={16} color="#6c757d" />
             <View>
-              <Text variant="labelMedium" style={styles.label}>Datum</Text>
-              <Text variant="bodyMedium" style={styles.value}>{formattedDate}</Text>
+              <Text variant="labelMedium" style={styles.label}>
+                Datum
+              </Text>
+              <Text variant="bodyMedium" style={styles.value}>
+                {formattedDate}
+              </Text>
             </View>
           </View>
 
           <View style={styles.detailRow}>
             <Clock size={16} color="#6c757d" />
             <View>
-              <Text variant="labelMedium" style={styles.label}>Tid</Text>
-              <Text variant="bodyMedium" style={styles.value}>{booking.interview_time}</Text>
+              <Text variant="labelMedium" style={styles.label}>
+                Tid
+              </Text>
+              <Text variant="bodyMedium" style={styles.value}>
+                {booking.interview_time}
+              </Text>
             </View>
           </View>
         </View>

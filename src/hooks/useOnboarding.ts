@@ -18,7 +18,14 @@ export interface OnboardingData {
 export interface OnboardingStep {
   id: string;
   company_id: string;
-  step_type: 'welcome' | 'personal_info' | 'emergency_contact' | 'bank_details' | 'contract_signing' | 'handbook' | 'custom';
+  step_type:
+    | 'welcome'
+    | 'personal_info'
+    | 'emergency_contact'
+    | 'bank_details'
+    | 'contract_signing'
+    | 'handbook'
+    | 'custom';
   title: string;
   description?: string;
   title_sv?: string;
@@ -125,8 +132,8 @@ export function useMyOnboarding(employeeId?: string) {
         status: onboardingData.status,
         stepsCount: stepsData.length,
         progressCount: progressData.length,
-        progressStatuses: progressData.map(p => ({ step_id: p.step_id, status: p.status })),
-        activeStepsIds: stepsData.map(s => s.id),
+        progressStatuses: progressData.map((p) => ({ step_id: p.step_id, status: p.status })),
+        activeStepsIds: stepsData.map((s) => s.id),
       });
 
       console.log('🔍 Detailed logging:');

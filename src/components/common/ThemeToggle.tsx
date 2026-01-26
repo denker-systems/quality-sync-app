@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Button, Text, useTheme as usePaperTheme, SegmentedButtons, IconButton } from 'react-native-paper';
-import { Sun, Moon, Smartphone } from 'lucide-react-native';
+import { Text, useTheme as usePaperTheme, SegmentedButtons, IconButton } from 'react-native-paper';
 import { useTheme, Theme } from '@/contexts/ThemeContext';
 
 interface ThemeToggleProps {
@@ -22,14 +21,17 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({ showLabels = true }) =
   return (
     <View style={styles.container}>
       {showLabels && (
-        <Text variant="labelLarge" style={[styles.label, { color: paperTheme.colors.onSurfaceVariant }]}>
+        <Text
+          variant="labelLarge"
+          style={[styles.label, { color: paperTheme.colors.onSurfaceVariant }]}
+        >
           Tema
         </Text>
       )}
       <SegmentedButtons
         value={theme}
         onValueChange={(value) => setTheme(value as Theme)}
-        buttons={themeOptions.map(option => ({
+        buttons={themeOptions.map((option) => ({
           value: option.value,
           label: option.label,
           icon: option.icon,
@@ -38,7 +40,10 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({ showLabels = true }) =
         style={styles.segmentedButtons}
       />
       {theme === 'system' && (
-        <Text variant="bodySmall" style={[styles.hint, { color: paperTheme.colors.onSurfaceVariant }]}>
+        <Text
+          variant="bodySmall"
+          style={[styles.hint, { color: paperTheme.colors.onSurfaceVariant }]}
+        >
           Följer systemet ({resolvedTheme === 'dark' ? 'mörkt' : 'ljust'})
         </Text>
       )}
@@ -93,21 +98,10 @@ export const ThemeListItem: React.FC = () => {
     }
   };
 
-  const cycleTheme = () => {
-    const themes: Theme[] = ['light', 'dark', 'system'];
-    const currentIndex = themes.indexOf(theme);
-    const nextIndex = (currentIndex + 1) % themes.length;
-    setTheme(themes[nextIndex]);
-  };
-
   return (
     <View style={styles.listItem}>
       <View style={styles.listItemContent}>
-        <IconButton
-          icon={getThemeIcon()}
-          size={20}
-          iconColor={paperTheme.colors.primary}
-        />
+        <IconButton icon={getThemeIcon()} size={20} iconColor={paperTheme.colors.primary} />
         <View style={styles.listItemText}>
           <Text variant="bodyLarge" style={{ color: paperTheme.colors.onSurface }}>
             Utseende
@@ -123,24 +117,42 @@ export const ThemeListItem: React.FC = () => {
           size={20}
           onPress={() => setTheme('light')}
           disabled={isLoading}
-          iconColor={theme === 'light' ? paperTheme.colors.primary : paperTheme.colors.onSurfaceVariant}
-          style={theme === 'light' ? [styles.activeButton, { backgroundColor: paperTheme.colors.primaryContainer }] : undefined}
+          iconColor={
+            theme === 'light' ? paperTheme.colors.primary : paperTheme.colors.onSurfaceVariant
+          }
+          style={
+            theme === 'light'
+              ? [styles.activeButton, { backgroundColor: paperTheme.colors.primaryContainer }]
+              : undefined
+          }
         />
         <IconButton
           icon="weather-night"
           size={20}
           onPress={() => setTheme('dark')}
           disabled={isLoading}
-          iconColor={theme === 'dark' ? paperTheme.colors.primary : paperTheme.colors.onSurfaceVariant}
-          style={theme === 'dark' ? [styles.activeButton, { backgroundColor: paperTheme.colors.primaryContainer }] : undefined}
+          iconColor={
+            theme === 'dark' ? paperTheme.colors.primary : paperTheme.colors.onSurfaceVariant
+          }
+          style={
+            theme === 'dark'
+              ? [styles.activeButton, { backgroundColor: paperTheme.colors.primaryContainer }]
+              : undefined
+          }
         />
         <IconButton
           icon="cellphone"
           size={20}
           onPress={() => setTheme('system')}
           disabled={isLoading}
-          iconColor={theme === 'system' ? paperTheme.colors.primary : paperTheme.colors.onSurfaceVariant}
-          style={theme === 'system' ? [styles.activeButton, { backgroundColor: paperTheme.colors.primaryContainer }] : undefined}
+          iconColor={
+            theme === 'system' ? paperTheme.colors.primary : paperTheme.colors.onSurfaceVariant
+          }
+          style={
+            theme === 'system'
+              ? [styles.activeButton, { backgroundColor: paperTheme.colors.primaryContainer }]
+              : undefined
+          }
         />
       </View>
     </View>

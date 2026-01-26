@@ -1,12 +1,14 @@
 # Visuals Roadmap (Animations & Transitions)
 
 ## Goals
+
 - Smooth native-feeling transitions (iOS/Android)
 - Delightful micro-interactions
 - Consistent, subtle motion system
 - Maintain performance (UI-thread animations)
 
 ## Plan (Full)
+
 1. Add animation stack
    - Install `react-native-reanimated`, `react-native-gesture-handler`, `moti`
    - Configure Babel for Reanimated
@@ -37,6 +39,7 @@
    - Confirm animations run on UI thread
 
 ## Checklist
+
 - [x] Install Reanimated + Gesture Handler + Moti
 - [x] Update babel.config.js (Reanimated plugin last)
 - [x] Wrap App root with GestureHandlerRootView
@@ -53,6 +56,7 @@
 - [ ] Manual QA on iOS + Android
 
 ## Files to touch
+
 - App.tsx
 - babel.config.js
 - src/navigation/AppNavigator.tsx

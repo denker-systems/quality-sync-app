@@ -10,10 +10,7 @@ export type Language = 'sv' | 'en';
  * Get the title for an onboarding step in the specified language
  * Falls back to the other language if not available, then to legacy field
  */
-export function getOnboardingStepTitle(
-  step: OnboardingStep,
-  language: Language
-): string {
+export function getOnboardingStepTitle(step: OnboardingStep, language: Language): string {
   if (language === 'sv') {
     return step.title_sv || step.title_en || step.title || '';
   }
@@ -26,7 +23,7 @@ export function getOnboardingStepTitle(
  */
 export function getOnboardingStepDescription(
   step: OnboardingStep,
-  language: Language
+  language: Language,
 ): string | undefined {
   if (language === 'sv') {
     return step.description_sv || step.description_en || step.description;

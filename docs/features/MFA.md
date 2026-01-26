@@ -57,12 +57,13 @@ export function MFAGate({ children }: { children: React.ReactNode }) {
   if (!user) return <>{children}</>;
   if (needsEnrollment) return <MFAEnrollment />;
   if (needsChallenge) return <MFAChallengeScreen />;
-  
+
   return <>{children}</>;
 }
 ```
 
 **Usage in App.tsx:**
+
 ```typescript
 <MFAGate>
   <AppNavigator />
@@ -76,6 +77,7 @@ Screen for enrolling in MFA with QR code.
 **Location:** `src/features/mfa/components/MFAEnrollment.tsx`
 
 **Features:**
+
 - Generates TOTP secret
 - Displays QR code for scanning
 - Shows manual entry code
@@ -110,6 +112,7 @@ Screen for entering MFA verification code.
 **Location:** `src/features/mfa/components/MFAChallengeScreen.tsx`
 
 **Features:**
+
 - 6-digit code input
 - Real-time validation
 - Error handling
@@ -206,7 +209,9 @@ export function useMFAStatus() {
       return;
     }
 
-    const { data: { aal } } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    const {
+      data: { aal },
+    } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
     const { data: factors } = await supabase.auth.mfa.listFactors();
 
     const hasFactors = factors && factors.totp.length > 0;
@@ -275,11 +280,13 @@ export const mfaService = {
 ## Assurance Levels
 
 ### AAL1 (Assurance Level 1)
+
 - Basic authentication (email/password)
 - No MFA required
 - Lower security
 
 ### AAL2 (Assurance Level 2)
+
 - MFA verified
 - Higher security
 - Required for sensitive operations
@@ -287,7 +294,9 @@ export const mfaService = {
 ### Checking AAL
 
 ```typescript
-const { data: { aal } } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+const {
+  data: { aal },
+} = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
 
 if (aal?.current_level === 'aal2') {
   // User has completed MFA
@@ -301,6 +310,7 @@ if (aal?.current_level === 'aal2') {
 ### What is TOTP?
 
 Time-based One-Time Password:
+
 - 6-digit code
 - Changes every 30 seconds
 - Based on shared secret
@@ -313,6 +323,7 @@ otpauth://totp/Quality%20Sync:user@example.com?secret=SECRET&issuer=Quality%20Sy
 ```
 
 **Components:**
+
 - **Protocol:** `otpauth://totp/`
 - **Label:** `Quality Sync:user@example.com`
 - **Secret:** Base32 encoded secret
@@ -321,6 +332,7 @@ otpauth://totp/Quality%20Sync:user@example.com?secret=SECRET&issuer=Quality%20Sy
 ### Manual Entry
 
 If QR scanning fails, users can manually enter:
+
 - **Account:** user@example.com
 - **Key:** SECRET (base32)
 - **Type:** Time-based
@@ -331,18 +343,22 @@ If QR scanning fails, users can manually enter:
 ## Security Considerations
 
 ### Secret Storage
+
 - Secrets never stored on client
 - Generated server-side by Supabase
 - Transmitted only during enrollment
 
 ### Code Validation
+
 - 30-second time window
 - Allows for clock drift
 - One-time use per code
 - Rate limiting on attempts
 
 ### Backup Codes
+
 Currently not implemented. Future consideration:
+
 - Generate backup codes during enrollment
 - Store encrypted in database
 - Allow one-time use
@@ -431,6 +447,7 @@ console.log('Current AAL:', aal.current_level);
 **Problem:** QR code image not showing
 
 **Solutions:**
+
 1. Check network connection
 2. Verify Supabase MFA is enabled
 3. Check console for errors
@@ -441,6 +458,7 @@ console.log('Current AAL:', aal.current_level);
 **Problem:** Correct code shows as invalid
 
 **Solutions:**
+
 1. Check device time synchronization
 2. Verify 30-second window hasn't passed
 3. Ensure code hasn't been used already
@@ -451,6 +469,7 @@ console.log('Current AAL:', aal.current_level);
 **Problem:** Cannot complete enrollment
 
 **Solutions:**
+
 1. Verify user is authenticated
 2. Check Supabase MFA configuration
 3. Ensure no existing factors conflict

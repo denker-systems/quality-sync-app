@@ -42,7 +42,7 @@ export function Avatar({ source, name, size = 'md' }: AvatarProps) {
   const { isDark } = useTheme();
   const dimension = sizeMap[size];
   const fontSize = fontSizeMap[size];
-  
+
   const backgroundColor = isDark ? '#2A2A2A' : '#E5EAE5';
   const textColor = isDark ? '#A8D5A2' : '#489A45';
   const borderColor = isDark ? '#3D3D3D' : '#FFFFFF';
@@ -58,23 +58,14 @@ export function Avatar({ source, name, size = 'md' }: AvatarProps) {
 
   if (source) {
     const imageSource = typeof source === 'string' ? { uri: source } : source;
-    return (
-      <Image
-        source={imageSource}
-        style={[styles.image, containerStyle]}
-      />
-    );
+    return <Image source={imageSource} style={[styles.image, containerStyle]} />;
   }
 
   const initials = name ? getInitials(name) : '?';
 
   return (
     <View style={[styles.fallback, containerStyle]}>
-      <Text 
-        style={[styles.initials, { fontSize, color: textColor }]}
-      >
-        {initials}
-      </Text>
+      <Text style={[styles.initials, { fontSize, color: textColor }]}>{initials}</Text>
     </View>
   );
 }

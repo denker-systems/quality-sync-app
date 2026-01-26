@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { MotiView } from 'moti';
 import { ScreenLayout } from '@/components/common';
-import { Text, Card, CardContent, Avatar, Badge, Button } from '@/components/ui';
+import { Text, Card, CardContent, Avatar, Badge } from '@/components/ui';
 import { AvatarUploadDialog } from '@/components/ui/AvatarUploadDialog';
 import { useTheme } from '@/contexts/ThemeContext';
 import { AnimatedEntrance, SPRING_CONFIGS, STAGGER_DELAYS } from '@/lib/animations';
@@ -17,18 +17,15 @@ import { useMyShifts } from '@/hooks/useMyShifts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/config/supabase';
 import { useNavigation } from '@react-navigation/native';
-import { 
-  Calendar, 
-  FileText, 
-  User, 
-  Mail, 
-  Phone, 
-  Briefcase, 
+import {
+  Calendar,
+  FileText,
+  Mail,
+  Phone,
+  Briefcase,
   Building2,
   ChevronRight,
   Star,
-  LogOut,
-  Settings,
   Edit,
 } from 'lucide-react-native';
 
@@ -53,8 +50,14 @@ function MenuItem({ icon: Icon, title, subtitle, onPress, rightContent }: MenuIt
         <Icon size={20} color={iconColor} />
       </View>
       <View style={styles.menuText}>
-        <Text variant="body-lg" style={{ color: textColor }}>{title}</Text>
-        {subtitle && <Text variant="body-sm" style={{ color: mutedColor }}>{subtitle}</Text>}
+        <Text variant="body-lg" style={{ color: textColor }}>
+          {title}
+        </Text>
+        {subtitle && (
+          <Text variant="body-sm" style={{ color: mutedColor }}>
+            {subtitle}
+          </Text>
+        )}
       </View>
       {rightContent || <ChevronRight size={20} color={mutedColor} />}
     </TouchableOpacity>
@@ -66,21 +69,20 @@ export const ProfileScreen = () => {
   const queryClient = useQueryClient();
   const { isDark } = useTheme();
   const { t } = useLanguage();
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const [uploadDialogVisible, setUploadDialogVisible] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  
+
   const textColor = isDark ? '#FAFAFA' : '#171717';
   const mutedColor = isDark ? '#A3A3A3' : '#737373';
   const accentColor = isDark ? '#6BBD68' : '#489A45';
-  const cardBg = isDark ? '#1A1A1A' : '#FFFFFF';
-  
+
   const { data: employee, isLoading: employeeLoading } = useMyEmployee();
   const { company, loading: companyLoading } = useCompanyData();
   const { data: onboardingData } = useMyOnboarding(employee?.id);
   const { data: contracts } = useMyContracts(employee?.id);
   const { data: shifts } = useMyShifts();
-  
+
   // Fallback: Get user_profiles data if no employee
   const { data: userProfile } = useQuery({
     queryKey: ['user-profile', user?.id],
@@ -92,18 +94,14 @@ export const ProfileScreen = () => {
         .eq('id', user!.id)
         .single();
       if (error) throw error;
-      return data as { first_name: string | null; last_name: string | null; email: string | null; company_id: string | null };
+      return data as {
+        first_name: string | null;
+        last_name: string | null;
+        email: string | null;
+        company_id: string | null;
+      };
     },
   });
-
-  const getInitials = () => {
-    const firstName = employee?.first_name || userProfile?.first_name;
-    const lastName = employee?.last_name || userProfile?.last_name;
-    if (firstName && lastName) {
-      return `${firstName[0]}${lastName[0]}`.toUpperCase();
-    }
-    return user?.email?.[0]?.toUpperCase() || '?';
-  };
 
   const getDisplayName = () => {
     if (employee?.full_name) return employee.full_name;
@@ -115,10 +113,6 @@ export const ProfileScreen = () => {
       return `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim();
     }
     return user?.email || t('common.user');
-  };
-
-  const handleLogout = async () => {
-    await signOut();
   };
 
   const isLoading = employeeLoading || companyLoading;
@@ -136,7 +130,8 @@ export const ProfileScreen = () => {
     );
   }
 
-  const completedOnboarding = onboardingData?.progress?.filter(p => p.status === 'completed').length || 0;
+  const completedOnboarding =
+    onboardingData?.progress?.filter((p) => p.status === 'completed').length || 0;
   const totalOnboarding = onboardingData?.steps?.length || 1;
   const onboardingProgress = (completedOnboarding / totalOnboarding) * 100;
   const level = Math.floor((shifts?.length || 0) / 5) + 1;
@@ -148,22 +143,28 @@ export const ProfileScreen = () => {
       <AnimatedEntrance preset="scaleIn">
         <View style={styles.profileHeaderContainer}>
           {/* Avatar with Level Badge */}
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.avatarWrapper}
             onPress={() => setUploadDialogVisible(true)}
             activeOpacity={0.8}
           >
             <View style={[styles.avatarBorder, { borderColor: isDark ? '#2A2A2A' : '#FFFFFF' }]}>
-              <Avatar name={getDisplayName()} size="2xl" source={avatarUrl || (employee as any)?.avatar_url} />
+              <Avatar
+                name={getDisplayName()}
+                size="2xl"
+                source={avatarUrl || (employee as any)?.avatar_url}
+              />
             </View>
             <View style={[styles.levelBadge, { backgroundColor: accentColor }]}>
-              <Text variant="tiny" style={{ color: '#FFFFFF', fontWeight: '700' }}>LVL {level}</Text>
+              <Text variant="tiny" style={{ color: '#FFFFFF', fontWeight: '700' }}>
+                LVL {level}
+              </Text>
             </View>
             <View style={[styles.cameraButton, { backgroundColor: accentColor }]}>
               <Camera size={16} color="#FFFFFF" />
             </View>
           </TouchableOpacity>
-          
+
           {/* Card with curved top */}
           <View style={[styles.profileCard, { backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF' }]}>
             <View style={styles.profileCardContent}>
@@ -173,19 +174,23 @@ export const ProfileScreen = () => {
               <Text variant="body" style={{ color: mutedColor, textAlign: 'center', marginTop: 4 }}>
                 {user?.email}
               </Text>
-              
+
               {/* XP Progress Bar */}
               <View style={styles.xpContainer}>
                 <View style={styles.xpHeader}>
                   <View style={styles.xpLabel}>
                     <Zap size={14} color="#F59E0B" />
-                    <Text variant="body-sm" style={{ color: mutedColor }}>Experience</Text>
+                    <Text variant="body-sm" style={{ color: mutedColor }}>
+                      Experience
+                    </Text>
                   </View>
                   <Text variant="body-sm" style={{ color: accentColor, fontWeight: '600' }}>
                     {shifts?.length || 0} / {level * 5} XP
                   </Text>
                 </View>
-                <View style={[styles.progressBar, { backgroundColor: isDark ? '#2A2A2A' : '#E5E5E5' }]}>
+                <View
+                  style={[styles.progressBar, { backgroundColor: isDark ? '#2A2A2A' : '#E5E5E5' }]}
+                >
                   <MotiView
                     from={{ width: '0%' }}
                     animate={{ width: `${xpProgress}%` }}
@@ -194,9 +199,9 @@ export const ProfileScreen = () => {
                   />
                 </View>
               </View>
-              
+
               {/* Edit button */}
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={[styles.editButton, { backgroundColor: isDark ? '#2A2A2A' : '#F5F5F5' }]}
                 onPress={() => navigation.navigate('EditProfile')}
               >
@@ -217,28 +222,87 @@ export const ProfileScreen = () => {
             <CardContent>
               <View style={styles.achievementsGrid}>
                 <View style={styles.achievementItem}>
-                  <View style={[styles.achievementIcon, { backgroundColor: onboardingProgress >= 100 ? '#FEF3C7' : (isDark ? '#2A2A2A' : '#F5F5F5') }]}>
+                  <View
+                    style={[
+                      styles.achievementIcon,
+                      {
+                        backgroundColor:
+                          onboardingProgress >= 100 ? '#FEF3C7' : isDark ? '#2A2A2A' : '#F5F5F5',
+                      },
+                    ]}
+                  >
                     <Award size={24} color={onboardingProgress >= 100 ? '#F59E0B' : mutedColor} />
                   </View>
-                  <Text variant="tiny" style={{ color: mutedColor, textAlign: 'center', marginTop: 4 }}>Onboarding</Text>
+                  <Text
+                    variant="tiny"
+                    style={{ color: mutedColor, textAlign: 'center', marginTop: 4 }}
+                  >
+                    Onboarding
+                  </Text>
                 </View>
                 <View style={styles.achievementItem}>
-                  <View style={[styles.achievementIcon, { backgroundColor: (shifts?.length || 0) >= 5 ? '#EDF5EC' : (isDark ? '#2A2A2A' : '#F5F5F5') }]}>
-                    <TrendingUp size={24} color={(shifts?.length || 0) >= 5 ? accentColor : mutedColor} />
+                  <View
+                    style={[
+                      styles.achievementIcon,
+                      {
+                        backgroundColor:
+                          (shifts?.length || 0) >= 5 ? '#EDF5EC' : isDark ? '#2A2A2A' : '#F5F5F5',
+                      },
+                    ]}
+                  >
+                    <TrendingUp
+                      size={24}
+                      color={(shifts?.length || 0) >= 5 ? accentColor : mutedColor}
+                    />
                   </View>
-                  <Text variant="tiny" style={{ color: mutedColor, textAlign: 'center', marginTop: 4 }}>5 Shifts</Text>
+                  <Text
+                    variant="tiny"
+                    style={{ color: mutedColor, textAlign: 'center', marginTop: 4 }}
+                  >
+                    5 Shifts
+                  </Text>
                 </View>
                 <View style={styles.achievementItem}>
-                  <View style={[styles.achievementIcon, { backgroundColor: (contracts?.length || 0) >= 1 ? '#DBEAFE' : (isDark ? '#2A2A2A' : '#F5F5F5') }]}>
-                    <FileText size={24} color={(contracts?.length || 0) >= 1 ? '#3B82F6' : mutedColor} />
+                  <View
+                    style={[
+                      styles.achievementIcon,
+                      {
+                        backgroundColor:
+                          (contracts?.length || 0) >= 1
+                            ? '#DBEAFE'
+                            : isDark
+                              ? '#2A2A2A'
+                              : '#F5F5F5',
+                      },
+                    ]}
+                  >
+                    <FileText
+                      size={24}
+                      color={(contracts?.length || 0) >= 1 ? '#3B82F6' : mutedColor}
+                    />
                   </View>
-                  <Text variant="tiny" style={{ color: mutedColor, textAlign: 'center', marginTop: 4 }}>Contract</Text>
+                  <Text
+                    variant="tiny"
+                    style={{ color: mutedColor, textAlign: 'center', marginTop: 4 }}
+                  >
+                    Contract
+                  </Text>
                 </View>
                 <View style={[styles.achievementItem, { opacity: 0.5 }]}>
-                  <View style={[styles.achievementIcon, { backgroundColor: isDark ? '#2A2A2A' : '#F5F5F5' }]}>
+                  <View
+                    style={[
+                      styles.achievementIcon,
+                      { backgroundColor: isDark ? '#2A2A2A' : '#F5F5F5' },
+                    ]}
+                  >
                     <Award size={24} color={mutedColor} />
                   </View>
-                  <Text variant="tiny" style={{ color: mutedColor, textAlign: 'center', marginTop: 4 }}>Locked</Text>
+                  <Text
+                    variant="tiny"
+                    style={{ color: mutedColor, textAlign: 'center', marginTop: 4 }}
+                  >
+                    Locked
+                  </Text>
                 </View>
               </View>
             </CardContent>
@@ -267,7 +331,7 @@ export const ProfileScreen = () => {
         <Text variant="body-sm" style={[styles.sectionSubtitle, { color: mutedColor }]}>
           {t('profile.manageInfo')}
         </Text>
-        
+
         <Card variant="elevated">
           <CardContent style={styles.menuContainer}>
             <MotiView
@@ -278,15 +342,19 @@ export const ProfileScreen = () => {
               <MenuItem
                 icon={Calendar}
                 title={t('profile.mySchedule')}
-                subtitle={shifts?.length ? `${shifts.length} ${t('profile.upcomingShifts')}` : t('profile.viewShifts')}
+                subtitle={
+                  shifts?.length
+                    ? `${shifts.length} ${t('profile.upcomingShifts')}`
+                    : t('profile.viewShifts')
+                }
                 onPress={() => navigation.navigate('Schedule')}
-                rightContent={shifts?.length ? (
-                  <Badge variant="success">{shifts.length}</Badge>
-                ) : undefined}
+                rightContent={
+                  shifts?.length ? <Badge variant="success">{shifts.length}</Badge> : undefined
+                }
               />
             </MotiView>
             <View style={[styles.divider, { backgroundColor: isDark ? '#2E2E2E' : '#E5E5E5' }]} />
-            
+
             <MotiView
               from={{ opacity: 0, translateX: -30, scale: 0.9 }}
               animate={{ opacity: 1, translateX: 0, scale: 1 }}
@@ -296,22 +364,24 @@ export const ProfileScreen = () => {
                 icon={Star}
                 title={t('profile.onboarding')}
                 subtitle={
-                  onboardingData?.onboarding?.status === 'completed' 
-                    ? t('profile.completed') 
+                  onboardingData?.onboarding?.status === 'completed'
+                    ? t('profile.completed')
                     : t('profile.inProgress')
                 }
                 onPress={() => navigation.navigate('Onboarding')}
                 rightContent={
-                  onboardingData?.onboarding?.status === 'completed' 
-                    ? <Badge variant="success">✓</Badge>
-                    : <Badge variant="warning">
-                        {`${onboardingData?.progress?.filter(p => p.status === 'completed').length || 0}/${onboardingData?.steps?.length || 0}`}
-                      </Badge>
+                  onboardingData?.onboarding?.status === 'completed' ? (
+                    <Badge variant="success">✓</Badge>
+                  ) : (
+                    <Badge variant="warning">
+                      {`${onboardingData?.progress?.filter((p) => p.status === 'completed').length || 0}/${onboardingData?.steps?.length || 0}`}
+                    </Badge>
+                  )
                 }
               />
             </MotiView>
             <View style={[styles.divider, { backgroundColor: isDark ? '#2E2E2E' : '#E5E5E5' }]} />
-            
+
             <MotiView
               from={{ opacity: 0, translateX: -30, scale: 0.9 }}
               animate={{ opacity: 1, translateX: 0, scale: 1 }}
@@ -322,9 +392,11 @@ export const ProfileScreen = () => {
                 title={t('profile.contracts')}
                 subtitle={`${contracts?.length || 0} ${t('profile.signedContracts')}`}
                 onPress={() => navigation.navigate('Contracts')}
-                rightContent={contracts?.length ? (
-                  <Badge variant="default">{contracts.length}</Badge>
-                ) : undefined}
+                rightContent={
+                  contracts?.length ? (
+                    <Badge variant="default">{contracts.length}</Badge>
+                  ) : undefined
+                }
               />
             </MotiView>
           </CardContent>
@@ -336,53 +408,71 @@ export const ProfileScreen = () => {
         <Text variant="h3" style={[styles.sectionTitle, { color: textColor }]}>
           {t('profile.contactInfo')}
         </Text>
-        
+
         <Card variant="elevated">
           <CardContent style={styles.menuContainer}>
             {/* Email - always show from employee or user */}
             <View style={styles.infoRow}>
               <Mail size={18} color={mutedColor} />
               <View style={styles.infoText}>
-                <Text variant="body-sm" style={{ color: mutedColor }}>{t('profile.email')}</Text>
+                <Text variant="body-sm" style={{ color: mutedColor }}>
+                  {t('profile.email')}
+                </Text>
                 <Text variant="body" style={{ color: textColor }}>
                   {employee?.email || user?.email || '-'}
                 </Text>
               </View>
             </View>
-            
+
             {/* Phone - show if available */}
             {employee?.phone && (
               <>
-                <View style={[styles.divider, { backgroundColor: isDark ? '#2E2E2E' : '#E5E5E5' }]} />
+                <View
+                  style={[styles.divider, { backgroundColor: isDark ? '#2E2E2E' : '#E5E5E5' }]}
+                />
                 <View style={styles.infoRow}>
                   <Phone size={18} color={mutedColor} />
                   <View style={styles.infoText}>
-                    <Text variant="body-sm" style={{ color: mutedColor }}>{t('profile.phone')}</Text>
-                    <Text variant="body" style={{ color: textColor }}>{employee.phone}</Text>
+                    <Text variant="body-sm" style={{ color: mutedColor }}>
+                      {t('profile.phone')}
+                    </Text>
+                    <Text variant="body" style={{ color: textColor }}>
+                      {employee.phone}
+                    </Text>
                   </View>
                 </View>
               </>
             )}
-            
+
             {/* Role */}
             <View style={[styles.divider, { backgroundColor: isDark ? '#2E2E2E' : '#E5E5E5' }]} />
             <View style={styles.infoRow}>
               <Briefcase size={18} color={mutedColor} />
               <View style={styles.infoText}>
-                <Text variant="body-sm" style={{ color: mutedColor }}>{t('profile.role')}</Text>
-                <Text variant="body" style={{ color: textColor }}>{employee?.role || t('profile.employee')}</Text>
+                <Text variant="body-sm" style={{ color: mutedColor }}>
+                  {t('profile.role')}
+                </Text>
+                <Text variant="body" style={{ color: textColor }}>
+                  {employee?.role || t('profile.employee')}
+                </Text>
               </View>
             </View>
-            
+
             {/* Company */}
             {company && (
               <>
-                <View style={[styles.divider, { backgroundColor: isDark ? '#2E2E2E' : '#E5E5E5' }]} />
+                <View
+                  style={[styles.divider, { backgroundColor: isDark ? '#2E2E2E' : '#E5E5E5' }]}
+                />
                 <View style={styles.infoRow}>
                   <Building2 size={18} color={mutedColor} />
                   <View style={styles.infoText}>
-                    <Text variant="body-sm" style={{ color: mutedColor }}>{t('profile.company')}</Text>
-                    <Text variant="body" style={{ color: textColor }}>{company.name}</Text>
+                    <Text variant="body-sm" style={{ color: mutedColor }}>
+                      {t('profile.company')}
+                    </Text>
+                    <Text variant="body" style={{ color: textColor }}>
+                      {company.name}
+                    </Text>
                   </View>
                 </View>
               </>
@@ -390,7 +480,6 @@ export const ProfileScreen = () => {
           </CardContent>
         </Card>
       </View>
-
     </ScreenLayout>
   );
 };

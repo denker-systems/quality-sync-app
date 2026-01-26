@@ -62,11 +62,11 @@ The `useAuth` hook provides authentication state and methods:
 
 ```typescript
 const {
-  user,           // Current user object
-  session,        // Current session
-  loading,        // Loading state
-  signIn,         // Sign in method
-  signOut,        // Sign out method
+  user, // Current user object
+  session, // Current session
+  loading, // Loading state
+  signIn, // Sign in method
+  signOut, // Sign out method
 } = useAuth();
 ```
 
@@ -80,7 +80,7 @@ const signIn = async (email: string, password: string) => {
     email,
     password,
   });
-  
+
   if (error) throw error;
   return data;
 };
@@ -100,12 +100,12 @@ const signOut = async () => {
 ```typescript
 useEffect(() => {
   // Listen for auth state changes
-  const { data: { subscription } } = supabase.auth.onAuthStateChange(
-    (_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-    }
-  );
+  const {
+    data: { subscription },
+  } = supabase.auth.onAuthStateChange((_event, session) => {
+    setSession(session);
+    setUser(session?.user ?? null);
+  });
 
   return () => subscription.unsubscribe();
 }, []);
@@ -167,6 +167,7 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 4. **Token Exchange:** Client proves ownership with code verifier
 
 **Benefits:**
+
 - Prevents authorization code interception
 - No client secret needed
 - Secure for mobile apps
@@ -213,6 +214,7 @@ auth: {
 Default session expiry: **7 days**
 
 After expiry:
+
 - User is automatically logged out
 - Redirected to login screen
 - Must re-authenticate
@@ -222,6 +224,7 @@ After expiry:
 ### Password Requirements
 
 Enforced by Supabase:
+
 - Minimum 6 characters
 - No maximum length
 - No complexity requirements (configurable)
@@ -229,6 +232,7 @@ Enforced by Supabase:
 ### Rate Limiting
 
 Supabase provides built-in rate limiting:
+
 - Max login attempts per IP
 - Temporary lockout after failed attempts
 - Email verification for suspicious activity
@@ -264,13 +268,13 @@ try {
 ```typescript
 const handleError = (error: Error) => {
   let message = 'An error occurred';
-  
+
   if (error.message.includes('Invalid login credentials')) {
     message = 'Invalid email or password';
   } else if (error.message.includes('Email not confirmed')) {
     message = 'Please verify your email';
   }
-  
+
   Alert.alert('Login Failed', message);
 };
 ```
@@ -339,6 +343,7 @@ Password: your-password
 **Problem:** User logged out after app restart
 
 **Solutions:**
+
 1. Check AsyncStorage permissions
 2. Verify `persistSession: true` in config
 3. Clear app data and try again
@@ -348,6 +353,7 @@ Password: your-password
 **Problem:** No error message shown
 
 **Solutions:**
+
 1. Check network connection
 2. Verify Supabase URL and anon key
 3. Check console for errors
@@ -358,6 +364,7 @@ Password: your-password
 **Problem:** User logged out unexpectedly
 
 **Solutions:**
+
 1. Check `autoRefreshToken: true` in config
 2. Verify network connectivity
 3. Check Supabase project status

@@ -3,12 +3,7 @@
  */
 
 import { supabase } from '@/config/supabase';
-import type { 
-  MFAEnrollmentResult, 
-  MFAChallengeResult, 
-  MFAFactor, 
-  AAL 
-} from '../types/mfa.types';
+import type { MFAEnrollmentResult, MFAChallengeResult, MFAFactor, AAL } from '../types/mfa.types';
 
 class MFAService {
   /**
@@ -16,7 +11,7 @@ class MFAService {
    */
   async enroll(friendlyName?: string): Promise<MFAEnrollmentResult> {
     console.log('🔐 MFA Service: Starting enrollment');
-    
+
     const { data, error } = await supabase.auth.mfa.enroll({
       factorType: 'totp',
       friendlyName: friendlyName || 'Google Authenticator',
@@ -44,9 +39,9 @@ class MFAService {
    */
   async challenge(factorId: string): Promise<MFAChallengeResult> {
     console.log('🔐 MFA Service: Creating challenge for factor:', factorId);
-    
+
     const { data, error } = await supabase.auth.mfa.challenge({ factorId });
-    
+
     if (error) {
       console.error('❌ MFA challenge failed:', error);
       throw error;
@@ -61,9 +56,9 @@ class MFAService {
    */
   async verify(factorId: string, challengeId: string, code: string): Promise<boolean> {
     console.log('🔐 MFA Service: Verifying code');
-    
+
     const { error } = await supabase.auth.mfa.verify({ factorId, challengeId, code });
-    
+
     if (error) {
       console.error('❌ MFA verification failed:', error);
       throw error;
@@ -78,7 +73,7 @@ class MFAService {
    */
   async listFactors(): Promise<MFAFactor[]> {
     const { data, error } = await supabase.auth.mfa.listFactors();
-    
+
     if (error) {
       console.error('❌ Failed to list MFA factors:', error);
       throw error;
@@ -92,7 +87,7 @@ class MFAService {
    */
   async getVerifiedTOTPFactors(): Promise<MFAFactor[]> {
     const factors = await this.listFactors();
-    return factors.filter(f => f.factor_type === 'totp' && f.status === 'verified');
+    return factors.filter((f) => f.factor_type === 'totp' && f.status === 'verified');
   }
 
   /**
@@ -100,9 +95,9 @@ class MFAService {
    */
   async unenroll(factorId: string): Promise<void> {
     console.log('🔐 MFA Service: Unenrolling factor:', factorId);
-    
+
     const { error } = await supabase.auth.mfa.unenroll({ factorId });
-    
+
     if (error) {
       console.error('❌ MFA unenroll failed:', error);
       throw error;
@@ -116,7 +111,7 @@ class MFAService {
    */
   async getAssuranceLevel(): Promise<{ currentLevel: AAL; nextLevel: AAL }> {
     const { data, error } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
-    
+
     if (error) {
       console.error('❌ Failed to get assurance level:', error);
       throw error;
@@ -141,9 +136,9 @@ class MFAService {
    */
   async completeChallenge(code: string): Promise<boolean> {
     console.log('🔐 MFA Service: Completing challenge');
-    
+
     const factors = await this.getVerifiedTOTPFactors();
-    
+
     if (factors.length === 0) {
       throw new Error('No verified TOTP factors found');
     }

@@ -16,7 +16,9 @@ const StatItem = ({ icon, label, value, subValue }: StatItemProps) => (
     <View style={styles.statIcon}>{icon}</View>
     <View style={styles.statContent}>
       <Text style={styles.statLabel}>{label}</Text>
-      <Text style={styles.statValue}>{typeof value === 'number' ? value.toLocaleString() : value}</Text>
+      <Text style={styles.statValue}>
+        {typeof value === 'number' ? value.toLocaleString() : value}
+      </Text>
       {subValue && <Text style={styles.statSubValue}>{subValue}</Text>}
     </View>
   </Surface>
@@ -52,7 +54,9 @@ export const AITokenUsageCard = () => {
         <Card.Content>
           <View style={styles.header}>
             <Bot size={20} color="#0056b3" />
-            <Text variant="titleMedium" style={styles.title}>AI-användning</Text>
+            <Text variant="titleMedium" style={styles.title}>
+              AI-användning
+            </Text>
           </View>
           <View style={styles.emptyContent}>
             <Bot size={40} color="#9ca3af" />
@@ -67,7 +71,10 @@ export const AITokenUsageCard = () => {
   }
 
   // Estimerad kostnad (grov beräkning)
-  const estimatedCost = (stats.totalPromptTokens * 0.0000025 + stats.totalCompletionTokens * 0.00001).toFixed(4);
+  const estimatedCost = (
+    stats.totalPromptTokens * 0.0000025 +
+    stats.totalCompletionTokens * 0.00001
+  ).toFixed(4);
 
   const formatDate = (dateStr: string | null) => {
     if (!dateStr) return '-';
@@ -83,7 +90,9 @@ export const AITokenUsageCard = () => {
       <Card.Content>
         <View style={styles.header}>
           <Bot size={20} color="#0056b3" />
-          <Text variant="titleMedium" style={styles.title}>AI-användning</Text>
+          <Text variant="titleMedium" style={styles.title}>
+            AI-användning
+          </Text>
         </View>
 
         <View style={styles.statsGrid}>
@@ -133,17 +142,17 @@ export const AITokenUsageCard = () => {
             </Text>
           </View>
           <View style={styles.progressBar}>
-            <View 
+            <View
               style={[
-                styles.progressInput, 
-                { width: `${(stats.totalPromptTokens / stats.totalTokensUsed) * 100}%` }
-              ]} 
+                styles.progressInput,
+                { width: `${(stats.totalPromptTokens / stats.totalTokensUsed) * 100}%` },
+              ]}
             />
-            <View 
+            <View
               style={[
-                styles.progressOutput, 
-                { width: `${(stats.totalCompletionTokens / stats.totalTokensUsed) * 100}%` }
-              ]} 
+                styles.progressOutput,
+                { width: `${(stats.totalCompletionTokens / stats.totalTokensUsed) * 100}%` },
+              ]}
             />
           </View>
           <View style={styles.breakdownLegend}>

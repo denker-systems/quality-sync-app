@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Modal, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
+import { StyleSheet, View, Modal, TouchableOpacity, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text, Button, Badge, Surface } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -27,8 +27,6 @@ interface StepPreviewModalProps {
   onPrevious: () => void;
   onNext: () => void;
 }
-
-const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 export function StepPreviewModal({
   visible,
@@ -61,6 +59,7 @@ export function StepPreviewModal({
   const renderStepComponent = () => {
     const commonProps = {
       content: step.content,
+      step,
       stepData: progress?.stepData || {},
       onComplete,
       onSave,
@@ -68,12 +67,7 @@ export function StepPreviewModal({
 
     switch (step.step_type) {
       case 'welcome':
-        return (
-          <WelcomeStep
-            {...commonProps}
-            employeeName={mockEmployee?.first_name}
-          />
-        );
+        return <WelcomeStep {...commonProps} employeeName={mockEmployee?.first_name} />;
       case 'personal_info':
         return <PersonalInfoStep {...commonProps} />;
       case 'emergency_contact':
@@ -112,12 +106,9 @@ export function StepPreviewModal({
     >
       <View style={[styles.container, { backgroundColor: bgColor }]}>
         {/* Header */}
-        <Surface 
-          elevation={1} 
-          style={[
-            styles.header, 
-            { backgroundColor: headerBg, paddingTop: insets.top + 8 }
-          ]}
+        <Surface
+          elevation={1}
+          style={[styles.header, { backgroundColor: headerBg, paddingTop: insets.top + 8 }]}
         >
           <View style={styles.headerTop}>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
@@ -136,7 +127,9 @@ export function StepPreviewModal({
                 <Badge variant="success">
                   <View style={styles.badgeContent}>
                     <CheckCircle size={12} color="#059669" />
-                    <Text variant="tiny" style={{ color: '#059669', marginLeft: 4 }}>Done</Text>
+                    <Text variant="tiny" style={{ color: '#059669', marginLeft: 4 }}>
+                      Done
+                    </Text>
                   </View>
                 </Badge>
               ) : (
@@ -155,10 +148,7 @@ export function StepPreviewModal({
               style={[styles.navButton, !hasPrevious && styles.navButtonDisabled]}
             >
               <ChevronLeft size={20} color={hasPrevious ? accentColor : mutedColor} />
-              <Text 
-                variant="body-sm" 
-                style={{ color: hasPrevious ? accentColor : mutedColor }}
-              >
+              <Text variant="body-sm" style={{ color: hasPrevious ? accentColor : mutedColor }}>
                 Previous
               </Text>
             </TouchableOpacity>
@@ -168,10 +158,7 @@ export function StepPreviewModal({
               disabled={!hasNext}
               style={[styles.navButton, !hasNext && styles.navButtonDisabled]}
             >
-              <Text 
-                variant="body-sm" 
-                style={{ color: hasNext ? accentColor : mutedColor }}
-              >
+              <Text variant="body-sm" style={{ color: hasNext ? accentColor : mutedColor }}>
                 Next
               </Text>
               <ChevronRight size={20} color={hasNext ? accentColor : mutedColor} />
@@ -180,12 +167,9 @@ export function StepPreviewModal({
         </Surface>
 
         {/* Content */}
-        <ScrollView 
+        <ScrollView
           style={styles.content}
-          contentContainerStyle={[
-            styles.contentContainer,
-            { paddingBottom: insets.bottom + 24 }
-          ]}
+          contentContainerStyle={[styles.contentContainer, { paddingBottom: insets.bottom + 24 }]}
           showsVerticalScrollIndicator={false}
         >
           {renderStepComponent()}

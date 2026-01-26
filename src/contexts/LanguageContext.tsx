@@ -50,7 +50,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   // Translation function
   const t = useCallback((key: string, options?: object) => {
     return i18n.t(key, options);
-  }, [language]); // Re-render when language changes
+  }, []);
 
   if (!isLoaded) {
     return null; // Or a loading spinner

@@ -9,25 +9,17 @@ const SWIPE_THRESHOLD = 50; // Minimum swipe distance to trigger
 export function SwipeEdgeDetector({ children }: { children: React.ReactNode }) {
   const menuContext = useMenu();
   const startX = useRef(0);
-
-  // If menu context is not available, just render children
-  if (!menuContext) {
-    return <>{children}</>;
-  }
-
-  const { openMenu, menuVisible } = menuContext;
+  const { openMenu, menuVisible } = menuContext ?? { openMenu: undefined, menuVisible: false };
 
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: (evt) => {
         // Only activate if touch starts near right edge
-        const touchX = evt.nativeEvent.pageX;
-        startX.current = touchX;
-        return touchX > SCREEN_WIDTH - EDGE_WIDTH;
+        startX.current = evt.nativeEvent.pageX;
+        return startX.current > SCREEN_WIDTH - EDGE_WIDTH;
       },
       onMoveShouldSetPanResponder: (evt, gestureState) => {
         // Respond to left swipes from right edge
-        const touchX = evt.nativeEvent.pageX;
         return (
           startX.current > SCREEN_WIDTH - EDGE_WIDTH &&
           gestureState.dx < -10 &&
@@ -37,11 +29,16 @@ export function SwipeEdgeDetector({ children }: { children: React.ReactNode }) {
       onPanResponderRelease: (_, gestureState) => {
         // If swiped left far enough, open menu
         if (gestureState.dx < -SWIPE_THRESHOLD || gestureState.vx < -0.5) {
-          openMenu();
+          openMenu?.();
         }
       },
-    })
+    }),
   ).current;
+
+  // If menu context is not available, just render children
+  if (!menuContext) {
+    return <>{children}</>;
+  }
 
   // Don't capture gestures when menu is visible
   if (menuVisible) {

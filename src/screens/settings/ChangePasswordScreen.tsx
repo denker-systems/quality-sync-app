@@ -5,7 +5,6 @@ import { ScreenLayout } from '@/components/common';
 import { Text, Card, CardContent, Button } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/config/supabase';
 import { Key, Eye, EyeOff, Shield } from 'lucide-react-native';
 import { TouchableOpacity } from 'react-native';
@@ -14,14 +13,12 @@ export function ChangePasswordScreen() {
   const { isDark } = useTheme();
   const { t } = useLanguage();
   const navigation = useNavigation<any>();
-  const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const textColor = isDark ? '#FAFAFA' : '#171717';
   const mutedColor = isDark ? '#A3A3A3' : '#737373';
   const accentColor = isDark ? '#6BBD68' : '#489A45';
@@ -57,7 +54,7 @@ export function ChangePasswordScreen() {
       if (error) throw error;
 
       Alert.alert(t('changePassword.successTitle'), t('changePassword.successMessage'), [
-        { text: 'OK', onPress: () => navigation.navigate('Settings') }
+        { text: 'OK', onPress: () => navigation.navigate('Settings') },
       ]);
     } catch (error: any) {
       Alert.alert(t('common.error'), error.message || t('changePassword.errorRequired'));
@@ -89,10 +86,7 @@ export function ChangePasswordScreen() {
               placeholderTextColor={mutedColor}
               style={[styles.input, { backgroundColor: inputBg, borderColor, color: textColor }]}
             />
-            <TouchableOpacity 
-              style={styles.eyeButton}
-              onPress={() => setShowNew(!showNew)}
-            >
+            <TouchableOpacity style={styles.eyeButton} onPress={() => setShowNew(!showNew)}>
               {showNew ? (
                 <EyeOff size={20} color={mutedColor} />
               ) : (
@@ -113,10 +107,7 @@ export function ChangePasswordScreen() {
               placeholderTextColor={mutedColor}
               style={[styles.input, { backgroundColor: inputBg, borderColor, color: textColor }]}
             />
-            <TouchableOpacity 
-              style={styles.eyeButton}
-              onPress={() => setShowConfirm(!showConfirm)}
-            >
+            <TouchableOpacity style={styles.eyeButton} onPress={() => setShowConfirm(!showConfirm)}>
               {showConfirm ? (
                 <EyeOff size={20} color={mutedColor} />
               ) : (

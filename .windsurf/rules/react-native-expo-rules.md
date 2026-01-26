@@ -1,6 +1,7 @@
 # React Native & Expo Rules
 
 ## Tech Stack
+
 - **Framework:** React Native with Expo (SDK 54+)
 - **Language:** TypeScript
 - **UI Library:** React Native Paper (Material Design 3)
@@ -40,11 +41,13 @@
 - Handle session persistence with `AsyncStorage`.
 
 ### Environment Variables
+
 - Access variables via `process.env.EXPO_PUBLIC_*` in client code.
 - Ensure `app.config.js` correctly loads `.env` for the Expo runtime.
 - Never hardcode secrets in the client code.
 
 ## Directory Structure
+
 - `src/screens`: Full screen components (pages).
 - `src/components`: Reusable UI components.
 - `src/hooks`: Custom hooks for logic and data fetching.
@@ -55,6 +58,7 @@
 - `src/utils`: Helper functions.
 
 ## Coding Standards
+
 - **Imports:** Use absolute imports with `@/` alias.
 - **Components:** Functional components with named exports.
 - **Types:** Interfaces for objects, Types for unions/primitives.

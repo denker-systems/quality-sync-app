@@ -11,75 +11,65 @@ interface InputProps extends TextInputProps {
   rightIcon?: React.ReactNode;
 }
 
-export const Input = forwardRef<TextInput, InputProps>(({
-  label,
-  error,
-  hint,
-  leftIcon,
-  rightIcon,
-  style,
-  ...props
-}, ref) => {
-  const { isDark } = useTheme();
+export const Input = forwardRef<TextInput, InputProps>(
+  ({ label, error, hint, leftIcon, rightIcon, style, ...props }, ref) => {
+    const { isDark } = useTheme();
 
-  const backgroundColor = isDark ? '#1A1A1A' : '#FFFFFF';
-  const borderColor = error 
-    ? '#EF4444' 
-    : isDark ? '#3D3D3D' : '#E5E5E5';
-  const textColor = isDark ? '#FAFAFA' : '#171717';
-  const placeholderColor = isDark ? '#737373' : '#A3A3A3';
-  const labelColor = isDark ? '#D4D4D4' : '#525252';
-  const hintColor = isDark ? '#737373' : '#737373';
+    const backgroundColor = isDark ? '#1A1A1A' : '#FFFFFF';
+    const borderColor = error ? '#EF4444' : isDark ? '#3D3D3D' : '#E5E5E5';
+    const textColor = isDark ? '#FAFAFA' : '#171717';
+    const placeholderColor = isDark ? '#737373' : '#A3A3A3';
+    const labelColor = isDark ? '#D4D4D4' : '#525252';
+    const hintColor = isDark ? '#737373' : '#737373';
 
-  return (
-    <View style={styles.container}>
-      {label && (
-        <Text variant="body-sm" style={[styles.label, { color: labelColor }]}>
-          {label}
-        </Text>
-      )}
-      
-      <View style={[
-        styles.inputContainer,
-        { backgroundColor, borderColor },
-        error && styles.errorBorder,
-      ]}>
-        {leftIcon && (
-          <View style={styles.leftIcon}>{leftIcon}</View>
+    return (
+      <View style={styles.container}>
+        {label && (
+          <Text variant="body-sm" style={[styles.label, { color: labelColor }]}>
+            {label}
+          </Text>
         )}
-        
-        <TextInput
-          ref={ref}
+
+        <View
           style={[
-            styles.input,
-            { color: textColor },
-            leftIcon ? styles.inputWithLeftIcon : undefined,
-            rightIcon ? styles.inputWithRightIcon : undefined,
-            style,
+            styles.inputContainer,
+            { backgroundColor, borderColor },
+            error && styles.errorBorder,
           ]}
-          placeholderTextColor={placeholderColor}
-          {...props}
-        />
-        
-        {rightIcon && (
-          <View style={styles.rightIcon}>{rightIcon}</View>
+        >
+          {leftIcon && <View style={styles.leftIcon}>{leftIcon}</View>}
+
+          <TextInput
+            ref={ref}
+            style={[
+              styles.input,
+              { color: textColor },
+              leftIcon ? styles.inputWithLeftIcon : undefined,
+              rightIcon ? styles.inputWithRightIcon : undefined,
+              style,
+            ]}
+            placeholderTextColor={placeholderColor}
+            {...props}
+          />
+
+          {rightIcon && <View style={styles.rightIcon}>{rightIcon}</View>}
+        </View>
+
+        {error && (
+          <Text variant="caption" style={styles.error}>
+            {error}
+          </Text>
+        )}
+
+        {hint && !error && (
+          <Text variant="caption" style={[styles.hint, { color: hintColor }]}>
+            {hint}
+          </Text>
         )}
       </View>
-      
-      {error && (
-        <Text variant="caption" style={styles.error}>
-          {error}
-        </Text>
-      )}
-      
-      {hint && !error && (
-        <Text variant="caption" style={[styles.hint, { color: hintColor }]}>
-          {hint}
-        </Text>
-      )}
-    </View>
-  );
-});
+    );
+  },
+);
 
 Input.displayName = 'Input';
 

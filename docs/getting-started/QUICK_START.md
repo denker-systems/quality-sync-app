@@ -39,11 +39,13 @@ npm start
 ### 4. Run the App
 
 **iOS:**
+
 ```bash
 npm run ios
 ```
 
 **Android:**
+
 ```bash
 npm run android
 ```
@@ -65,17 +67,20 @@ npm run android
 ## Common Issues
 
 ### Metro Bundler Cache Issues
+
 ```bash
 npm start -- --clear
 ```
 
 ### Module Resolution Errors
+
 ```bash
 rm -rf node_modules
 npm install
 ```
 
 ### iOS Simulator Not Starting
+
 ```bash
 open -a Simulator
 npm run ios

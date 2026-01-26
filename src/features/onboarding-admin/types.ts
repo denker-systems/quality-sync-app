@@ -5,7 +5,14 @@
 export interface AdminOnboardingStep {
   id: string;
   company_id: string;
-  step_type: 'welcome' | 'personal_info' | 'emergency_contact' | 'bank_details' | 'contract_signing' | 'handbook' | 'custom';
+  step_type:
+    | 'welcome'
+    | 'personal_info'
+    | 'emergency_contact'
+    | 'bank_details'
+    | 'contract_signing'
+    | 'handbook'
+    | 'custom';
   title: string;
   description?: string;
   content: Record<string, any>;

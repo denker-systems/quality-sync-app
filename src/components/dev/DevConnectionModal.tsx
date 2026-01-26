@@ -6,7 +6,6 @@ import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Modal, TouchableOpacity, Clipboard, Platform } from 'react-native';
 import { Text, Card, Button } from 'react-native-paper';
 import { useTheme } from '@/contexts/ThemeContext';
-import { useLanguage } from '@/contexts/LanguageContext';
 import { X, Copy, CheckCircle, Wifi, Smartphone } from 'lucide-react-native';
 import QRCode from 'react-native-qrcode-svg';
 import Constants from 'expo-constants';
@@ -18,7 +17,6 @@ interface DevConnectionModalProps {
 
 export function DevConnectionModal({ visible, onClose }: DevConnectionModalProps) {
   const { isDark } = useTheme();
-  const { t } = useLanguage();
   const [copied, setCopied] = useState(false);
   const [connectionUrl, setConnectionUrl] = useState<string>('');
 
@@ -64,12 +62,7 @@ export function DevConnectionModal({ visible, onClose }: DevConnectionModalProps
   const tunnelCommand = 'npx expo start --tunnel';
 
   return (
-    <Modal
-      visible={visible}
-      animationType="slide"
-      transparent={true}
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} animationType="slide" transparent={true} onRequestClose={onClose}>
       <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.5)' }]}>
         <View style={[styles.container, { backgroundColor: bgColor }]}>
           {/* Header */}
@@ -148,12 +141,13 @@ export function DevConnectionModal({ visible, onClose }: DevConnectionModalProps
                 </Text>
 
                 <TouchableOpacity
-                  style={[styles.urlContainer, { backgroundColor: cardBg, borderColor: isDark ? '#525252' : '#E5E5E5' }]}
+                  style={[
+                    styles.urlContainer,
+                    { backgroundColor: cardBg, borderColor: isDark ? '#525252' : '#E5E5E5' },
+                  ]}
                   onPress={() => copyToClipboard(connectionUrl)}
                 >
-                  <Text style={[styles.urlText, { color: textColor }]}>
-                    {connectionUrl}
-                  </Text>
+                  <Text style={[styles.urlText, { color: textColor }]}>{connectionUrl}</Text>
                   {copied ? (
                     <CheckCircle size={18} color={successColor} />
                   ) : (
@@ -179,22 +173,19 @@ export function DevConnectionModal({ visible, onClose }: DevConnectionModalProps
                   Om du är på olika nätverk, kör i terminalen:
                 </Text>
                 <TouchableOpacity
-                  style={[styles.commandContainer, { backgroundColor: cardBg, borderColor: isDark ? '#525252' : '#E5E5E5' }]}
+                  style={[
+                    styles.commandContainer,
+                    { backgroundColor: cardBg, borderColor: isDark ? '#525252' : '#E5E5E5' },
+                  ]}
                   onPress={() => copyToClipboard(tunnelCommand)}
                 >
-                  <Text style={[styles.commandText, { color: textColor }]}>
-                    {tunnelCommand}
-                  </Text>
+                  <Text style={[styles.commandText, { color: textColor }]}>{tunnelCommand}</Text>
                   <Copy size={16} color={mutedColor} />
                 </TouchableOpacity>
               </Card.Content>
             </Card>
 
-            <Button
-              mode="contained"
-              onPress={onClose}
-              style={styles.closeButtonBottom}
-            >
+            <Button mode="contained" onPress={onClose} style={styles.closeButtonBottom}>
               Stäng
             </Button>
           </View>

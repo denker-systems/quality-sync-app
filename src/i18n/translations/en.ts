@@ -84,7 +84,8 @@ export default {
     confirmPasswordPlaceholder: 'Enter password again',
     saveButton: 'Update Password',
     saving: 'Saving...',
-    passwordHint: 'Choose a strong password with at least 8 characters, preferably with a mix of letters, numbers and symbols.',
+    passwordHint:
+      'Choose a strong password with at least 8 characters, preferably with a mix of letters, numbers and symbols.',
     errorRequired: 'Fill in all fields',
     errorMismatch: 'Passwords do not match',
     errorTooShort: 'Password must be at least 8 characters',
@@ -180,7 +181,7 @@ export default {
     journeyTitle: 'Your onboarding journey',
     stepNumber: 'Step {{number}}',
     openButton: 'Open',
-    
+
     // Personal Info Step
     personalInfo: {
       title: 'Personal Information',
@@ -197,14 +198,15 @@ export default {
       phone: 'Phone',
       email: 'Email',
       idDocument: 'ID Document (optional)',
-      idDocumentDesc: 'Upload a copy of your driver\'s license, passport, or national ID card (JPG, PNG, or PDF, max 5MB)',
+      idDocumentDesc:
+        "Upload a copy of your driver's license, passport, or national ID card (JPG, PNG, or PDF, max 5MB)",
       chooseImage: 'Choose Image',
       chooseDocument: 'Choose Document',
       uploading: 'Uploading...',
       uploaded: 'Uploaded',
       idDocumentUploaded: 'ID document uploaded',
       required: '*',
-      
+
       // Errors
       errorFirstName: 'First name is required',
       errorLastName: 'Last name is required',
@@ -213,7 +215,7 @@ export default {
       errorAddress: 'Address is required',
       errorPostalCode: 'Postal code is required',
       errorCity: 'City is required',
-      
+
       // Alerts
       errorTitle: 'Error',
       errorSave: 'Could not save your information. Please try again.',
@@ -226,7 +228,7 @@ export default {
       uploadSuccess: 'Done!',
       uploadSuccessMessage: 'ID document uploaded',
     },
-    
+
     // Contract Signing Step
     contract: {
       title: 'Employment Contract',
@@ -240,14 +242,14 @@ export default {
       mustReadFirst: 'You must read the contract first',
       signatureModalTitle: 'Sign Employment Contract',
       signatureModalDesc: 'Draw your signature below to approve the contract',
-      
+
       // Alerts
       alertReadFirst: 'Read the contract first',
       alertReadMessage: 'You must read through the contract before continuing.',
       alertSignatureMissing: 'Signature missing',
       alertSignatureMessage: 'You must sign the contract to continue.',
     },
-    
+
     // Welcome Step
     welcome: {
       defaultTitle: 'Welcome to our team! We are happy to have you on board.',
@@ -255,7 +257,7 @@ export default {
       stepTitle: 'Welcome!',
       stepDescription: 'Welcome message and introduction to the company',
     },
-    
+
     // Handbook Step
     handbook: {
       title: 'Employee Handbook',
@@ -268,20 +270,23 @@ export default {
       markAsRead: 'Mark as read',
       confirmation: 'I have read and understood the employee handbook',
       alertReadAll: 'Read all sections first',
-      alertReadAllMessage: 'You must read all {{total}} sections before continuing. You have read {{read}} of {{total}}.',
+      alertReadAllMessage:
+        'You must read all {{total}} sections before continuing. You have read {{read}} of {{total}}.',
       alertConfirm: 'Confirm that you have read',
-      alertConfirmMessage: 'You must check that you have read and understood the employee handbook.',
+      alertConfirmMessage:
+        'You must check that you have read and understood the employee handbook.',
       defaultSectionWelcome: 'Welcome',
       defaultSectionWelcomeContent: 'Welcome to the company! We are happy to have you on the team.',
     },
-    
+
     // Bank Details Step
     bankDetails: {
       title: 'Bank Details',
       stepTitle: 'Bank Details',
       stepDescription: 'Enter your bank details for salary payment',
       description: 'Enter your bank details for salary payment.',
-      securityInfo: '🔒 Your bank details are encrypted and stored securely. They are used only for salary payment.',
+      securityInfo:
+        '🔒 Your bank details are encrypted and stored securely. They are used only for salary payment.',
       accountType: 'Account Type',
       bankAccount: 'Bank Account',
       bankgiro: 'Bankgiro',
@@ -299,14 +304,15 @@ export default {
       errorInvalidClearingNumber: 'Clearing number should be 4-5 digits',
       errorAccountNumber: 'Account number is required',
     },
-    
+
     // Emergency Contact Step
     emergencyContact: {
       title: 'Emergency Contact',
       stepTitle: 'Emergency Contact',
       stepDescription: 'Provide an emergency contact',
       description: 'Provide a person we can contact in case of emergency.',
-      securityInfo: 'ℹ️ This information is used only in emergencies and is treated confidentially.',
+      securityInfo:
+        'ℹ️ This information is used only in emergencies and is treated confidentially.',
       contactName: 'Contact person name',
       relation: 'Relation',
       relationFamily: 'Family',
@@ -318,7 +324,7 @@ export default {
       errorName: 'Name is required',
       errorPhone: 'Phone is required',
     },
-    
+
     // Custom Step
     custom: {
       stepTitle: 'Custom Step',
@@ -334,7 +340,7 @@ export default {
       emptyDescription: 'Content has not been configured yet',
     },
   },
-  
+
   // Signature
   signature: {
     modalTitle: 'Sign Document',

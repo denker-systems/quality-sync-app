@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, ScrollView, Alert } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { StyleSheet, View, Alert } from 'react-native';
 import { Text, Button, Surface, Checkbox, List } from 'react-native-paper';
 import { BookOpen, ChevronDown, ChevronUp } from 'lucide-react-native';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -25,21 +25,10 @@ export const HandbookStep: React.FC<HandbookStepProps> = ({
 }) => {
   const { t, language } = useLanguage();
   console.log('📚 HANDBOOK_STEP render:', { stepData, readSections: stepData?.read_sections });
-  
+
   const [hasReadAll, setHasReadAll] = useState(stepData?.has_read_all || false);
   const [expandedSections, setExpandedSections] = useState<string[]>([]);
   const [readSections, setReadSections] = useState<string[]>(stepData?.read_sections || []);
-
-  useEffect(() => {
-    if (submitRef) {
-      submitRef.current = handleComplete;
-    }
-    return () => {
-      if (submitRef) {
-        submitRef.current = null;
-      }
-    };
-  }, [submitRef, hasReadAll]);
 
   interface Section {
     id: string;
@@ -66,7 +55,8 @@ export const HandbookStep: React.FC<HandbookStepProps> = ({
     {
       id: 'policies',
       title: 'Policyer',
-      content: 'Här hittar du information om våra policyer gällande arbetstid, frånvaro och semester.',
+      content:
+        'Här hittar du information om våra policyer gällande arbetstid, frånvaro och semester.',
     },
     {
       id: 'it_security',
@@ -81,10 +71,8 @@ export const HandbookStep: React.FC<HandbookStepProps> = ({
   ];
 
   const toggleSection = (sectionId: string) => {
-    setExpandedSections(prev => 
-      prev.includes(sectionId) 
-        ? prev.filter(id => id !== sectionId)
-        : [...prev, sectionId]
+    setExpandedSections((prev) =>
+      prev.includes(sectionId) ? prev.filter((id) => id !== sectionId) : [...prev, sectionId],
     );
   };
 
@@ -92,7 +80,7 @@ export const HandbookStep: React.FC<HandbookStepProps> = ({
     if (!readSections.includes(sectionId)) {
       const newReadSections = [...readSections, sectionId];
       setReadSections(newReadSections);
-      
+
       // Check if all sections are read
       if (newReadSections.length === sections.length) {
         setHasReadAll(true);
@@ -100,17 +88,20 @@ export const HandbookStep: React.FC<HandbookStepProps> = ({
     }
   };
 
-  const handleComplete = () => {
-    console.log('📚 HANDBOOK_STEP handleComplete:', { 
-      readSections: readSections.length, 
+  const handleComplete = useCallback(() => {
+    console.log('📚 HANDBOOK_STEP handleComplete:', {
+      readSections: readSections.length,
       totalSections: sections.length,
-      allRead: hasReadAll 
+      allRead: hasReadAll,
     });
-    
+
     if (readSections.length < sections.length) {
       Alert.alert(
         t('onboarding.handbook.alertReadAll'),
-        t('onboarding.handbook.alertReadAllMessage', { total: sections.length, read: readSections.length })
+        t('onboarding.handbook.alertReadAllMessage', {
+          total: sections.length,
+          read: readSections.length,
+        }),
       );
       return;
     }
@@ -118,7 +109,7 @@ export const HandbookStep: React.FC<HandbookStepProps> = ({
     if (!hasReadAll) {
       Alert.alert(
         t('onboarding.handbook.alertConfirm'),
-        t('onboarding.handbook.alertConfirmMessage')
+        t('onboarding.handbook.alertConfirmMessage'),
       );
       return;
     }
@@ -129,7 +120,18 @@ export const HandbookStep: React.FC<HandbookStepProps> = ({
       read_sections: readSections,
       completed_at: new Date().toISOString(),
     });
-  };
+  }, [hasReadAll, onComplete, readSections, sections.length, t]);
+
+  useEffect(() => {
+    if (submitRef) {
+      submitRef.current = handleComplete;
+    }
+    return () => {
+      if (submitRef) {
+        submitRef.current = null;
+      }
+    };
+  }, [handleComplete, submitRef]);
 
   return (
     <>
@@ -137,24 +139,30 @@ export const HandbookStep: React.FC<HandbookStepProps> = ({
         <View style={styles.header}>
           <BookOpen size={24} color="#0056b3" />
           <Text variant="titleLarge" style={styles.title}>
-            {getOnboardingStepTitle(step, language === 'sv' ? 'sv' : 'en') || t('onboarding.handbook.title')}
+            {getOnboardingStepTitle(step, language === 'sv' ? 'sv' : 'en') ||
+              t('onboarding.handbook.title')}
           </Text>
         </View>
-        
+
         <Text variant="bodyMedium" style={styles.description}>
-          {getOnboardingStepDescription(step, language === 'sv' ? 'sv' : 'en') || content?.description || t('onboarding.handbook.description')}
+          {getOnboardingStepDescription(step, language === 'sv' ? 'sv' : 'en') ||
+            content?.description ||
+            t('onboarding.handbook.description')}
         </Text>
 
         <View style={styles.progressContainer}>
           <Text variant="bodySmall" style={styles.progressText}>
-            {t('onboarding.handbook.sectionsRead', { read: readSections.length, total: sections.length })}
+            {t('onboarding.handbook.sectionsRead', {
+              read: readSections.length,
+              total: sections.length,
+            })}
           </Text>
           <View style={styles.progressBar}>
-            <View 
+            <View
               style={[
-                styles.progressFill, 
-                { width: `${(readSections.length / sections.length) * 100}%` }
-              ]} 
+                styles.progressFill,
+                { width: `${(readSections.length / sections.length) * 100}%` },
+              ]}
             />
           </View>
         </View>
@@ -170,36 +178,30 @@ export const HandbookStep: React.FC<HandbookStepProps> = ({
             <View key={section.id}>
               <List.Item
                 title={section.title}
-                titleStyle={[
-                  styles.sectionTitle,
-                  isRead && styles.sectionTitleRead,
-                ]}
-                description={isRead ? t('onboarding.handbook.read') : t('onboarding.handbook.unread')}
-                descriptionStyle={[
-                  styles.sectionStatus,
-                  isRead && styles.sectionStatusRead,
-                ]}
+                titleStyle={[styles.sectionTitle, isRead && styles.sectionTitleRead]}
+                description={
+                  isRead ? t('onboarding.handbook.read') : t('onboarding.handbook.unread')
+                }
+                descriptionStyle={[styles.sectionStatus, isRead && styles.sectionStatusRead]}
                 left={() => (
-                  <View style={[
-                    styles.sectionNumber,
-                    isRead && styles.sectionNumberRead,
-                  ]}>
-                    <Text style={[
-                      styles.sectionNumberText,
-                      isRead && styles.sectionNumberTextRead,
-                    ]}>
+                  <View style={[styles.sectionNumber, isRead && styles.sectionNumberRead]}>
+                    <Text
+                      style={[styles.sectionNumberText, isRead && styles.sectionNumberTextRead]}
+                    >
                       {isRead ? '✓' : index + 1}
                     </Text>
                   </View>
                 )}
-                right={() => (
-                  isExpanded 
-                    ? <ChevronUp size={20} color="#6b7280" />
-                    : <ChevronDown size={20} color="#6b7280" />
-                )}
+                right={() =>
+                  isExpanded ? (
+                    <ChevronUp size={20} color="#6b7280" />
+                  ) : (
+                    <ChevronDown size={20} color="#6b7280" />
+                  )
+                }
                 onPress={() => toggleSection(section.id)}
               />
-              
+
               {isExpanded && (
                 <View style={styles.sectionContent}>
                   <Text variant="bodyMedium" style={styles.contentText}>
@@ -216,7 +218,7 @@ export const HandbookStep: React.FC<HandbookStepProps> = ({
                   )}
                 </View>
               )}
-              
+
               {index < sections.length - 1 && <View style={styles.divider} />}
             </View>
           );
@@ -235,8 +237,8 @@ export const HandbookStep: React.FC<HandbookStepProps> = ({
             }}
             disabled={readSections.length < sections.length}
           />
-          <Text 
-            variant="bodyMedium" 
+          <Text
+            variant="bodyMedium"
             style={[
               styles.checkboxLabel,
               readSections.length < sections.length && styles.checkboxLabelDisabled,

@@ -72,7 +72,7 @@ export type RootStackParamList = {
   OnboardingAdmin: undefined;
   OnboardingPreview: undefined;
   // Onboarding step screen
-  OnboardingStep: { 
+  OnboardingStep: {
     stepIndex: number;
     previewData?: {
       onboarding: OnboardingData;
@@ -84,6 +84,7 @@ export type RootStackParamList = {
 
 declare global {
   namespace ReactNavigation {
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     interface RootParamList extends RootStackParamList {}
   }
 }

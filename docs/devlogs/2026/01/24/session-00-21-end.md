@@ -41,6 +41,7 @@
 ### Filer Ändrade (19 filer, +828/-450 rader)
 
 **Huvudändringar:**
+
 - `src/screens/onboarding/OnboardingStepScreen.tsx` - Förenklad navigation och validering
 - `src/screens/onboarding/OnboardingScreen.tsx` - Fixade flickering och hook-ordning
 - `src/screens/onboarding/steps/PersonalInfoStep.tsx` - Employee-data uppdatering

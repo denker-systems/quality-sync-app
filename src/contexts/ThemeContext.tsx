@@ -43,12 +43,15 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   }, [systemColorScheme]);
 
   // Resolve theme (convert 'system' to actual theme)
-  const resolveTheme = useCallback((themeValue: Theme): ResolvedTheme => {
-    if (themeValue === 'system') {
-      return getSystemTheme();
-    }
-    return themeValue;
-  }, [getSystemTheme]);
+  const resolveTheme = useCallback(
+    (themeValue: Theme): ResolvedTheme => {
+      if (themeValue === 'system') {
+        return getSystemTheme();
+      }
+      return themeValue;
+    },
+    [getSystemTheme],
+  );
 
   // Calculate resolved theme
   const resolvedTheme = resolveTheme(theme);
@@ -78,7 +81,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
       try {
         const savedTheme = await AsyncStorage.getItem(THEME_STORAGE_KEY);
         console.log('🎨 THEME: Loaded saved theme:', savedTheme);
-        
+
         if (savedTheme && ['light', 'dark', 'system'].includes(savedTheme)) {
           setThemeState(savedTheme as Theme);
         }
@@ -115,11 +118,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
     isDark,
   };
 
-  return (
-    <ThemeContext.Provider value={contextValue}>
-      {children}
-    </ThemeContext.Provider>
-  );
+  return <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>;
 };
 
 // Custom hook to use theme context

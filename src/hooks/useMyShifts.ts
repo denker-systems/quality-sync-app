@@ -24,7 +24,7 @@ export const useMyShifts = () => {
     enabled: !!user?.id,
     queryFn: async (): Promise<MyShift[]> => {
       console.log('📅 SHIFTS: Fetching shifts for user:', user?.id);
-      
+
       if (!user?.id) return [];
 
       // 1) Hämta company_id från user_profiles
@@ -33,12 +33,12 @@ export const useMyShifts = () => {
         .select('company_id')
         .eq('id', user.id)
         .single();
-        
+
       if (profileErr) {
         console.error('❌ SHIFTS: Failed to fetch profile:', profileErr);
         throw profileErr;
       }
-      
+
       const companyId = (profile as any)?.company_id as string | null;
       if (!companyId || !user.email) {
         console.log('ℹ️ SHIFTS: No company_id or email found');
@@ -57,7 +57,7 @@ export const useMyShifts = () => {
         console.error('❌ SHIFTS: Failed to fetch employee:', empErr);
         throw empErr;
       }
-      
+
       const employee = emp as any;
       if (!employee?.id) {
         console.log('ℹ️ SHIFTS: No employee found');
@@ -67,7 +67,8 @@ export const useMyShifts = () => {
       // 3) Fetch shifts for this employee
       const { data, error } = await (supabase as any)
         .from('quinyx_shifts')
-        .select(`
+        .select(
+          `
           id,
           quinyx_shift_id,
           employee_id,
@@ -80,7 +81,8 @@ export const useMyShifts = () => {
           company_id,
           updated_at,
           created_at
-        `)
+        `,
+        )
         .eq('company_id', employee.company_id as string)
         .eq('employee_id', employee.id)
         .order('start_time', { ascending: true });

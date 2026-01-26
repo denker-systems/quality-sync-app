@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, ScrollView, ActivityIndicator } from 'react-native';
-import { Text, Card, CardContent, Button } from '@/components/ui';
+import { Text, Button } from '@/components/ui';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Plus, Eye, Settings } from 'lucide-react-native';
 import { useOnboardingSteps, useUpdateOnboardingStep } from '../hooks/useOnboardingSteps';

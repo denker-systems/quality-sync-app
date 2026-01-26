@@ -24,10 +24,7 @@ export function MenuSection({ title, items, onItemPress }: MenuSectionProps) {
   return (
     <View style={styles.section}>
       {title && (
-        <Text 
-          variant="body-sm" 
-          style={[styles.sectionTitle, { color: sectionTitleColor }]}
-        >
+        <Text variant="body-sm" style={[styles.sectionTitle, { color: sectionTitleColor }]}>
           {title}
         </Text>
       )}

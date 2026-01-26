@@ -10,28 +10,30 @@ Detta dokument beskriver en komplett UI/UX-arkitektur för Quality Sync App med 
 
 ### Färdigt
 
-| Komponent | Status | Fil |
-|-----------|--------|-----|
-| **NativeWind v5** | ✅ Installerat | `tailwind.config.js`, `metro.config.js` |
-| **Design Tokens** | ✅ Skapad | `src/config/colors.ts` |
-| **CSS Variables** | ✅ Konfigurerad | `src/styles/global.css` |
-| **Text Component** | ✅ Implementerad | `src/components/ui/Text.tsx` |
-| **Button Component** | ✅ Implementerad | `src/components/ui/Button.tsx` |
-| **Card Component** | ✅ Implementerad | `src/components/ui/Card.tsx` |
-| **FloatingTabBar** | ✅ Implementerad | `src/components/ui/FloatingTabBar.tsx` |
-| **FullscreenMenu** | ✅ Implementerad | `src/components/ui/FullscreenMenu.tsx` |
-| **Input Component** | ✅ Implementerad | `src/components/ui/Input.tsx` |
-| **Avatar Component** | ✅ Implementerad | `src/components/ui/Avatar.tsx` |
-| **Badge Component** | ✅ Implementerad | `src/components/ui/Badge.tsx` |
-| **Divider Component** | ✅ Implementerad | `src/components/ui/Divider.tsx` |
-| **IconButton Component** | ✅ Implementerad | `src/components/ui/IconButton.tsx` |
-| **HomeScreen** | ✅ Implementerad | `src/screens/home/HomeScreen.tsx` |
-| **SearchScreen** | ✅ Implementerad | `src/screens/search/SearchScreen.tsx` |
-| **MainTabNavigator** | ✅ Implementerad | `src/navigation/MainTabNavigator.tsx` |
-| **PostCSS Config** | ✅ Skapad | `postcss.config.js` |
+| Komponent                | Status           | Fil                                     |
+| ------------------------ | ---------------- | --------------------------------------- |
+| **NativeWind v5**        | ✅ Installerat   | `tailwind.config.js`, `metro.config.js` |
+| **Design Tokens**        | ✅ Skapad        | `src/config/colors.ts`                  |
+| **CSS Variables**        | ✅ Konfigurerad  | `src/styles/global.css`                 |
+| **Text Component**       | ✅ Implementerad | `src/components/ui/Text.tsx`            |
+| **Button Component**     | ✅ Implementerad | `src/components/ui/Button.tsx`          |
+| **Card Component**       | ✅ Implementerad | `src/components/ui/Card.tsx`            |
+| **FloatingTabBar**       | ✅ Implementerad | `src/components/ui/FloatingTabBar.tsx`  |
+| **FullscreenMenu**       | ✅ Implementerad | `src/components/ui/FullscreenMenu.tsx`  |
+| **Input Component**      | ✅ Implementerad | `src/components/ui/Input.tsx`           |
+| **Avatar Component**     | ✅ Implementerad | `src/components/ui/Avatar.tsx`          |
+| **Badge Component**      | ✅ Implementerad | `src/components/ui/Badge.tsx`           |
+| **Divider Component**    | ✅ Implementerad | `src/components/ui/Divider.tsx`         |
+| **IconButton Component** | ✅ Implementerad | `src/components/ui/IconButton.tsx`      |
+| **HomeScreen**           | ✅ Implementerad | `src/screens/home/HomeScreen.tsx`       |
+| **SearchScreen**         | ✅ Implementerad | `src/screens/search/SearchScreen.tsx`   |
+| **MainTabNavigator**     | ✅ Implementerad | `src/navigation/MainTabNavigator.tsx`   |
+| **PostCSS Config**       | ✅ Skapad        | `postcss.config.js`                     |
 
 ### Design Inspiration
+
 Baserat på **ZocDog Healthcare App** (Behance):
+
 - Mintgrön färgpalett (#D4E8D1 → #6BBD68)
 - Svarta CTA-knappar med pill-form
 - Överlappande cirkulär tab bar
@@ -46,13 +48,13 @@ Se `docs/DESIGN_SYSTEM.md` för komplett specifikation.
 
 ### Populära React Native UI Libraries 2025
 
-| Library | Fördelar | Nackdelar | Rekommendation |
-|---------|----------|-----------|----------------|
-| **NativeWind v5** | Tailwind CSS för RN, 97+ snippets, Benchmark: 72.6 | Kräver PostCSS setup | ⭐ **REKOMMENDERAD** |
-| **Gluestack UI** | Copy-paste komponenter, NativeWind-baserad, 844 snippets | Relativt nytt | ⭐ **REKOMMENDERAD** |
-| **React Native Paper** | Material Design, redan installerad, 848 snippets | Begränsad styling-flexibilitet | ✅ Behåll som bas |
-| **Uniwind** | Snabbaste Tailwind-bindningar, 1091 snippets | Mindre dokumentation | Alternativ |
-| **Tamagui** | Universal styling, animations | Komplex setup | Avancerat alternativ |
+| Library                | Fördelar                                                 | Nackdelar                      | Rekommendation       |
+| ---------------------- | -------------------------------------------------------- | ------------------------------ | -------------------- |
+| **NativeWind v5**      | Tailwind CSS för RN, 97+ snippets, Benchmark: 72.6       | Kräver PostCSS setup           | ⭐ **REKOMMENDERAD** |
+| **Gluestack UI**       | Copy-paste komponenter, NativeWind-baserad, 844 snippets | Relativt nytt                  | ⭐ **REKOMMENDERAD** |
+| **React Native Paper** | Material Design, redan installerad, 848 snippets         | Begränsad styling-flexibilitet | ✅ Behåll som bas    |
+| **Uniwind**            | Snabbaste Tailwind-bindningar, 1091 snippets             | Mindre dokumentation           | Alternativ           |
+| **Tamagui**            | Universal styling, animations                            | Komplex setup                  | Avancerat alternativ |
 
 ### Rekommenderad Stack
 
@@ -135,40 +137,40 @@ npx tailwindcss init
 // tailwind.config.js
 module.exports = {
   content: [
-    "./App.{js,jsx,ts,tsx}",
-    "./src/**/*.{js,jsx,ts,tsx}",
-    "./src/components/**/*.{js,jsx,ts,tsx}",
+    './App.{js,jsx,ts,tsx}',
+    './src/**/*.{js,jsx,ts,tsx}',
+    './src/components/**/*.{js,jsx,ts,tsx}',
   ],
-  presets: [require("nativewind/preset")],
-  darkMode: "class", // Använd class-baserad dark mode
+  presets: [require('nativewind/preset')],
+  darkMode: 'class', // Använd class-baserad dark mode
   theme: {
     extend: {
       colors: {
         // Brand colors (matchar web app)
         primary: {
-          DEFAULT: "rgb(var(--color-primary) / <alpha-value>)",
-          foreground: "rgb(var(--color-primary-foreground) / <alpha-value>)",
+          DEFAULT: 'rgb(var(--color-primary) / <alpha-value>)',
+          foreground: 'rgb(var(--color-primary-foreground) / <alpha-value>)',
         },
         secondary: {
-          DEFAULT: "#997328",
-          light: "#d4a636",
-          dark: "#614a19",
+          DEFAULT: '#997328',
+          light: '#d4a636',
+          dark: '#614a19',
         },
-        background: "rgb(var(--color-background) / <alpha-value>)",
-        foreground: "rgb(var(--color-foreground) / <alpha-value>)",
+        background: 'rgb(var(--color-background) / <alpha-value>)',
+        foreground: 'rgb(var(--color-foreground) / <alpha-value>)',
         muted: {
-          DEFAULT: "rgb(var(--color-muted) / <alpha-value>)",
-          foreground: "rgb(var(--color-muted-foreground) / <alpha-value>)",
+          DEFAULT: 'rgb(var(--color-muted) / <alpha-value>)',
+          foreground: 'rgb(var(--color-muted-foreground) / <alpha-value>)',
         },
         card: {
-          DEFAULT: "rgb(var(--color-card) / <alpha-value>)",
-          foreground: "rgb(var(--color-card-foreground) / <alpha-value>)",
+          DEFAULT: 'rgb(var(--color-card) / <alpha-value>)',
+          foreground: 'rgb(var(--color-card-foreground) / <alpha-value>)',
         },
-        border: "rgb(var(--color-border) / <alpha-value>)",
-        success: "#22c55e",
-        error: "#ef4444",
-        warning: "#f59e0b",
-        info: "#3b82f6",
+        border: 'rgb(var(--color-border) / <alpha-value>)',
+        success: '#22c55e',
+        error: '#ef4444',
+        warning: '#f59e0b',
+        info: '#3b82f6',
       },
     },
   },
@@ -182,7 +184,7 @@ module.exports = {
 // postcss.config.js
 module.exports = {
   plugins: {
-    "@tailwindcss/postcss": {},
+    '@tailwindcss/postcss': {},
   },
 };
 ```
@@ -197,27 +199,27 @@ module.exports = {
 
 /* CSS Variables för theming */
 :root {
-  --color-primary: 23 23 23;          /* #171717 */
+  --color-primary: 23 23 23; /* #171717 */
   --color-primary-foreground: 255 255 255;
-  --color-background: 255 255 255;    /* #ffffff */
-  --color-foreground: 23 23 23;       /* #171717 */
+  --color-background: 255 255 255; /* #ffffff */
+  --color-foreground: 23 23 23; /* #171717 */
   --color-card: 255 255 255;
   --color-card-foreground: 23 23 23;
-  --color-muted: 245 245 245;         /* #f5f5f5 */
+  --color-muted: 245 245 245; /* #f5f5f5 */
   --color-muted-foreground: 102 102 102;
-  --color-border: 229 229 229;        /* #e5e5e5 */
+  --color-border: 229 229 229; /* #e5e5e5 */
 }
 
 .dark {
-  --color-primary: 250 250 250;       /* #fafafa */
+  --color-primary: 250 250 250; /* #fafafa */
   --color-primary-foreground: 10 10 10;
-  --color-background: 10 10 10;       /* #0a0a0a */
-  --color-foreground: 250 250 250;    /* #fafafa */
-  --color-card: 20 20 20;             /* #141414 */
+  --color-background: 10 10 10; /* #0a0a0a */
+  --color-foreground: 250 250 250; /* #fafafa */
+  --color-card: 20 20 20; /* #141414 */
   --color-card-foreground: 250 250 250;
-  --color-muted: 31 31 31;            /* #1f1f1f */
+  --color-muted: 31 31 31; /* #1f1f1f */
   --color-muted-foreground: 166 166 166;
-  --color-border: 46 46 46;           /* #2e2e2e */
+  --color-border: 46 46 46; /* #2e2e2e */
 }
 ```
 
@@ -228,16 +230,13 @@ module.exports = {
 module.exports = function (api) {
   api.cache(true);
   return {
-    presets: [
-      ["babel-preset-expo", { jsxImportSource: "nativewind" }],
-      "nativewind/babel",
-    ],
+    presets: [['babel-preset-expo', { jsxImportSource: 'nativewind' }], 'nativewind/babel'],
     plugins: [
       [
-        "module-resolver",
+        'module-resolver',
         {
           alias: {
-            "@": "./src",
+            '@': './src',
           },
         },
       ],
@@ -250,12 +249,12 @@ module.exports = function (api) {
 
 ```javascript
 // metro.config.js
-const { getDefaultConfig } = require("expo/metro-config");
-const { withNativeWind } = require("nativewind/metro");
+const { getDefaultConfig } = require('expo/metro-config');
+const { withNativeWind } = require('nativewind/metro');
 
 const config = getDefaultConfig(__dirname);
 
-module.exports = withNativeWind(config, { input: "./src/styles/global.css" });
+module.exports = withNativeWind(config, { input: './src/styles/global.css' });
 ```
 
 ---
@@ -312,11 +311,9 @@ interface GluestackUIProviderProps {
 export function GluestackUIProvider({ children, mode }: GluestackUIProviderProps) {
   const { resolvedTheme } = useTheme();
   const currentMode = mode ?? resolvedTheme;
-  
+
   return (
-    <View style={[{ flex: 1 }, currentMode === 'dark' ? darkTheme : lightTheme]}>
-      {children}
-    </View>
+    <View style={[{ flex: 1 }, currentMode === 'dark' ? darkTheme : lightTheme]}>{children}</View>
   );
 }
 ```
@@ -408,9 +405,7 @@ export function Button({
       className={buttonVariants({ variant, size, disabled, className })}
     >
       {icon && <View className="mr-2">{icon}</View>}
-      <Text className={textVariants({ variant, size })}>
-        {children}
-      </Text>
+      <Text className={textVariants({ variant, size })}>{children}</Text>
     </Pressable>
   );
 }
@@ -449,15 +444,33 @@ export function Card({ children, variant, className, ...props }: CardProps) {
   );
 }
 
-export function CardHeader({ children, className }: { children: React.ReactNode; className?: string }) {
+export function CardHeader({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   return <View className={`mb-3 ${className}`}>{children}</View>;
 }
 
-export function CardContent({ children, className }: { children: React.ReactNode; className?: string }) {
+export function CardContent({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   return <View className={className}>{children}</View>;
 }
 
-export function CardFooter({ children, className }: { children: React.ReactNode; className?: string }) {
+export function CardFooter({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   return <View className={`mt-3 flex-row justify-end ${className}`}>{children}</View>;
 }
 ```
@@ -497,12 +510,7 @@ interface CustomTextProps extends TextProps {
 }
 
 export function Text({ variant, muted, className, ...props }: CustomTextProps) {
-  return (
-    <RNText 
-      className={textVariants({ variant, muted, className })} 
-      {...props} 
-    />
-  );
+  return <RNText className={textVariants({ variant, muted, className })} {...props} />;
 }
 ```
 
@@ -589,10 +597,14 @@ export default function App() {
 ### 5.2 Exempel: ProfileScreen Migration
 
 **Före:**
+
 ```tsx
 <Card style={styles.card}>
   <Card.Content>
-    <Text variant="titleMedium" style={[styles.sectionTitle, { color: paperTheme.colors.onSurface }]}>
+    <Text
+      variant="titleMedium"
+      style={[styles.sectionTitle, { color: paperTheme.colors.onSurface }]}
+    >
       Snabbval
     </Text>
   </Card.Content>
@@ -600,6 +612,7 @@ export default function App() {
 ```
 
 **Efter:**
+
 ```tsx
 <Card className="mx-4 mb-2">
   <CardContent>
@@ -655,37 +668,41 @@ declare module 'react-native' {
 
 ## 🎯 Fördelar med Denna Arkitektur
 
-| Funktion | Fördel |
-|----------|--------|
-| **NativeWind** | Tailwind CSS syntax, `dark:` prefix för dark mode |
-| **CSS Variables** | Centraliserade färger som uppdateras globalt |
-| **Gluestack UI** | Produktionsfärdiga, tillgängliga komponenter |
-| **React Native Paper** | Beprövade Material Design widgets |
-| **Tailwind Variants** | Type-safe variants för komponenter |
-| **Single Source of Truth** | En plats för alla färger och stilar |
+| Funktion                   | Fördel                                            |
+| -------------------------- | ------------------------------------------------- |
+| **NativeWind**             | Tailwind CSS syntax, `dark:` prefix för dark mode |
+| **CSS Variables**          | Centraliserade färger som uppdateras globalt      |
+| **Gluestack UI**           | Produktionsfärdiga, tillgängliga komponenter      |
+| **React Native Paper**     | Beprövade Material Design widgets                 |
+| **Tailwind Variants**      | Type-safe variants för komponenter                |
+| **Single Source of Truth** | En plats för alla färger och stilar               |
 
 ---
 
 ## 📋 Implementationsordning
 
 ### Vecka 1
+
 - [ ] Installera NativeWind v5
 - [ ] Konfigurera Tailwind + PostCSS
 - [ ] Skapa global.css med CSS-variabler
 - [ ] Uppdatera babel.config.js och metro.config.js
 
 ### Vecka 2
+
 - [ ] Installera Gluestack UI
 - [ ] Skapa Button, Card, Text komponenter
 - [ ] Uppdatera App.tsx med GluestackUIProvider
 - [ ] Migrera ThemeContext för NativeWind-integration
 
 ### Vecka 3
+
 - [ ] Migrera ProfileScreen
 - [ ] Migrera LoginScreen
 - [ ] Skapa fler UI-komponenter (Input, Avatar, Badge)
 
 ### Vecka 4
+
 - [ ] Migrera övriga skärmar
 - [ ] Dokumentation och cleanup
 - [ ] Performance-testning
@@ -702,4 +719,4 @@ declare module 'react-native' {
 
 ---
 
-*Genererad: 2026-01-20*
+_Genererad: 2026-01-20_

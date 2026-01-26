@@ -29,10 +29,7 @@ export function MenuHeader({ title, onClose }: MenuHeaderProps) {
 
       {/* Right - Menu icon */}
       <View style={styles.rightSection}>
-        <Pressable 
-          style={styles.menuButton}
-          onPress={onClose}
-        >
+        <Pressable style={styles.menuButton} onPress={onClose}>
           <X size={20} color={textColor} />
         </Pressable>
       </View>

@@ -3,6 +3,7 @@
 ## 🎨 Design Inspiration
 
 Baserat på följande Behance-projekt:
+
 - **ZocDog** (Healthcare) - Primär inspiration ⭐
 - **AIVA** (AI Financial Management)
 - **Productivity Task Management**
@@ -13,18 +14,21 @@ Baserat på följande Behance-projekt:
 ## 🎯 Design Principer
 
 ### 1. Visuellt Lugnande (ZocDog-stil)
+
 - **Mjuka, avrundade former** - 16-24px border-radius
 - **Generöst whitespace** - Andningsrum mellan element
 - **Subtila skuggor** - Ej hårda kanter
 - **Lugnande färgpalett** - Teal/mint toner med neutrala grunder
 
 ### 2. Klarhet & Enkelhet (AIVA-stil)
+
 - **Tydlig hierarki** - Stor kontrast mellan rubriker och brödtext
 - **Ikon-driven navigation** - Minimalt text-brus
 - **Fokuserade vyer** - En primär åtgärd per skärm
 - **Real-time feedback** - Tydlig visuell respons
 
 ### 3. Produktivitetsfokus (Task Management-stil)
+
 - **Snabb skanning** - Viktig info synlig direkt
 - **Progressindikatorer** - Visa framsteg tydligt
 - **Batch-actions** - Effektiv hantering av listor
@@ -270,6 +274,7 @@ Baserat på följande Behance-projekt:
 ## 🧱 Component Specs
 
 ### Cards (ZocDog-style)
+
 ```
 ┌─────────────────────────────────────┐
 │  padding: 16px (space-4)            │
@@ -282,6 +287,7 @@ Baserat på följande Behance-projekt:
 ```
 
 ### Buttons (ZocDog-style - from Bild 2, 5, 7, 8)
+
 ```
 ┌─────────────────────────────────────────────────────┐
 │  VARIANTS                                           │
@@ -328,6 +334,7 @@ Baserat på följande Behance-projekt:
 ```
 
 ### Inputs
+
 ```
 ┌─────────────────────────────────────────────────────┐
 │  height: 48px                                       │
@@ -341,6 +348,7 @@ Baserat på följande Behance-projekt:
 ```
 
 ### Avatars
+
 ```
 ┌─────────────────────────────────────────────────────┐
 │  xs:  24px   Inline, lists                          │
@@ -356,6 +364,7 @@ Baserat på följande Behance-projekt:
 ```
 
 ### Badges/Pills (ZocDog-style)
+
 ```
 ┌─────────────────────────────────────────────────────┐
 │  height: 24px                                       │
@@ -375,6 +384,7 @@ Baserat på följande Behance-projekt:
 ```
 
 ### Bottom Navigation (ZocDog Floating Pills Style) ⭐
+
 ```
 ┌─────────────────────────────────────────────────────┐
 │  VISUAL DESIGN (Overlapping Circles)                │
@@ -462,6 +472,7 @@ Baserat på följande Behance-projekt:
 ```
 
 ### Fullscreen Menu (Avanza-style) ⭐
+
 ```
 ┌─────────────────────────────────────────────────────┐
 │  TRIGGER                                            │
@@ -623,6 +634,7 @@ Baserat på följande Behance-projekt:
 ```
 
 ### Profile Header (ZocDog - Bild 5)
+
 ```
 ┌─────────────────────────────────────────────────────┐
 │  LAYOUT                                             │
@@ -654,6 +666,7 @@ Baserat på följande Behance-projekt:
 ```
 
 ### List Items (ZocDog - Bild 5)
+
 ```
 ┌─────────────────────────────────────────────────────┐
 │  LAYOUT                                             │
@@ -679,6 +692,7 @@ Baserat på följande Behance-projekt:
 ```
 
 ### Specialist Card (ZocDog - Bild 7, 8)
+
 ```
 ┌─────────────────────────────────────────────────────┐
 │  LAYOUT                                             │
@@ -716,6 +730,7 @@ Baserat på följande Behance-projekt:
 ## 📱 Screen Layouts
 
 ### Profile Screen (ZocDog-inspired)
+
 ```
 ┌─────────────────────────────────────┐
 │  ┌───────────────────────────────┐  │
@@ -751,6 +766,7 @@ Baserat på följande Behance-projekt:
 ## 🌗 Dark/Light Mode Implementation
 
 ### CSS Variables Approach (NativeWind)
+
 ```css
 :root {
   /* Light mode defaults */
@@ -776,6 +792,7 @@ Baserat på följande Behance-projekt:
 ```
 
 ### Component Usage
+
 ```tsx
 // Automatisk dark mode med NativeWind
 <View className="bg-background-0 dark:bg-background-0">
@@ -797,6 +814,7 @@ Baserat på följande Behance-projekt:
 ## ✅ Design Checklist
 
 ### Per Komponent
+
 - [ ] Fungerar i Light mode
 - [ ] Fungerar i Dark mode
 - [ ] Korrekt touch-target (44px minimum)
@@ -805,6 +823,7 @@ Baserat på följande Behance-projekt:
 - [ ] Smooth transitions (150-200ms)
 
 ### Per Skärm
+
 - [ ] Tydlig visuell hierarki
 - [ ] Tillräckligt whitespace
 - [ ] Fokuserad primär åtgärd
@@ -812,5 +831,5 @@ Baserat på följande Behance-projekt:
 
 ---
 
-*Baserat på ZocDog Healthcare UI, AIVA Finance, och moderna productivity app-designers.*
-*Uppdaterad: 2026-01-20*
+_Baserat på ZocDog Healthcare UI, AIVA Finance, och moderna productivity app-designers._
+_Uppdaterad: 2026-01-20_

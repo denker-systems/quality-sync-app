@@ -9,6 +9,7 @@ Common problems and solutions for Quality Sync Mobile.
 **Problem:** Error when running `npm start`
 
 **Solutions:**
+
 ```bash
 # Reinstall dependencies
 rm -rf node_modules package-lock.json
@@ -24,6 +25,7 @@ npm install
 **Problem:** Metro bundler fails to start or crashes
 
 **Solutions:**
+
 ```bash
 # Clear Metro cache
 npm start -- --clear
@@ -44,6 +46,7 @@ npm start
 **Problem:** Cannot resolve '@/...' imports
 
 **Solutions:**
+
 ```bash
 # Clear Metro cache
 npm start -- --clear
@@ -60,6 +63,7 @@ npm start -- --clear
 **Problem:** iOS Simulator doesn't launch
 
 **Solutions:**
+
 ```bash
 # Open Simulator manually first
 open -a Simulator
@@ -76,6 +80,7 @@ npm run ios -- --simulator="iPhone 14"
 **Problem:** iOS build errors
 
 **Solutions:**
+
 ```bash
 # Install/update CocoaPods
 cd ios
@@ -97,6 +102,7 @@ npm run ios
 **Problem:** App shows "No bundle URL present"
 
 **Solutions:**
+
 ```bash
 # Ensure Metro is running
 npm start
@@ -115,6 +121,7 @@ npm start -- --clear
 **Problem:** Android Emulator doesn't launch
 
 **Solutions:**
+
 1. Open Android Studio
 2. Tools → AVD Manager
 3. Start emulator manually
@@ -125,6 +132,7 @@ npm start -- --clear
 **Problem:** Android build errors
 
 **Solutions:**
+
 ```bash
 # Clean Gradle cache
 cd android
@@ -145,6 +153,7 @@ npm run android
 **Problem:** App shows "Unable to load script"
 
 **Solutions:**
+
 ```bash
 # Ensure Metro is running
 npm start
@@ -164,6 +173,7 @@ npm start
 **Problem:** No error message when login fails
 
 **Solutions:**
+
 1. Check network connection
 2. Verify Supabase URL and anon key in `.env`
 3. Check console for errors
@@ -175,6 +185,7 @@ npm start
 **Problem:** User logged out after app restart
 
 **Solutions:**
+
 ```typescript
 // Verify supabase config
 auth: {
@@ -193,6 +204,7 @@ await AsyncStorage.clear();
 **Problem:** User logged out unexpectedly
 
 **Solutions:**
+
 1. Check network connectivity
 2. Verify `autoRefreshToken: true` in config
 3. Check Supabase project status
@@ -205,6 +217,7 @@ await AsyncStorage.clear();
 **Problem:** MFA QR code doesn't show
 
 **Solutions:**
+
 1. Check network connection
 2. Verify Supabase MFA is enabled in dashboard
 3. Check console for errors
@@ -216,6 +229,7 @@ await AsyncStorage.clear();
 **Problem:** Correct MFA code shows as invalid
 
 **Solutions:**
+
 1. **Check device time** - Must be synchronized
    - iOS: Settings → General → Date & Time → Set Automatically
    - Android: Settings → System → Date & Time → Automatic
@@ -228,6 +242,7 @@ await AsyncStorage.clear();
 **Problem:** Cannot complete MFA enrollment
 
 **Solutions:**
+
 1. Verify user is authenticated
 2. Check Supabase MFA configuration
 3. Ensure no existing factors conflict
@@ -241,6 +256,7 @@ await AsyncStorage.clear();
 **Problem:** Profile or company data doesn't load
 
 **Solutions:**
+
 1. Check network connection
 2. Verify user is authenticated
 3. Check RLS policies in Supabase
@@ -252,6 +268,7 @@ await AsyncStorage.clear();
 **Problem:** Queries return empty despite data existing
 
 **Solutions:**
+
 1. Verify user is authenticated
 2. Check RLS policies exist for table
 3. Verify policy conditions match user
@@ -268,6 +285,7 @@ await AsyncStorage.clear();
 **Problem:** All API calls fail
 
 **Solutions:**
+
 1. Check internet connection
 2. Verify Supabase URL is correct
 3. Check firewall settings
@@ -279,6 +297,7 @@ await AsyncStorage.clear();
 **Problem:** App is slow or laggy
 
 **Solutions:**
+
 1. Clear Metro cache: `npm start -- --clear`
 2. Restart app
 3. Check network speed
@@ -292,6 +311,7 @@ await AsyncStorage.clear();
 **Problem:** `process.env.EXPO_PUBLIC_*` is undefined
 
 **Solutions:**
+
 ```bash
 # Verify .env file exists
 ls -la .env
@@ -312,6 +332,7 @@ npm start -- --clear
 **Problem:** TypeScript compilation errors
 
 **Solutions:**
+
 ```bash
 # Run TypeScript check
 npx tsc --noEmit
@@ -332,6 +353,7 @@ npx tsc --noEmit
 **Problem:** EAS build fails
 
 **Solutions:**
+
 1. Check `eas.json` configuration
 2. Verify all dependencies are in `package.json`
 3. Check build logs for specific errors
@@ -343,6 +365,7 @@ npx tsc --noEmit
 **Problem:** App crashes immediately after opening
 
 **Solutions:**
+
 1. Check console/logs for errors
 2. Verify all native dependencies are linked
 3. Clear app data and reinstall
@@ -356,6 +379,7 @@ npx tsc --noEmit
 **Problem:** UI is unresponsive
 
 **Solutions:**
+
 1. Check for infinite loops in useEffect
 2. Optimize expensive computations with useMemo
 3. Use React.memo for heavy components
@@ -367,6 +391,7 @@ npx tsc --noEmit
 **Problem:** App takes long to load
 
 **Solutions:**
+
 1. Optimize initial data loading
 2. Lazy load heavy components
 3. Reduce bundle size
@@ -403,14 +428,17 @@ npx react-native log-android
 ### Common Console Errors
 
 **"Require cycle"**
+
 - Circular dependency between modules
 - Refactor to break the cycle
 
 **"Can't find variable"**
+
 - Missing import
 - Typo in variable name
 
 **"undefined is not an object"**
+
 - Accessing property of undefined
 - Add null checks
 
@@ -435,6 +463,7 @@ npx react-native log-android
 ### Providing Information
 
 When reporting an issue, include:
+
 - Error message (full text)
 - Steps to reproduce
 - Device/simulator info

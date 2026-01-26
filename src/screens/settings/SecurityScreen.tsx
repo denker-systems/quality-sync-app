@@ -8,21 +8,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/config/supabase';
-import { 
-  Fingerprint, 
-  Smartphone,
-  Key,
-  Shield,
-  CheckCircle,
-} from 'lucide-react-native';
-
-interface MfaFactor {
-  id: string;
-  friendly_name: string;
-  factor_type: string;
-  status: string;
-  created_at: string;
-}
+import { Fingerprint, Smartphone, Shield, CheckCircle } from 'lucide-react-native';
 
 export function SecurityScreen() {
   const { isDark } = useTheme();
@@ -30,7 +16,7 @@ export function SecurityScreen() {
   const { user } = useAuth();
   const navigation = useNavigation<any>();
   const [biometricEnabled, setBiometricEnabled] = useState(false);
-  
+
   const textColor = isDark ? '#FAFAFA' : '#171717';
   const mutedColor = isDark ? '#A3A3A3' : '#737373';
   const accentColor = isDark ? '#6BBD68' : '#489A45';
@@ -70,7 +56,9 @@ export function SecurityScreen() {
                 <Fingerprint size={20} color={accentColor} />
               </View>
               <View style={styles.settingsText}>
-                <Text variant="body-lg" style={{ color: textColor }}>{t('security.biometric')}</Text>
+                <Text variant="body-lg" style={{ color: textColor }}>
+                  {t('security.biometric')}
+                </Text>
                 <Text variant="body-sm" style={{ color: mutedColor }}>
                   {t('security.biometricSubtitle')}
                 </Text>
@@ -95,9 +83,13 @@ export function SecurityScreen() {
                 <Smartphone size={20} color={accentColor} />
               </View>
               <View style={styles.settingsText}>
-                <Text variant="body-lg" style={{ color: textColor }}>{t('security.twoFactor')}</Text>
+                <Text variant="body-lg" style={{ color: textColor }}>
+                  {t('security.twoFactor')}
+                </Text>
                 <Text variant="body-sm" style={{ color: mutedColor }}>
-                  {hasMfaEnabled ? t('security.twoFactorEnabled') : t('security.twoFactorRecommended')}
+                  {hasMfaEnabled
+                    ? t('security.twoFactorEnabled')
+                    : t('security.twoFactorRecommended')}
                 </Text>
               </View>
               {mfaLoading ? (
@@ -108,12 +100,15 @@ export function SecurityScreen() {
                 <Badge variant="default">{t('security.inactive')}</Badge>
               )}
             </View>
-            
+
             {/* Show registered MFA devices */}
             {verifiedFactors.length > 0 && (
               <View style={styles.mfaDevices}>
                 {verifiedFactors.map((factor: any) => (
-                  <View key={factor.id} style={[styles.mfaDevice, { borderColor: isDark ? '#2E2E2E' : '#E5E5E5' }]}>
+                  <View
+                    key={factor.id}
+                    style={[styles.mfaDevice, { borderColor: isDark ? '#2E2E2E' : '#E5E5E5' }]}
+                  >
                     <View style={styles.mfaDeviceInfo}>
                       <CheckCircle size={16} color={accentColor} />
                       <Text variant="body" style={{ color: textColor, marginLeft: 8 }}>

@@ -39,18 +39,18 @@ interface OnboardingPathMapProps {
   isDark: boolean;
 }
 
-const StepNode = memo(function StepNode({ 
-  step, 
-  index, 
-  stepProgress, 
-  hasStarted, 
-  activeIndex, 
-  openStepId, 
-  onToggleBubble, 
-  accentColor, 
+const StepNode = memo(function StepNode({
+  step,
+  index,
+  stepProgress,
+  hasStarted,
+  activeIndex,
+  openStepId,
+  onToggleBubble,
+  accentColor,
   textColor,
   t,
-  language
+  language,
 }: {
   step: OnboardingStep;
   index: number;
@@ -85,18 +85,19 @@ const StepNode = memo(function StepNode({
     }
   }, [canAccess, onToggleBubble, step.id]);
 
-  const animateStyle = useCallback(({ pressed }: { pressed: boolean }) => {
-    'worklet';
-    return {
-      scale: pressed || isOpen ? 1.25 : 1,
-      opacity: pressed ? 0.95 : 1,
-    };
-  }, [isOpen]);
+  const animateStyle = useCallback(
+    ({ pressed }: { pressed: boolean }) => {
+      'worklet';
+      return {
+        scale: pressed || isOpen ? 1.25 : 1,
+        opacity: pressed ? 0.95 : 1,
+      };
+    },
+    [isOpen],
+  );
 
   return (
-    <View
-      style={[styles.stepRow, { transform: [{ translateX: horizontalOffset }] }]}
-    >
+    <View style={[styles.stepRow, { transform: [{ translateX: horizontalOffset }] }]}>
       <MotiPressable
         disabled={!canAccess}
         onPress={handlePress}
@@ -104,8 +105,8 @@ const StepNode = memo(function StepNode({
         transition={SPRING_CONFIGS.snappy}
         style={styles.stepNodePressable}
       >
-        <OnboardingPathNode 
-          status={status} 
+        <OnboardingPathNode
+          status={status}
           accentColor={accentColor}
           image={getStepImage(step.step_type)}
         />
@@ -113,7 +114,8 @@ const StepNode = memo(function StepNode({
           variant="body-sm"
           style={[styles.stepLabel, { color: textColor, opacity: isLocked ? 0.6 : 1 }]}
         >
-          {getOnboardingStepTitle(step, language === 'sv' ? 'sv' : 'en') || t('onboarding.stepNumber', { number: index + 1 })}
+          {getOnboardingStepTitle(step, language === 'sv' ? 'sv' : 'en') ||
+            t('onboarding.stepNumber', { number: index + 1 })}
         </Text>
       </MotiPressable>
     </View>
@@ -135,28 +137,46 @@ export const OnboardingPathMap = memo(function OnboardingPathMap({
   isDark,
 }: OnboardingPathMapProps) {
   const { t, language } = useLanguage();
-  const openIndex = useMemo(() => steps.findIndex((step) => step.id === openStepId), [steps, openStepId]);
+  const openIndex = useMemo(
+    () => steps.findIndex((step) => step.id === openStepId),
+    [steps, openStepId],
+  );
   const openStep = openIndex >= 0 ? steps[openIndex] : null;
 
-  const memoizedSteps = useMemo(() => steps.map((step, index) => {
-    const stepProgress = progressMap.get(step.id);
-    return (
-      <StepNode
-        key={step.id}
-        step={step}
-        index={index}
-        stepProgress={stepProgress}
-        hasStarted={hasStarted}
-        activeIndex={activeIndex}
-        openStepId={openStepId}
-        onToggleBubble={onToggleBubble}
-        accentColor={accentColor}
-        textColor={textColor}
-        t={t}
-        language={language}
-      />
-    );
-  }), [steps, progressMap, hasStarted, activeIndex, openStepId, onToggleBubble, accentColor, textColor, t, language]);
+  const memoizedSteps = useMemo(
+    () =>
+      steps.map((step, index) => {
+        const stepProgress = progressMap.get(step.id);
+        return (
+          <StepNode
+            key={step.id}
+            step={step}
+            index={index}
+            stepProgress={stepProgress}
+            hasStarted={hasStarted}
+            activeIndex={activeIndex}
+            openStepId={openStepId}
+            onToggleBubble={onToggleBubble}
+            accentColor={accentColor}
+            textColor={textColor}
+            t={t}
+            language={language}
+          />
+        );
+      }),
+    [
+      steps,
+      progressMap,
+      hasStarted,
+      activeIndex,
+      openStepId,
+      onToggleBubble,
+      accentColor,
+      textColor,
+      t,
+      language,
+    ],
+  );
 
   return (
     <View style={styles.stepsSection}>
@@ -164,15 +184,17 @@ export const OnboardingPathMap = memo(function OnboardingPathMap({
         {t('onboarding.journeyTitle')}
       </Text>
       <View style={styles.pathContainer} pointerEvents="box-none">
-        {openStepId && (
-          <Pressable style={styles.bubbleOverlay} onPress={onCloseBubble} />
-        )}
+        {openStepId && <Pressable style={styles.bubbleOverlay} onPress={onCloseBubble} />}
         {memoizedSteps}
       </View>
       <OnboardingStepDialog
         visible={!!openStep && openIndex >= 0}
         title={openStep ? getOnboardingStepTitle(openStep, language === 'sv' ? 'sv' : 'en') : ''}
-        description={openStep ? getOnboardingStepDescription(openStep, language === 'sv' ? 'sv' : 'en') : undefined}
+        description={
+          openStep
+            ? getOnboardingStepDescription(openStep, language === 'sv' ? 'sv' : 'en')
+            : undefined
+        }
         actionLabel={t('onboarding.openButton')}
         onAction={() => openIndex >= 0 && onOpenStep(openIndex)}
         onClose={onCloseBubble}
